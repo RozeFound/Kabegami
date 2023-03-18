@@ -1,0 +1,55 @@
+using Gtk 4.0;
+using Adw 1;
+
+menu main_options {
+    section {
+      item {
+        custom: "theme";
+      }
+    }
+    section {
+        item(_("Preferences"), "app.preferences")
+    }
+    section {
+        item(_("About Kabegami"), "app.about")
+        item(_("Exit"), "app.exit")
+    }
+}
+
+template MainWindow : Adw.ApplicationWindow {
+
+    title: "Kabegami";
+    default-width: 800;
+    default-height: 600;
+    icon-name: "com.github.RozeFound.Kabegami";
+    modal: true;
+
+    Gtk.Box {
+        orientation: vertical;
+
+        Adw.HeaderBar {
+
+            title-widget: Adw.ViewSwitcherTitle view_switcher_title {
+                title: bind MainWindow.title;
+                stack: stack;
+            };
+
+            [end]
+            Gtk.MenuButton {
+                primary: true;
+                icon-name: "open-menu-symbolic";
+                popover: Gtk.PopoverMenu options_menu {
+                    menu-model: main_options;
+                };
+            }
+        }
+
+        Adw.ViewStack stack { }
+
+        Adw.ViewSwitcherBar {
+            stack: stack;
+            reveal: bind view_switcher_title.title-visible;
+        }
+    }
+    
+}

@@ -1,0 +1,4 @@
+# List of source files containing translatable strings.
+kabegami.ui.about.blp
+kabegami.ui.theme_switcher.blp
+kabegami.ui.window.blp

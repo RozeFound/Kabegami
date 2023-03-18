@@ -1,0 +1,52 @@
+.theme-switcher {
+  margin: 9px;
+}
+  
+.theme-switcher checkbutton {
+  padding: 0;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 1px;
+  background-clip: content-box;
+  border-radius: 9999px;
+  box-shadow: inset 0 0 0 1px @borders;
+}
+
+.theme-switcher checkbutton.system:checked,
+.theme-switcher checkbutton.light:checked,
+.theme-switcher checkbutton.dark:checked {
+  box-shadow: inset 0 0 0 2px @theme_selected_bg_color;
+}
+
+.theme-switcher checkbutton.system {
+  background-image: linear-gradient(
+    to bottom right,
+    #fff 49.99%,
+    #202020 50.01%
+  );
+}
+
+.theme-switcher checkbutton.light {
+  background-color: #fff;
+}
+
+.theme-switcher checkbutton.dark {
+  background-color: #202020;
+}
+
+.theme-switcher checkbutton radio {
+  -gtk-icon-source: none;
+  border: none;
+  background: none;
+  box-shadow: none;
+  min-width: 12px;
+  min-height: 12px;
+  transform: translate(27px, 14px);
+  padding: 2px;
+}
+
+.theme-switcher checkbutton.theme-selector radio:checked {
+  -gtk-icon-source: -gtk-icontheme("object-select-symbolic");
+  background-color: @theme_selected_bg_color;
+  color: @theme_selected_fg_color;
+}
