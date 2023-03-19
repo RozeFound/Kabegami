@@ -6,6 +6,7 @@ template ThemeSwitcherWidget : Adw.Bin {
     styles ["theme-switcher"]
 
     Gtk.Box {
+        
         hexpand: true;
         spacing: 12;
 
@@ -13,10 +14,6 @@ template ThemeSwitcherWidget : Adw.Bin {
 
             visible: bind ThemeSwitcherWidget.show-system;
             tooltip-text: _("Follow system style");
-
-            hexpand: true;
-            halign: center;
-            focus-on-click: false;
 
             toggled => on_color_scheme_changed();
 
@@ -32,10 +29,6 @@ template ThemeSwitcherWidget : Adw.Bin {
             tooltip-text: _("Light style");
             group: system;
 
-            hexpand: true;
-            halign: center;
-            focus-on-click: false;
-
             toggled => on_color_scheme_changed();
 
             styles [
@@ -49,10 +42,6 @@ template ThemeSwitcherWidget : Adw.Bin {
 
             tooltip-text: _("Dark style");
             group: system;
-
-            hexpand: true;
-            halign: center;
-            focus-on-click: false;
 
             toggled => on_color_scheme_changed();
 

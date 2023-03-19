@@ -11,11 +11,12 @@ from kabegami import config
 class Kabegami(Adw.Application):
 
     def __init__(self) -> None:
-        super().__init__(application_id=config.APP_ID)
+        super().__init__(application_id=config.APP_ID, register_session=True)
+        self.set_resource_base_path(config.RESOURCES)
 
-        self.create_action("preferences", self.show_preferences)
         self.create_action("about", self.show_about)
-        self.create_action("exit", lambda *_: quit(), ["<primary>q"])
+        self.create_action("preferences", self.show_preferences, ["<primary>,"])
+        self.create_action("exit", lambda *args: quit(), ["<primary>q"])
 
     def create_action(self, name: str, callback: Callable, shortcuts: list[str] = None) -> None:
 
@@ -30,7 +31,7 @@ class Kabegami(Adw.Application):
 
     def show_about(self, *args) -> None:
         
-        builder = Gtk.Builder.new_from_resource("/com/github/RozeFound/Kabegami/about.ui")
+        builder = Gtk.Builder.new_from_resource(f"{config.RESOURCES}/about.ui")
 
         about = builder.get_object("about_window")
         about.set_application_name(config.APP_NAME)

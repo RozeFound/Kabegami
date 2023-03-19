@@ -1,7 +1,7 @@
 .theme-switcher {
   margin: 9px;
 }
-  
+
 .theme-switcher checkbutton {
   padding: 0;
   min-height: 44px;
@@ -45,7 +45,7 @@
   padding: 2px;
 }
 
-.theme-switcher checkbutton.theme-selector radio:checked {
+checkbutton.theme-selector radio:checked {
   -gtk-icon-source: -gtk-icontheme("object-select-symbolic");
   background-color: @theme_selected_bg_color;
   color: @theme_selected_fg_color;

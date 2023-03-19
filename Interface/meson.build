@@ -22,7 +22,6 @@ localedir = get_option('localedir')
 
 subdir('data')
 subdir('kabegami')
-subdir('po')
 
 gnome.post_install(
      glib_compile_schemas: true,

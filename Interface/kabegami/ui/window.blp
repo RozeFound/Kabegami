@@ -3,9 +3,7 @@ using Adw 1;
 
 menu main_options {
     section {
-      item {
-        custom: "theme";
-      }
+      item { custom: "theme"; }
     }
     section {
         item(_("Preferences"), "app.preferences")
@@ -19,15 +17,15 @@ menu main_options {
 template MainWindow : Adw.ApplicationWindow {
 
     title: "Kabegami";
-    default-width: 800;
-    default-height: 600;
     icon-name: "com.github.RozeFound.Kabegami";
-    modal: true;
+
+    close-request => on_close_request();
 
     Gtk.Box {
         orientation: vertical;
 
         Adw.HeaderBar {
+            centering-policy: strict;
 
             title-widget: Adw.ViewSwitcherTitle view_switcher_title {
                 title: bind MainWindow.title;

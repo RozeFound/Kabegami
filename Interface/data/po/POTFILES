@@ -2,3 +2,4 @@
 kabegami.ui.about.blp
 kabegami.ui.theme_switcher.blp
 kabegami.ui.window.blp
+kabegami.windows.main_window.py

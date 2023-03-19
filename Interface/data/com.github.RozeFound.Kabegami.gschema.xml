@@ -1,5 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist gettext-domain="kabegami">
+
 	<schema id="com.github.RozeFound.Kabegami" path="/com/github/RozeFound/Kabegami/">
+
+	    <key type="i" name="theme">
+			<default>0</default>
+			<summary>Theme index</summary>
+			<description>Theme index 0=auto, 1=light, 2=dark</description>
+		</key>
+
+		<key type="i" name="width">
+			<default>800</default>
+			<summary>Main Window Width</summary>
+		</key>
+
+		<key type="i" name="height">
+			<default>600</default>
+			<summary>Main Window Height</summary>
+		</key>
+
 	</schema>
+
 </schemalist>

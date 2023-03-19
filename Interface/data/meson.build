@@ -16,7 +16,7 @@ desktop = i18n.merge_file(
         input: desktop_file,
        output: 'com.github.RozeFound.Kabegami.desktop',
          type: 'desktop',
-       po_dir: '../po',
+       po_dir: 'po',
       install: true,
   install_dir: join_paths(get_option('datadir'), 'applications')
 )
@@ -29,7 +29,7 @@ endif
 appstream_file = i18n.merge_file(
         input: 'com.github.RozeFound.Kabegami.appdata.xml.in',
        output: 'com.github.RozeFound.Kabegami.appdata.xml',
-       po_dir: '../po',
+       po_dir: 'po',
       install: true,
   install_dir: join_paths(get_option('datadir'), 'appdata')
 )
@@ -59,3 +59,5 @@ symbolic_dir = join_paths('icons', 'hicolor', 'symbolic', 'apps')
 install_data ( join_paths(symbolic_dir, APP_SYMBOLIC_ICON),
   install_dir: join_paths(get_option('prefix'), get_option('datadir'), symbolic_dir)
 )
+
+subdir('po')
