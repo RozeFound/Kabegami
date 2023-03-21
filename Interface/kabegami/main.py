@@ -15,7 +15,7 @@ class Kabegami(Adw.Application):
         self.set_resource_base_path(config.RESOURCES)
 
         self.create_action("about", self.show_about)
-        self.create_action("preferences", self.show_preferences, ["<primary>,"])
+        self.create_action("preferences", self.show_preferences, ["<primary>comma"])
         self.create_action("exit", lambda *args: quit(), ["<primary>q"])
 
     def create_action(self, name: str, callback: Callable, shortcuts: list[str] = None) -> None:
