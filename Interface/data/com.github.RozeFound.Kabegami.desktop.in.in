@@ -1,8 +1,0 @@
-[Desktop Entry]
-Name=@APP_NAME@
-Exec=kabegami
-Icon=@APP_ID@
-Terminal=false
-Type=Application
-Categories=GTK;Utility
-StartupNotify=true
