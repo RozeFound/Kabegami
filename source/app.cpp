@@ -12,29 +12,31 @@ Kabegami::Kabegami() {
 
 Kabegami::~Kabegami() {
 
-    auto ec = glz::write_file(settings, "Settings.json");
+    std::string buffer;
+
+    glz::write<glz::opts{.prettify=true}>(settings, buffer);
+
+    auto file = std::ofstream("Settings.json");
+
+    file << buffer;
 
 }
 
 void Kabegami::run() {
 
     auto fs = FileSystem();
-    auto ec = glz::parse_error();
 
     fs.add_location(settings.assets);
     fs.add_location(settings.wallpaper);
+    
+    auto file = glz::get_as_json<std::string, "/file">(fs.read_as_string("project.json"));
 
-    glz::json_t project;
-    ec = glz::read_json(project, fs.read_as_string("project.json"));
+    if (!fs.exists(*file)) fs.add_package(settings.wallpaper + "/scene.pkg");
 
-    auto file = project["file"].get<std::string>();
+    auto scene = glz::read_json<Scene>(fs.read_as_string(*file));
 
-    if (!fs.exists(file)) fs.add_package(settings.wallpaper + "/scene.pkg");
-
-    auto scene = Scene();
-    ec = glz::read_json(scene, fs.read_as_string(file));
-
-    auto op = scene.general.orthogonalprojection;
+    auto op = scene->general.orthogonalprojection;
     fmt::print("width: {}, heigth: {}\n", op.width, op.height);
+    fmt::print("Clear color: {}\n", scene->general.clearcolor);
 
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <string>
+#include <string_view>
 #include <optional>
 #include <vector>
 
@@ -17,14 +17,14 @@ struct Pass {
 
     struct Constants {
         double ui_editor_properties_audio_amount;
-        std::string ui_editor_properties_audio_bounds;
+        std::string_view ui_editor_properties_audio_bounds;
         float ui_editor_properties_audio_exponent;
         int ui_editor_properties_frequency_max;
         int ui_editor_properties_frequency_min;
         double ui_editor_properties_strength;
     } constantshadervalues;
 
-    std::vector<std::optional<std::string>> textures;
+    std::vector<std::optional<std::string_view>> textures;
 
 };
 
@@ -36,9 +36,9 @@ GLZ_META(Pass::Constants, ui_editor_properties_audio_amount, ui_editor_propertie
 
 struct Effect {
 
-    std::string file;
+    std::string_view file;
     std::vector<Pass> passes;
-    std::string username;
+    std::string_view username;
     bool visible;
 
 };
@@ -47,20 +47,20 @@ GLZ_META(Effect, file, passes, username, visible);
 
 struct Object {
 
-    std::string angles;
+    std::string_view angles;
     int colorBlendMode;
     bool copybackground;
 
     std::vector<Effect> effects;
 
     int id;
-    std::string image;
+    std::string_view image;
     bool locktransforms;
-    std::string name;
-    std::string origin;
-    std::string parallaxDepth;
-    std::string scale;
-    std::string size;
+    std::string_view name;
+    std::string_view origin;
+    std::string_view parallaxDepth;
+    std::string_view scale;
+    std::string_view size;
     bool visible;
 
 };
@@ -71,14 +71,14 @@ GLZ_META(Object, angles, colorBlendMode, copybackground, effects,
 struct Scene {
 
     struct Camera {
-        std::string center;
-        std::string eye;
-        std::string up;
+        std::string_view center;
+        std::string_view eye;
+        std::string_view up;
     } camera;
 
     struct General {
 
-        std::string ambientcolor;
+        std::string_view ambientcolor;
         bool bloom;
         int bloomstrength;
         double bloomthreshold;
@@ -92,7 +92,7 @@ struct Scene {
         float camerashakeamplitude;
         int camerashakeroughness;
         int camerashakespeed;
-        std::string clearcolor;
+        std::string_view clearcolor;
         std::optional<bool> clearenabled;
 
         struct OrthogonalProjection {
@@ -100,7 +100,7 @@ struct Scene {
             int width;
         } orthogonalprojection;
 
-        std::string skylightcolor;
+        std::string_view skylightcolor;
 
     } general;
 
