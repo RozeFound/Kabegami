@@ -12,6 +12,6 @@ CPMAddPackage(
 
 CPMAddPackage(
     NAME glaze
-    VERSION 1.1.0
+    VERSION 1.2.0
     GITHUB_REPOSITORY stephenberry/glaze
 )

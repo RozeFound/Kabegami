@@ -1,12 +1,14 @@
 #include "package.hpp"
 
-#include <iostream>
+#include <fmt/core.h>
+
+
 
 Package::Package (std::filesystem::path path) {
 
     file = std::ifstream(path, std::ios::binary);
 
-    std::cout << read_string() << std::endl;
+    fmt::print("Package version: {}\n", read_string());
 
     auto entries_count = read_int();
 

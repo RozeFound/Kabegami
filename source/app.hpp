@@ -10,9 +10,9 @@
 struct Settings {
 
     std::string assets;
-    std::string package;
+    std::string wallpaper;
 
-    GLZ_LOCAL_META(Settings, assets, package);
+    GLZ_LOCAL_META(Settings, assets, wallpaper);
 
 };
 
