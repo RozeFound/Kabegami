@@ -31,6 +31,8 @@ class Package {
     Package (Package&) = delete;
 
     std::vector <std::byte> read_file (std::string_view path);
-    constexpr bool exists (std::string_view path) const { return entries.contains(path.data()); }
+    constexpr bool exists (std::string_view path) const { 
+        return entries.contains({ path.begin(), path.end() });
+    }
 
 };

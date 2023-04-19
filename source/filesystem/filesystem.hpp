@@ -17,7 +17,6 @@ class FileSystem {
 
     bool exists (std::string_view path);
 
-    std::vector <std::byte> read_file (std::string_view path);
-    std::string read_as_string (std::string_view path);
+    template <typename T = std::vector <std::byte>> T read (std::string_view path);
 
 };

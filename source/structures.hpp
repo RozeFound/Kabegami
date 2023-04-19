@@ -15,12 +15,18 @@ struct Pass {
         int NOISE;
     } combos;
 
+    std::string_view blending;
+    std::string_view cullmode;
+    std::string_view depthtest;
+    std::string_view depthwrite;
+    std::string_view shader;
+
     std::unordered_map<std::string, glz::json_t> constantshadervalues;
     std::vector<std::optional<std::string_view>> textures;
 
 };
 
-GLZ_META(Pass, combos, constantshadervalues, textures);
+GLZ_META(Pass, combos, blending, cullmode, depthtest, depthwrite, shader, constantshadervalues, textures);
 GLZ_META(Pass::Combo, AUDIOPROCESSING, DIRECTION, NOISE);
 
 struct Effect {
@@ -164,3 +170,16 @@ template <> struct glz::meta<Scene::General> {
 
 };
 GLZ_META(Scene::General::OrthogonalProjection, height, width);
+
+struct Model {
+    bool autosize;
+    std::string_view material;
+};
+
+GLZ_META(Model, autosize, material);
+
+struct Material {
+    std::vector<Pass> passes;
+};
+
+GLZ_META(Material, passes);
