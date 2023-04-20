@@ -52,17 +52,27 @@ void Kabegami::run() {
 
     for (const auto& object : scene->objects) {
         
-        auto model = glz::read_json<Model>(fs.read<std::string>(object.image));
+        if (!object.image) continue;
+        
+        auto model = glz::read_json<Model>(fs.read<std::string>(*object.image));
         auto material = glz::read_json<Material>(fs.read<std::string>(model->material));
 
         static auto has_value = [] (auto& object) { return object.has_value(); };
 
         for (const auto& pass : material->passes)
             for (const auto& name : pass.textures | std::views::filter(has_value)) {
-                auto data = fs.read(fmt::format("materials/{}.tex", *name));
+
+                auto parent = model->material.substr(0, model->material.find_last_of('/'));
+                auto path = fmt::format("{}/{}.tex", parent, *name);
+
+                if (!fs.exists(path)) continue;
+                
+                auto data = fs.read(path);
                 auto texture = std::make_unique<Texture>(data);
+
                 fmt::print("texv: {}, texi: {}\n", texture->get_header().version, texture->get_header().index);
                 fmt::print("width: {}, height: {}\n", texture->get_header().width, texture->get_header().height);
+
             }
         
     }

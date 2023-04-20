@@ -45,4 +45,4 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC "$<$<CONFIG:RELWITHDEBINFO>:DE
 
 # ---- Link libraries ----
 
-target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt glaze::glaze)
+target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt glaze::glaze lz4)
