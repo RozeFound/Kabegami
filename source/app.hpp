@@ -6,19 +6,17 @@
 #include <glaze/core/macros.hpp>
 
 #include "filesystem/filesystem.hpp"
-
-struct Settings {
-
-    std::string assets;
-    std::string wallpaper;
-
-    GLZ_LOCAL_META(Settings, assets, wallpaper);
-
-};
+#include "window.hpp"
 
 class Kabegami {
 
-    Settings settings;
+    struct Settings {
+        std::string assets;
+        std::string wallpaper;
+        GLZ_LOCAL_META(Settings, assets, wallpaper);
+    } settings;
+
+    std::unique_ptr<Window> window;
 
     public:
 

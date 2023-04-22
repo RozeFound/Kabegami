@@ -38,11 +38,17 @@ file(GLOB_RECURSE sources CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/source/
 add_executable(${PROJECT_NAME} ${sources})
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 20)
 
+# Enable precompiled headers
+target_precompile_headers(${PROJECT_NAME} PRIVATE "source/logging.hpp")
+
 # ---- Enable debug info ----
 
 target_compile_definitions(${PROJECT_NAME} PUBLIC "$<$<CONFIG:DEBUG>:DEBUG>")
 target_compile_definitions(${PROJECT_NAME} PUBLIC "$<$<CONFIG:RELWITHDEBINFO>:DEBUG>")
 
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/settings.json DESTINATION ${PROJECT_BINARY_DIR})
+
 # ---- Link libraries ----
 
-target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt glaze::glaze lz4)
+target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt glaze::glaze)
+target_link_libraries(${PROJECT_NAME} PRIVATE lz4 glfw spdlog)

@@ -5,26 +5,29 @@ set(CPM_USE_LOCAL_PACKAGES)
 include(cmake/CPM.cmake)
 
 CPMAddPackage(
-    NAME fmt
     GIT_TAG 9.1.0
     GITHUB_REPOSITORY fmtlib/fmt
 )
 
 CPMAddPackage(
-    NAME glaze
-    VERSION 1.2.0
+    VERSION 1.2.1
     GITHUB_REPOSITORY stephenberry/glaze
 )
 
 CPMAddPackage(
-    NAME lz4
-    VERSION 1.9.4
-    GITHUB_REPOSITORY lz4/lz4
-    DOWNLOAD_ONLY
+    VERSION 3.3.9
+    GITHUB_REPOSITORY glfw/glfw
+    GIT_TAG 3fa2360720eeba1964df3c0ecf4b5df8648a8e52
+    OPTIONS
+        "GLFW_BUILD_TESTS OFF"
+        "GLFW_BUILD_EXAMPLES OFF"
+        "GLFW_BULID_DOCS OFF"
+        "GLFW_BUILD_WAYLAND ON"
+        "GLFW_BUILD_X11 OFF"
 )
 
-if (lz4_ADDED)
-    add_subdirectory("${lz4_SOURCE_DIR}/build/cmake" EXCLUDE_FROM_ALL)
-    set(LZ4_BUILD_CLI OFF)
-    set(LZ4_BUILD_LEGACY_LZ4C OFF)
-endif()
+CPMAddPackage(
+    VERSION 1.11.0
+    GITHUB_REPOSITORY gabime/spdlog
+    OPTIONS "SPDLOG_FMT_EXTERNAL 1"
+)

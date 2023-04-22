@@ -3,10 +3,15 @@
 #include <ranges>
 #include <fmt/core.h>
 
+#include "logging.hpp"
 #include "structures.hpp"
 #include "texture.hpp"
 
 Kabegami::Kabegami() {
+
+    logging::setup_logger();
+
+    window = std::make_unique<Window>("Kabegami", 800, 600);
 
     auto ec = glz::read_file(settings, "settings.json");
 
@@ -33,7 +38,7 @@ void Kabegami::run() {
         if (!fs.exists(*file)) fs.add_package(settings.wallpaper + "/scene.pkg");
 
         auto scene = glz::read_json<Scene>(fs.read<std::string>(*file));
-        if (!scene) throw std::runtime_error("Failed to parse scene");
+        if (!scene) loge("Failed to parse scene");
 
         return scene;
 
@@ -44,11 +49,6 @@ void Kabegami::run() {
     fs.add_location(settings.wallpaper);
 
     auto scene = parse_scene(fs);
-    
-    auto op = scene->general.orthogonal_projection;
-    fmt::print("width: {}, heigth: {}\n", op.width, op.height);
-    fmt::print("Clear color: {}\n", scene->general.clear_color);
-    fmt::print("camera preview: {}\n", scene->camera.preview);
 
     for (const auto& object : scene->objects) {
         
@@ -70,11 +70,23 @@ void Kabegami::run() {
                 auto data = fs.read(path);
                 auto texture = std::make_unique<Texture>(data);
 
-                fmt::print("texv: {}, texi: {}\n", texture->get_header().version, texture->get_header().index);
-                fmt::print("width: {}, height: {}\n", texture->get_header().width, texture->get_header().height);
+                logi("texv: {}, texi: {}", texture->get_header().version, texture->get_header().index);
+                logi("width: {}, height: {}", texture->get_header().width, texture->get_header().height);
 
             }
         
+    }
+
+    window->add_key_callback([this](int key, int action, int mods) {
+        if (mods == GLFW_MOD_CONTROL && action == GLFW_PRESS) {
+            if (key == GLFW_KEY_F) window->toggle_fullscreen();
+            if (key == GLFW_KEY_Q || key == GLFW_KEY_W) window->close();
+        }
+    });
+
+    while (window->is_open()) {
+        // main loop basically
+        window->close();
     }
 
 }

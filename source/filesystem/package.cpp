@@ -1,14 +1,11 @@
 #include "package.hpp"
 
-#include <fmt/core.h>
-
-
-
 Package::Package (std::filesystem::path path) {
 
     file = std::ifstream(path, std::ios::binary);
 
-    fmt::print("Package version: {}\n", read_string());
+    auto package_version = read_string();
+    logi("Package version: {}", package_version);
 
     auto entries_count = read_int();
 
