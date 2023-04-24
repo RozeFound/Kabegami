@@ -31,3 +31,12 @@ CPMAddPackage(
     GITHUB_REPOSITORY gabime/spdlog
     OPTIONS "SPDLOG_FMT_EXTERNAL 1"
 )
+
+CPMAddPackage(
+    VERSION 1.9.4
+    GITHUB_REPOSITORY lz4/lz4
+    DOWNLOAD_ONLY
+)
+
+add_library(lz4 STATIC ${lz4_SOURCE_DIR}/lib/lz4.c)
+target_include_directories(lz4 PUBLIC ${lz4_SOURCE_DIR}/lib)

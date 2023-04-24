@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.19...3.22)
 project(
   Kabegami
   VERSION 0.0.1
-  LANGUAGES CXX
+  LANGUAGES C CXX
 )
 
 # ---- Include guards ----
@@ -44,7 +44,6 @@ target_precompile_headers(${PROJECT_NAME} PRIVATE "source/logging.hpp")
 # ---- Enable debug info ----
 
 target_compile_definitions(${PROJECT_NAME} PUBLIC "$<$<CONFIG:DEBUG>:DEBUG>")
-target_compile_definitions(${PROJECT_NAME} PUBLIC "$<$<CONFIG:RELWITHDEBINFO>:DEBUG>")
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/settings.json DESTINATION ${PROJECT_BINARY_DIR})
 
