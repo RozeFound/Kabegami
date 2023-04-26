@@ -15,6 +15,16 @@ CPMAddPackage(
 )
 
 CPMAddPackage(
+    VERSION 1.3.246
+    GITHUB_REPOSITORY khronosgroup/vulkan-hpp
+)
+
+# Temp solution for broken system 1.3.246 verson. Once driver is updated it can be removed
+file(GLOB_RECURSE vulkan-headers "${vulkan-hpp_SOURCE_DIR}/vulkan/*.hpp")
+add_library(vulkan-hpp INTERFACE EXCLUDE_FROM_ALL ${vulkan-headers})
+target_include_directories(vulkan-hpp INTERFACE $<BUILD_INTERFACE:${vulkan-hpp_SOURCE_DIR}>)
+
+CPMAddPackage(
     VERSION 3.3.9
     GITHUB_REPOSITORY glfw/glfw
     GIT_TAG 3fa2360720eeba1964df3c0ecf4b5df8648a8e52

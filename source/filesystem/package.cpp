@@ -43,7 +43,7 @@ std::string Package::read_string() {
 
 }
 
-std::vector <std::byte> Package::read_file (std::string_view path) {
+std::vector <std::byte> Package::read_file (std::string_view path) const {
 
     auto& entry = entries.at({ path.begin(), path.end() });
     auto result = std::vector<std::byte>(entry.length);

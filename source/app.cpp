@@ -7,13 +7,17 @@
 #include "structures.hpp"
 #include "texture.hpp"
 
+#include "context.hpp"
+
 Kabegami::Kabegami() {
 
-    logging::setup_logger();
+    setup_logger();
 
     window = std::make_unique<Window>("Kabegami", 800, 600);
 
     auto ec = glz::read_file(settings, "settings.json");
+
+    auto context = vki::Context(*window);
 
 }
 

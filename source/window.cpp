@@ -10,10 +10,10 @@ Window::Window (std::string_view title, std::size_t width, std::size_t height) {
     logi("Creating window: {}x{}", settings.width, settings.height);
 
     glfwInit();
-
-    glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+
+    glfwWindowHint(GLFW_DECORATED, false);
+    glfwWindowHint(GLFW_RESIZABLE, true);
 
     handle = glfwCreateWindow(settings.width, settings.height, title.data(), nullptr, nullptr);
 

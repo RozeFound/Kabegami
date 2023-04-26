@@ -15,7 +15,7 @@ struct Entry {
 
 class Package {
 
-    std::ifstream file;
+    mutable std::ifstream file;
 
     std::ptrdiff_t data_offset;
 
@@ -30,7 +30,7 @@ class Package {
     Package (Package&&) noexcept = default;
     Package (Package&) = delete;
 
-    std::vector <std::byte> read_file (std::string_view path);
+    std::vector <std::byte> read_file (std::string_view path) const;
     constexpr bool exists (std::string_view path) const { 
         return entries.contains({ path.begin(), path.end() });
     }

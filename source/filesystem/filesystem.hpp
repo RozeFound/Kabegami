@@ -17,6 +17,6 @@ class FileSystem {
 
     bool exists (std::string_view path);
 
-    template <typename T = std::vector <std::byte>> T read (std::string_view path);
+    template <typename T = std::vector <std::byte>> T read (std::string_view path) const;
 
 };

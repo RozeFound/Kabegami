@@ -18,7 +18,7 @@ bool FileSystem::exists (std::string_view path) {
     
 }
 
-template <> std::vector<std::byte> FileSystem::read (std::string_view path) {
+template <> std::vector<std::byte> FileSystem::read (std::string_view path) const {
 
     for (auto& package : packages)
         if (package.exists(path))
@@ -45,6 +45,6 @@ template <> std::vector<std::byte> FileSystem::read (std::string_view path) {
 
 }
 
-template <> std::string FileSystem::read (std::string_view path) {
+template <> std::string FileSystem::read (std::string_view path) const {
     return reinterpret_cast<char*>(read(path).data());
 }
