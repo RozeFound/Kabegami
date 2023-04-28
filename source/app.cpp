@@ -54,6 +54,8 @@ void Kabegami::run() {
 
     auto scene = parse_scene(fs);
 
+    logi("Camera eye: {}", scene->camera.eye.to_string());
+
     for (const auto& object : scene->objects) {
         
         if (!object.image) continue;

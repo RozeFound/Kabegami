@@ -51,4 +51,4 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/settings.json DESTINATION ${PROJECT_BINARY
 # ---- Link libraries ----
 
 target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt glaze::glaze)
-target_link_libraries(${PROJECT_NAME} PRIVATE lz4 glfw spdlog vulkan-hpp)
+target_link_libraries(${PROJECT_NAME} PRIVATE lz4 glfw spdlog vulkan)

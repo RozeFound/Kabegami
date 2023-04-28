@@ -7,6 +7,77 @@
 #include <glaze/glaze.hpp>
 #include <glaze/core/macros.hpp>
 
+struct vec2_t {
+
+    double x, y;
+
+    constexpr double& operator[] (const std::ptrdiff_t index) {
+
+		switch (index) {
+            case 0: return x;
+            case 1: return y;
+            default: throw std::out_of_range("Out of bound vec2_t index");
+		}
+	}
+
+	constexpr const double& operator[] (const std::ptrdiff_t index) const { return this->operator[](index); }
+
+    constexpr double& at (const std::ptrdiff_t index) { return operator[](index); }
+    constexpr const double& at (const std::ptrdiff_t index) const { return operator[](index); }
+
+    std::string to_string() { return fmt::format("{:.2f}, {:.2f}", x, y); }
+
+};
+
+struct vec3_t {
+
+    double x, y, z;
+
+    constexpr double& operator[] (const std::ptrdiff_t index) {
+
+		switch (index) {
+            case 0: return x;
+            case 1: return y;
+            case 2: return z;
+            default: throw std::out_of_range("Out of bound vec3_t index");
+		}
+	}
+
+    constexpr const double& operator[] (const std::ptrdiff_t index) const { return this->operator[](index); }
+
+    constexpr double& at (const std::ptrdiff_t index) { return operator[](index); }
+    constexpr const double& at (const std::ptrdiff_t index) const { return operator[](index); }
+
+    std::string to_string() { return fmt::format("{:.2f}, {:.2f}, {:.2f}", x, y, z); }
+
+};
+
+template <std::size_t size>
+void str_to_vec (auto& vec, std::string_view string) {
+    for (std::size_t i = 0, last_id = 0; i < size; ++i) {
+        auto delimiter_position = string.find(' ');
+        vec.at(i) = std::stod(string.substr(last_id, delimiter_position).data());
+        last_id = delimiter_position;
+    }
+}
+
+namespace glz::detail {
+    template <> struct from_json<vec2_t> {
+    template <auto Opts> static void op (vec2_t& vec, auto&&... args) {
+        std::string_view string = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"; 
+        read<json>::op<Opts>(string, args...);
+        str_to_vec<2>(vec, string);
+      }
+   };
+    template <> struct from_json<vec3_t> {
+    template <auto Opts> static void op (vec3_t& vec, auto&&... args) {
+        std::string_view string = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"; 
+        read<json>::op<Opts>(string, args...);
+        str_to_vec<3>(vec, string);
+      }
+   };
+}
+
 struct Pass {
 
     int id;
@@ -58,11 +129,11 @@ struct Object {
     std::string_view name;
 
     std::string_view alignment;
-    std::string_view scale;
-    std::string_view size;
-    std::string_view origin;
-    std::string_view angles;
-    std::string_view color;
+    vec3_t scale;
+    vec2_t size;
+    vec3_t origin;
+    vec3_t angles;
+    vec3_t color;
     int colorBlendMode;
 
     bool copybackground;
@@ -101,7 +172,7 @@ struct Object {
         double lifetime;
         double speed;
         double alpha;
-        std::string_view colorn;
+        vec3_t colorn;
     } instanceoverride;
 
 };
@@ -116,9 +187,9 @@ struct Scene {
 
     struct Camera {
 
-        std::string_view center;
-        std::string_view eye;
-        std::string_view up;
+        vec3_t center;
+        vec3_t eye;
+        vec3_t up;
 
         std::vector<std::string_view> paths;
 
@@ -167,10 +238,10 @@ struct Scene {
         double zoom;
         
         std::optional<bool> clear;
-        std::string_view clear_color;
 
-        std::string_view ambient_color;
-        std::string_view skylight_color;
+        vec3_t clear_color;
+        vec3_t ambient_color;
+        vec3_t skylight_color;
 
         struct OrthogonalProjection {
             int height;
