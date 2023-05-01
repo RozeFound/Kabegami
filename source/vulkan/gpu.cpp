@@ -1,4 +1,4 @@
-#include "gpu.hpp"
+#include "vulkan/gpu.hpp"
 
 namespace vki {
 
