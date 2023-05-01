@@ -3,20 +3,18 @@
 #include <ranges>
 #include <fmt/core.h>
 
+#include "assets/filesystem.hpp"
 #include "assets/mappings.hpp"
 #include "assets/texture.hpp"
-
-#include "vulkan/core/context.hpp"
 
 Kabegami::Kabegami() {
 
     setup_logger();
 
     window = std::make_unique<Window>("Kabegami", 800, 600);
+    engine = std::make_unique<Engine>(*window);
 
     auto ec = glz::read_file(settings, "settings.json");
-
-    auto context = vki::Context(*window);
 
 }
 
@@ -39,7 +37,8 @@ void Kabegami::run() {
     auto file = glz::get_as_json<std::string, "/file">(fs.read<std::string>("project.json"));
     if (!fs.exists(file.value())) fs.add_package(settings.wallpaper + "/scene.pkg");
 
-    auto scene = glz::read_json<Scene>(fs.read<std::string>(*file));
+    auto buffer = fs.read<std::string>(file.value());
+    auto scene = glz::read_json<Scene>(buffer);
     if (!scene) loge("Failed to parse scene");
 
     logi("Camera eye: {}", scene->camera.eye.to_string());

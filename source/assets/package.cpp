@@ -1,4 +1,4 @@
-#include "filesystem/package.hpp"
+#include "package.hpp"
 
 Package::Package (std::filesystem::path path) {
 

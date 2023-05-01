@@ -1,4 +1,4 @@
-#include "assets/texture.hpp"
+#include "texture.hpp"
 
 #include <lz4.h>
 

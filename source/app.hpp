@@ -5,7 +5,7 @@
 #include <glaze/glaze.hpp>
 #include <glaze/core/macros.hpp>
 
-#include "filesystem/filesystem.hpp"
+#include "vulkan/engine.hpp"
 #include "window.hpp"
 
 class Kabegami {
@@ -17,6 +17,7 @@ class Kabegami {
     } settings;
 
     std::unique_ptr<Window> window;
+    std::unique_ptr<Engine> engine;
 
     public:
 

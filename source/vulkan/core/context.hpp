@@ -26,7 +26,10 @@ namespace vki {
         public:
 
         Context (const Window& window) : window(window), instance(handle), 
-            surface(*instance, *window), gpu(*instance),  device(*gpu, get_queue_family_indices()) { }
+            surface(*instance, *window), gpu(*instance), device(*gpu, get_queue_family_indices()) {}
+
+        static void set (std::shared_ptr<Context>);
+        static const std::shared_ptr<Context> get();
 
         constexpr const auto& get_handle() const { return handle; }
 
@@ -34,6 +37,10 @@ namespace vki {
         constexpr const Window& get_window() const { return window; }
 
         const vku::QueueFamilyIndices get_queue_family_indices() const;
+
+        constexpr const vk::Extent2D get_extent() const;
+        constexpr const vk::SurfaceFormatKHR get_format() const;
+        
     };
 
 }
