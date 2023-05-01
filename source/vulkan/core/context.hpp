@@ -2,10 +2,10 @@
 
 #include "window.hpp"
 
-#include "vulkan/instance.hpp"
-#include "vulkan/surface.hpp"
-#include "vulkan/device.hpp"
-#include "vulkan/gpu.hpp"
+#include "instance.hpp"
+#include "surface.hpp"
+#include "device.hpp"
+#include "gpu.hpp"
 
 #include "vulkan/utils.hpp"
 

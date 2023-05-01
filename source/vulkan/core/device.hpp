@@ -1,6 +1,6 @@
 #pragma once
 
-#include "utils.hpp"
+#include "vulkan/utils.hpp"
 
 namespace vki {
 

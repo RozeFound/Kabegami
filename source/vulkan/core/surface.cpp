@@ -1,4 +1,4 @@
-#include "vulkan/surface.hpp"
+#include "surface.hpp"
 
 namespace vki {
 
