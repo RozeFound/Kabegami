@@ -79,7 +79,7 @@ Texture::Texture (std::span<std::byte> data) : reader(data), header(reader) {
         for (uint32_t i = 0; i < mipmap_count; i ++)
             mipmaps.emplace_back(reader, container_version);
 
-        images[image] = mipmaps;
+        images[image] = mipmaps; // will make a copy?
 
     }
 

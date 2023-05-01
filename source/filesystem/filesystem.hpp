@@ -12,6 +12,9 @@ class FileSystem {
 
     public:
 
+    FileSystem() = default;
+    FileSystem (std::initializer_list<std::filesystem::path> locations) : locations(locations) {}
+
     void add_package (std::filesystem::path package) { packages.emplace_back(package); }
     void add_location (std::filesystem::path location) { locations.push_back(location); }
 

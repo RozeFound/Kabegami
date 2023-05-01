@@ -3,9 +3,8 @@
 #include <ranges>
 #include <fmt/core.h>
 
-#include "logging.hpp"
-#include "structures.hpp"
-#include "texture.hpp"
+#include "assets/mappings.hpp"
+#include "assets/texture.hpp"
 
 #include "context.hpp"
 
@@ -35,51 +34,38 @@ Kabegami::~Kabegami() {
 
 void Kabegami::run() {
 
-    auto parse_scene = [this](FileSystem& fs) {
+    auto fs = FileSystem { settings.assets, settings.wallpaper };
 
-        auto file = glz::get_as_json<std::string, "/file">(fs.read<std::string>("project.json"));
+    auto file = glz::get_as_json<std::string, "/file">(fs.read<std::string>("project.json"));
+    if (!fs.exists(file.value())) fs.add_package(settings.wallpaper + "/scene.pkg");
 
-        if (!fs.exists(*file)) fs.add_package(settings.wallpaper + "/scene.pkg");
-
-        auto scene = glz::read_json<Scene>(fs.read<std::string>(*file));
-        if (!scene) loge("Failed to parse scene");
-
-        return scene;
-
-    };
-
-    auto fs = FileSystem();
-    fs.add_location(settings.assets);
-    fs.add_location(settings.wallpaper);
-
-    auto scene = parse_scene(fs);
+    auto scene = glz::read_json<Scene>(fs.read<std::string>(*file));
+    if (!scene) loge("Failed to parse scene");
 
     logi("Camera eye: {}", scene->camera.eye.to_string());
 
-    for (const auto& object : scene->objects) {
+    static auto has_image = [] (auto& object) { return object.image.has_value(); };
+    for (const auto& object : scene->objects | std::views::filter(has_image)) {
         
-        if (!object.image) continue;
-        
-        auto model = glz::read_json<Model>(fs.read<std::string>(*object.image));
+        auto model = glz::read_json<Model>(fs.read<std::string>(object.image.value()));
         auto material = glz::read_json<Material>(fs.read<std::string>(model->material));
 
-        static auto has_value = [] (auto& object) { return object.has_value(); };
+        for (const auto& tex_name : material->passes 
+        | std::views::transform(&Pass::textures) | std::views::join 
+        | std::views::filter([] (auto& texture) { return texture.has_value(); })) {
 
-        for (const auto& pass : material->passes)
-            for (const auto& name : pass.textures | std::views::filter(has_value)) {
+            auto parent = model->material.substr(0, model->material.find_last_of('/'));
+            auto path = fmt::format("{}/{}.tex", parent, tex_name.value());
 
-                auto parent = model->material.substr(0, model->material.find_last_of('/'));
-                auto path = fmt::format("{}/{}.tex", parent, *name);
+            if (!fs.exists(path)) continue;
+            
+            auto data = fs.read(path);
+            auto texture = std::make_unique<Texture>(data);
 
-                if (!fs.exists(path)) continue;
-                
-                auto data = fs.read(path);
-                auto texture = std::make_unique<Texture>(data);
+            logi("texv: {}, texi: {}", texture->get_header().version, texture->get_header().index);
+            logi("width: {}, height: {}", texture->get_header().width, texture->get_header().height);
 
-                logi("texv: {}, texi: {}", texture->get_header().version, texture->get_header().index);
-                logi("width: {}, height: {}", texture->get_header().width, texture->get_header().height);
-
-            }
+        }
         
     }
 
