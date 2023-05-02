@@ -22,6 +22,26 @@ namespace vku {
         
 	};
 
+    constexpr auto get_image_view_info (vk::Image& image, 
+        vk::Format format, vk::ImageAspectFlags flags, uint32_t mip_levels = 0) {
+
+        return vk::ImageViewCreateInfo {
+            .flags = vk::ImageViewCreateFlags(),
+            .image = image,
+            .viewType = vk::ImageViewType::e2D,
+            .format = format,
+            .components = vk::ComponentMapping(),
+            .subresourceRange = {
+                .aspectMask = flags,
+                .baseMipLevel = 0,
+                .levelCount = mip_levels,
+                .baseArrayLayer = 0,
+                .layerCount = 1
+            }
+        };
+
+    }
+
     constexpr uint32_t to_u32 (std::size_t value) { return static_cast<uint32_t>(value); }
 
 }

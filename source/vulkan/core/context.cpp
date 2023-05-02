@@ -37,7 +37,7 @@ namespace vki {
 
     }
 
-    constexpr const vk::Extent2D Context::get_extent() const {
+    const vk::Extent2D Context::get_extent() const {
 
         auto capabilities = gpu->getSurfaceCapabilitiesKHR(**surface);
 
@@ -57,7 +57,7 @@ namespace vki {
 
     } 
 
-    constexpr const vk::SurfaceFormatKHR Context::get_format() const {
+    const vk::SurfaceFormatKHR Context::get_format() const {
 
         auto formats = gpu->getSurfaceFormatsKHR(**surface);
 

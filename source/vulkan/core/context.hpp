@@ -11,9 +11,11 @@
 
 namespace vki {
 
-    class Context {
+    struct Context {
 
-        vk::raii::Context handle;
+        const vk::raii::Context handle;
+
+        public:
 
         const Window& window;
         const Instance instance;
@@ -21,9 +23,6 @@ namespace vki {
 
         const GPU gpu;
         const Device device;
-        
-
-        public:
 
         Context (const Window& window) : window(window), instance(handle), 
             surface(*instance, *window), gpu(*instance), device(*gpu, get_queue_family_indices()) {}
@@ -33,13 +32,10 @@ namespace vki {
 
         constexpr const auto& get_handle() const { return handle; }
 
-        constexpr const Instance& get_instance() const { return instance; }
-        constexpr const Window& get_window() const { return window; }
-
         const vku::QueueFamilyIndices get_queue_family_indices() const;
 
-        constexpr const vk::Extent2D get_extent() const;
-        constexpr const vk::SurfaceFormatKHR get_format() const;
+        const vk::Extent2D get_extent() const;
+        const vk::SurfaceFormatKHR get_format() const;
         
     };
 

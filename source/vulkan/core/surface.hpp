@@ -10,6 +10,8 @@ namespace vki {
 
         Surface (const vk::raii::Instance& instance, GLFWwindow* window);
 
+        constexpr operator const vk::SurfaceKHR&() const { return **handle; }
+
         constexpr const auto& get_handle() const { return *handle; }
         constexpr const auto& operator* () const { return get_handle(); }
         constexpr const auto& operator->() const { return handle; }
