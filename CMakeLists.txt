@@ -40,8 +40,8 @@ set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 20)
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/source)
 
 # Enable precompiled headers
-target_compile_definitions(${PROJECT_NAME} PRIVATE "VULKAN_HPP_NO_CONSTRUCTORS")
-target_precompile_headers(${PROJECT_NAME} PRIVATE "source/logging.hpp" <vulkan/vulkan_raii.hpp> <GLFW/glfw3.h>)
+target_compile_definitions(${PROJECT_NAME} PRIVATE "VULKAN_HPP_NO_CONSTRUCTORS" "VULKAN_HPP_NO_TO_STRING")
+target_precompile_headers(${PROJECT_NAME} PRIVATE <vulkan/vulkan_raii.hpp> "source/logging.hpp" <GLFW/glfw3.h>)
 
 # ---- Enable debug info ----
 

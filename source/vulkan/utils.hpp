@@ -4,6 +4,8 @@
 
 namespace vku {
 
+    struct Version { uint32_t major, minor, patch; };
+
     struct QueueFamilyIndices {
         
         std::optional<uint32_t> transfer_family;
@@ -23,7 +25,7 @@ namespace vku {
 	};
 
     constexpr auto get_image_view_info (vk::Image& image, 
-        vk::Format format, vk::ImageAspectFlags flags, uint32_t mip_levels = 0) {
+        vk::Format format, vk::ImageAspectFlags flags, uint32_t mip_levels = 1) {
 
         return vk::ImageViewCreateInfo {
             .flags = vk::ImageViewCreateFlags(),

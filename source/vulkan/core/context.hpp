@@ -15,8 +15,6 @@ namespace vki {
 
         const vk::raii::Context handle;
 
-        public:
-
         const Window& window;
         const Instance instance;
         const Surface surface;
@@ -24,18 +22,20 @@ namespace vki {
         const GPU gpu;
         const Device device;
 
-        Context (const Window& window) : window(window), instance(handle), 
-            surface(*instance, *window), gpu(*instance), device(*gpu, get_queue_family_indices()) {}
+        Context (const Window& window) 
+            : window(window), instance(handle), 
+            surface(*instance, *window), gpu(*instance), 
+            device(*gpu, get_queue_family_indices()) {}
 
         static void set (std::shared_ptr<Context>);
         static const std::shared_ptr<Context> get();
 
-        constexpr const auto& get_handle() const { return handle; }
-
-        const vku::QueueFamilyIndices get_queue_family_indices() const;
-
         const vk::Extent2D get_extent() const;
         const vk::SurfaceFormatKHR get_format() const;
+        const vku::Version get_version() const;
+
+        const vku::QueueFamilyIndices get_queue_family_indices() const;
+        std::unique_ptr <vk::raii::RenderPass>  create_render_pass();
         
     };
 

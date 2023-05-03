@@ -1,5 +1,7 @@
 #include "context.hpp"
 
+#include <set>
+
 namespace vki {
 
     static std::weak_ptr<Context> global_context;
@@ -67,6 +69,69 @@ namespace vki {
                 return format;
 
         return formats.at(0);
+
+    }
+
+    const vku::Version Context::get_version() const {
+
+        auto version = handle.enumerateInstanceVersion();
+
+        return vku::Version {
+            .major = VK_API_VERSION_MAJOR(version),
+            .minor = VK_API_VERSION_MINOR(version),
+            .patch = VK_API_VERSION_PATCH(version)
+        };
+
+    }
+
+    std::unique_ptr<vk::raii::RenderPass> Context::create_render_pass() {
+
+        auto attachment = vk::AttachmentDescription {
+            .flags = vk::AttachmentDescriptionFlags(),
+            .format = get_format().format,
+            .samples = vk::SampleCountFlagBits::e1,
+            .loadOp = vk::AttachmentLoadOp::eClear,
+            .storeOp = vk::AttachmentStoreOp::eStore,
+            .stencilLoadOp = vk::AttachmentLoadOp::eDontCare,
+            .stencilStoreOp = vk::AttachmentStoreOp::eDontCare,
+            .initialLayout = vk::ImageLayout::eUndefined,
+            .finalLayout = vk::ImageLayout::ePresentSrcKHR
+        };
+
+        auto attachment_reference = vk::AttachmentReference {
+            .attachment = 0,
+            .layout = vk::ImageLayout::eColorAttachmentOptimal
+        };
+
+        auto subpass = vk::SubpassDescription {
+            .flags = vk::SubpassDescriptionFlags(),
+            .pipelineBindPoint = vk::PipelineBindPoint::eGraphics,
+            .colorAttachmentCount = 1,
+            .pColorAttachments = &attachment_reference
+        };
+
+        auto subpass_dependency = vk::SubpassDependency {
+            .srcSubpass = VK_SUBPASS_EXTERNAL,
+            .srcStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput,
+            .dstStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput,
+            .dstAccessMask = vk::AccessFlagBits::eColorAttachmentWrite
+        };
+
+        auto attachments = std::array { attachment };
+
+        auto create_info = vk::RenderPassCreateInfo {
+            .flags = vk::RenderPassCreateFlags(),
+            .attachmentCount = vku::to_u32(attachments.size()),
+            .pAttachments = attachments.data(),
+            .subpassCount = 1,
+            .pSubpasses = &subpass,
+            .dependencyCount = 1,
+            .pDependencies = &subpass_dependency
+        };
+
+        try { return std::make_unique<vk::raii::RenderPass>(device, create_info); }
+        catch (const vk::SystemError& e) { loge("Failed to create render pass: {}", e.what()); }
+        return nullptr;
 
     }
 

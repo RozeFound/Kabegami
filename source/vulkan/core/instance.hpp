@@ -9,7 +9,7 @@ namespace vki {
         std::vector <const char*> get_extensions();
         std::vector <const char*> get_layers();
 
-        void log_properties();
+        void log_properties (const vk::raii::Context& context);
 
         public:
 

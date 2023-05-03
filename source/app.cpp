@@ -9,8 +9,6 @@
 
 Kabegami::Kabegami() {
 
-    setup_logger();
-
     window = std::make_unique<Window>("Kabegami", 800, 600);
     engine = std::make_unique<Engine>(*window);
 
@@ -75,9 +73,7 @@ void Kabegami::run() {
         }
     });
 
-    while (window->is_open()) {
-        // main loop basically
-        window->close();
-    }
+    while (window->is_open())
+        engine->update();
 
 }

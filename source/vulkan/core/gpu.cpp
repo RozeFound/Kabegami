@@ -19,7 +19,7 @@ namespace vki {
         if (device == std::end(devices)) loge("Failed to get Physical Device");
 
         handle = std::make_unique<vk::raii::PhysicalDevice>(*device);
-        if constexpr (debug) log_properties();
+        log_properties();
 
     }
 

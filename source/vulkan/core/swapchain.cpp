@@ -1,10 +1,10 @@
 #include "swapchain.hpp"
 
-#include "utils.hpp"
+#include "vulkan/utils.hpp"
 
 namespace vki {
 
-    void SwapChain::create_handle (bool vsync) {
+    void SwapChain::create_handle() {
 
         auto capabilities = context->gpu->getSurfaceCapabilitiesKHR(context->surface);
         auto modes = context->gpu->getSurfacePresentModesKHR(context->surface);
@@ -34,9 +34,10 @@ namespace vki {
             .preTransform = capabilities.currentTransform,
             .compositeAlpha = vk::CompositeAlphaFlagBitsKHR::eInherit,
             .presentMode = present_mode,
-            .clipped = true,
-            .oldSwapchain = **handle
+            .clipped = true
         };
+
+        if (handle) create_info.oldSwapchain = **handle;
 
         auto indices = context->get_queue_family_indices();
         uint32_t queue_family_indices[] = { 
@@ -56,18 +57,27 @@ namespace vki {
 
     }
 
-    void SwapChain::make_frames (const vk::raii::RenderPass& render_pass) {
+    void SwapChain::make_frames() {
 
         auto images = handle->getImages();
-        frames.resize(images.size());
 
-        for (size_t i = 0; i < images.size(); i++) {
+        for (std::size_t i = 0; i < images.size(); i++) {
 
-			frames.at(i).image = images.at(i);
-            auto view_info = vku::get_image_view_info(images.at(i), context->get_format().format, vk::ImageAspectFlagBits::eColor);
-			frames.at(i).view = std::make_unique<vk::raii::ImageView>(context->device, view_info);
+            auto format = context->get_format().format;
 
-            auto attachments = std::array { **frames.at(i).view };
+            auto view_info = vku::get_image_view_info(images.at(i), format, vk::ImageAspectFlagBits::eColor);
+            auto semaphore_info = vk::SemaphoreCreateInfo { .flags = vk::SemaphoreCreateFlags() };
+            auto fence_info = vk::FenceCreateInfo { .flags = vk::FenceCreateFlagBits::eSignaled };
+
+            auto frame = Frame {
+                .image = images.at(i),
+                .view = vk::raii::ImageView(context->device, view_info),
+                .image_available = vk::raii::Semaphore(context->device, semaphore_info),
+                .render_finished = vk::raii::Semaphore(context->device, semaphore_info),
+                .in_flight = vk::raii::Fence(context->device, fence_info)
+            };
+
+            auto attachments = std::array { *frame.view };
 
             auto buffer_info = vk::FramebufferCreateInfo {
                 .flags = vk::FramebufferCreateFlags(),
@@ -79,21 +89,18 @@ namespace vki {
                 .layers = 1
             };
 
-            try { frames.at(i).buffer = std::make_unique<vk::raii::Framebuffer>(context->device, buffer_info); } 
-            catch (vk::SystemError err) { loge("Failed to create Framebuffer"); return; }
+            try { frame.buffer = std::make_unique<vk::raii::Framebuffer>(context->device, buffer_info); } 
+            catch (vk::SystemError e) { loge("Failed to create Framebuffer: {}", e.what()); return; }
+
+            if (frames.size() > i) {
+                frame.commands = std::move(frames.at(i).commands);
+                frames.at(i) = std::move(frame);
+            } else frames.emplace_back(std::move(frame));
 
 		};
 
         logi("Successfully created Framebuffers");
         logi("Created ImageView's for SwapChain");
-
-        for (auto& frame : frames) {          
-            frame.image_available = std::make_unique<vk::raii::Semaphore>(context->device, vk::SemaphoreCreateInfo());
-            frame.render_finished = std::make_unique<vk::raii::Semaphore>(context->device, vk::SemaphoreCreateInfo());
-            auto create_info = vk::FenceCreateInfo { .flags = vk::FenceCreateFlagBits::eSignaled };
-            frame.in_flight = std::make_unique<vk::raii::Fence>(context->device, create_info);
-        }
-
         logi("Created syncronization structures");
 
     }
@@ -103,11 +110,11 @@ namespace vki {
         constexpr auto timeout = std::numeric_limits<uint64_t>::max();
         const auto& frame = frames.at(index);
 
-        if (context->device->waitForFences(**frame.in_flight, VK_TRUE, timeout) != vk::Result::eSuccess)
-            logw("Something goes wrong when waiting on fences");
-        context->device->resetFences(**frame.in_flight);
+        auto wait = context->device->waitForFences(*frame.in_flight, VK_TRUE, timeout);
+        if (wait != vk::Result::eSuccess) logw("Something goes wrong when waiting on fences");
+        context->device->resetFences(*frame.in_flight);
 
-        auto [result, image_index] = handle->acquireNextImage(timeout, **frame.image_available);
+        auto [result, image_index] = handle->acquireNextImage(timeout, *frame.image_available);
 
         if (result == vk::Result::eErrorOutOfDateKHR) resize_if_needed();
 
@@ -115,25 +122,20 @@ namespace vki {
 
     }
 
-    bool SwapChain::present_image(uint32_t index) {
+    bool SwapChain::present_image (uint32_t index) {
 
         const auto& frame = frames.at(index);
 
         auto present_info = vk::PresentInfoKHR {
             .waitSemaphoreCount = 1,
-            .pWaitSemaphores = &**frame.render_finished,
+            .pWaitSemaphores = &*frame.render_finished,
             .swapchainCount = 1,
             .pSwapchains = &**handle,
             .pImageIndices = &frame.index
         };
 
-        try {
-            auto result = queue->presentKHR(present_info);     
-        } catch (vk::OutOfDateKHRError e) {
-            resize_if_needed();
-            return false;
-        }
-
+        try { auto result = queue->presentKHR(present_info); } 
+        catch (vk::OutOfDateKHRError e) { resize_if_needed(); return false; }
         return true;
 
     }
@@ -145,6 +147,7 @@ namespace vki {
         if (new_extent == extent) return false;
         context->device->waitIdle();
         create_handle();
+        make_frames();
 
         return true;
 

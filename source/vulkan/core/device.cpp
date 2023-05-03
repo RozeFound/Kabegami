@@ -63,11 +63,7 @@ namespace vki {
 
         auto layers = std::vector<const char*>();
 
-        if constexpr (debug) {
-
-            layers.push_back("VK_LAYER_KHRONOS_validation");
-
-        }
+        if constexpr (debug) layers.push_back("VK_LAYER_KHRONOS_validation");
 
         return layers;
 
