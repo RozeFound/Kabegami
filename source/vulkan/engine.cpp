@@ -1,5 +1,7 @@
 #include "engine.hpp"
 
+#include "utility/primitives.hpp"
+
 Engine::Engine (const Window& window) {
 
     context = std::make_shared<vki::Context>(window);
@@ -16,6 +18,24 @@ Engine::Engine (const Window& window) {
 
     auto graphics = context->get_queue_family_indices().graphics_family.value();
     queue = std::make_unique<vk::raii::Queue>(context->device, graphics, 0);
+
+    pipeline_layout = vku::PipeLineLayoutFactory().create();
+    pipeline_cache = std::make_unique<vku::PipeLineCache>();
+
+    pipeline = vku::PipeLineFactory()
+        .vertex_binding(vku::Vertex::get_binding_description())
+        .vertex_attributes(vku::Vertex::get_attribute_descriptions())
+        .stage("shaders/basic.vert").stage("shaders/basic.frag")
+        .create(**pipeline_cache, *pipeline_layout, *render_pass);
+
+    auto vertecies = std::vector<vku::Vertex> {
+        {{0.0f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
+        {{0.5f, 0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
+        {{-0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}},
+    };
+
+    vertex_buffer = std::make_unique<vku::DeviceBuffer>(vertecies.size() * sizeof(vku::Vertex), vk::BufferUsageFlagBits::eVertexBuffer);
+    vertex_buffer->upload(vertecies.data(), vertecies.size() * sizeof(vku::Vertex));
 
 }
 
@@ -60,7 +80,7 @@ void Engine::record (uint32_t index, std::function<void()> callback) {
     const auto& frame = swapchain->get_frames().at(index);
 
     try { frame.commands->reset(); frame.commands->begin(vk::CommandBufferBeginInfo()); } 
-    catch (vk::SystemError e) {loge("Failed to begin command record: {}", e.what()); return; }
+    catch (vk::SystemError e) { loge("Failed to begin command record: {}", e.what()); return; }
 
     auto clear_value = vk::ClearValue { std::array { .1f, .1f, .1f, 1.f } };
 
@@ -102,7 +122,14 @@ void Engine::update() {
     auto& frame = swapchain->get_frames().at(frame_index);
     frame.index = swapchain->acquire_image(frame_index);
 
-    record(frame_index, nullptr);
+    record(frame_index, [&]() {
+
+        frame.commands->bindPipeline(vk::PipelineBindPoint::eGraphics, **pipeline);
+        frame.commands->bindVertexBuffers(0, ***vertex_buffer, { 0 });
+        frame.commands->draw(3, 1, 0, 0);
+
+    });
+
     submit(frame_index);
 
     if (!swapchain->present_image(frame_index)) { frame_index = 0; return; }
@@ -127,7 +154,7 @@ void Engine::submit (uint32_t index) {
         .pSignalSemaphores = &*frame.render_finished
     };
 
-    try { queue->submit(submit_info, *frame.in_flight); } catch (vk::SystemError e) 
-        { loge("Failed to submit command buffer: {}", e.what()); }
+    try { queue->submit(submit_info, *frame.in_flight); } 
+    catch (vk::SystemError e) { loge("Failed to submit command buffer: {}", e.what()); }
 
 }

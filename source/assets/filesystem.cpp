@@ -1,5 +1,7 @@
 #include "filesystem.hpp"
 
+#include "vulkan/utility/misc.hpp"
+
 #include <fmt/core.h>
 
 bool FileSystem::exists (std::string_view path) {
@@ -31,13 +33,7 @@ template <> std::vector<std::byte> FileSystem::read (std::string_view path) cons
         if (!std::filesystem::exists(full_path))
             continue;
 
-        auto file = std::ifstream(full_path, std::ios::binary | std::ios::ate);
-        
-        auto size = file.tellg(); file.seekg(0);
-        auto result = std::vector<std::byte>(size); 
-
-        file.read(reinterpret_cast<char*>(result.data()), size);
-        return result;
+        return vku::fs::read(full_path);
         
     }
 

@@ -52,4 +52,21 @@ namespace vki {
 
     }
 
+    uint32_t GPU::get_memory_index (vk::MemoryRequirements requirements, vk::MemoryPropertyFlags flags) const {
+
+        auto properties = handle->getMemoryProperties();
+
+        for (uint32_t i = 0; i < properties.memoryTypeCount; i++) {
+
+            bool supported = requirements.memoryTypeBits & (1 << i);
+            bool sufficient = (properties.memoryTypes.at(i).propertyFlags & flags) == flags;
+
+            if (supported && sufficient) return i;
+
+        }
+
+        return std::numeric_limits<uint32_t>::max();
+
+    }
+
 }

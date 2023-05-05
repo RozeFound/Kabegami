@@ -2,12 +2,12 @@
 
 #include "window.hpp"
 
-#include "instance.hpp"
-#include "surface.hpp"
-#include "device.hpp"
-#include "gpu.hpp"
+#include "helpers/instance.hpp"
+#include "helpers/surface.hpp"
+#include "helpers/device.hpp"
+#include "helpers/gpu.hpp"
 
-#include "vulkan/utils.hpp"
+#include "vulkan/utility/misc.hpp"
 
 namespace vki {
 

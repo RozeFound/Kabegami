@@ -9,6 +9,7 @@ namespace vki {
         public:
 
         void log_properties();
+        uint32_t get_memory_index (vk::MemoryRequirements, vk::MemoryPropertyFlags) const;
 
         GPU (const vk::raii::Instance&  instance);
 

@@ -41,13 +41,15 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/s
 
 # Enable precompiled headers
 target_compile_definitions(${PROJECT_NAME} PRIVATE "VULKAN_HPP_NO_CONSTRUCTORS" "VULKAN_HPP_NO_TO_STRING")
-target_precompile_headers(${PROJECT_NAME} PRIVATE <vulkan/vulkan_raii.hpp> "source/logging.hpp" <GLFW/glfw3.h>)
+target_precompile_headers(${PROJECT_NAME} PRIVATE <vulkan/vulkan_raii.hpp> "source/logging.hpp" <glm/glm.hpp> <GLFW/glfw3.h>)
 
 # ---- Enable debug info ----
 
 target_compile_definitions(${PROJECT_NAME} PUBLIC "$<$<CONFIG:DEBUG>:DEBUG>")
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/settings.json DESTINATION ${PROJECT_BINARY_DIR})
+
+include(cmake/shaders.cmake)
 
 # ---- Link libraries ----
 

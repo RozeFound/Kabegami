@@ -1,6 +1,6 @@
 #include "swapchain.hpp"
 
-#include "vulkan/utils.hpp"
+#include "vulkan/utility/misc.hpp"
 
 namespace vki {
 
@@ -110,7 +110,7 @@ namespace vki {
         constexpr auto timeout = std::numeric_limits<uint64_t>::max();
         const auto& frame = frames.at(index);
 
-        auto wait = context->device->waitForFences(*frame.in_flight, VK_TRUE, timeout);
+        auto wait = context->device->waitForFences(*frame.in_flight, true, timeout);
         if (wait != vk::Result::eSuccess) logw("Something goes wrong when waiting on fences");
         context->device->resetFences(*frame.in_flight);
 

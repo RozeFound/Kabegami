@@ -1,6 +1,6 @@
 #include "instance.hpp"
 
-#include "vulkan/utils.hpp"
+#include "vulkan/utility/misc.hpp"
 
 namespace vki {
 

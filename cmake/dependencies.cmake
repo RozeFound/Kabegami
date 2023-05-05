@@ -27,6 +27,11 @@ CPMAddPackage(
 )
 
 CPMAddPackage(
+    GIT_TAG 0.9.9.8
+    GITHUB_REPOSITORY g-truc/glm
+)
+
+CPMAddPackage(
     VERSION 1.11.0
     GITHUB_REPOSITORY gabime/spdlog
     OPTIONS "SPDLOG_FMT_EXTERNAL 1"
