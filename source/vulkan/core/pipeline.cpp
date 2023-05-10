@@ -201,8 +201,6 @@ namespace vku {
 
         auto context = vki::Context::get();
 
-        auto path = ".cache/pipeline.cache";
-
         if (std::filesystem::exists(path))
             data = fs::read(path);
 
@@ -221,7 +219,7 @@ namespace vku {
         for (const auto& byte : handle->getData())
             data.emplace_back((std::byte)byte);
 
-        fs::write(".cache/pipeline.cache", this->data);
+        fs::write(path, this->data);
 
     }
 

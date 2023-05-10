@@ -15,12 +15,14 @@ class Reader {
 
     Reader (std::span<std::byte> data) : data(data) {}
 
-    constexpr const auto get_span() const { return data; }
-    constexpr std::ptrdiff_t& get_offset() { return offset; }
+    constexpr const auto& get_span() const { return data; }
+    constexpr const std::ptrdiff_t& get_offset() const { return offset; }
 
-    template<typename T = const char*>
+    template<typename T = std::nullopt_t>
     constexpr const auto get_range (std::ptrdiff_t range) const { 
-        return reinterpret_cast<T>(data.subspan(offset, range).data());
+        if constexpr (!std::is_same_v<T, std::nullopt_t>) 
+            return reinterpret_cast<T>(data.subspan(offset, range).data());
+        else return data.subspan(offset, range);
     }
 
     template <typename T> T get() {
@@ -36,6 +38,11 @@ class Reader {
         offset += string_length;
         return result;
     };
+
+    template <typename T = std::byte> 
+    void skip (std::size_t amount = 1) { 
+        offset += sizeof(T) * amount;
+    }
 
 };
 

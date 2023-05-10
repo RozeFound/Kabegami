@@ -24,6 +24,7 @@ include(cmake/tools.cmake)
 
 # ---- Import dependencies ----
 
+set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 include(cmake/dependencies.cmake)
 
 # ---- Add source files ----

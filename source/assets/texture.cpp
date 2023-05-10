@@ -16,7 +16,7 @@ Header::Header (Reader& reader) {
     width = reader.get<uint32_t>();
     height = reader.get<uint32_t>();
 
-    reader.get_offset() += sizeof(uint32_t);
+    reader.skip<uint32_t>(); // Unknown;
 
 }
 
@@ -36,15 +36,16 @@ MipMap::MipMap (Reader& reader, std::string_view container_version) {
     size = reader.get<uint32_t>();
 
     if (compression) {
-        LZ4_decompress_safe(reader.get_range(size), 
+        LZ4_decompress_safe(
+            reader.get_range<const char*>(size), 
             reinterpret_cast<char*>(data.data()),
             size, data.capacity());
     } else {
-        auto uncompressed = reader.get_span().subspan(reader.get_offset(), size);
+        auto uncompressed = reader.get_range(size);
         data.assign(uncompressed.begin(), uncompressed.end());
     }
 
-    reader.get_offset() += size;
+    reader.skip(size);
 
 }
 
@@ -59,7 +60,7 @@ Frame::Frame (Reader& reader) {
     width = reader.get<uint32_t>();
     height = reader.get<uint32_t>();
 
-    reader.get_offset()  += sizeof(uint32_t) * 2;
+    reader.skip<uint32_t>(2);
 
 }
 
@@ -69,7 +70,7 @@ Texture::Texture (std::span<std::byte> data) : reader(data), header(reader) {
     auto image_count = reader.get<uint32_t>();
 
     if (container_version == "TEXB0003")
-        reader.get_offset() += sizeof(uint32_t); // FreeImageFormat
+        reader.skip<uint32_t>(); // FreeImageFormat
 
     for (uint32_t image = 0; image < image_count; image++) {
 
