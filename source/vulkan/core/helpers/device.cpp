@@ -44,12 +44,8 @@ namespace vki {
             .pEnabledFeatures = &device_features
         };
 
-        try {
-            handle = std::make_unique<vk::raii::Device>(gpu, device_info);
-            logi("Device was successfully abstracted");
-        } catch (vk::SystemError err) {
-            loge("Failed to abstract Physical Device");
-        }
+        try { handle = std::make_unique<vk::raii::Device>(gpu, device_info); } 
+        catch (vk::SystemError e) { loge("Failed to abstract Physical Device: {}", e.what()); }
 
     }
 

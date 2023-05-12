@@ -52,5 +52,34 @@ namespace vku {
         if (wait != vk::Result::eSuccess) logw("Something goes wrong when waiting on fences");
 
     }
+
+    void TransientBuffer::barrier (const vk::raii::Image& image,
+        const vk::ImageAspectFlags aspect_flags, 
+        const std::array<vk::PipelineStageFlags, 2> stages, 
+        const std::array<vk::AccessFlags, 2> access_flags, 
+        const std::array<vk::ImageLayout, 2> layouts, uint32_t mip_levels) {
+
+        auto subres_range = vk::ImageSubresourceRange {
+            .aspectMask = aspect_flags,
+            .baseMipLevel = 0,
+            .levelCount = mip_levels,
+            .baseArrayLayer = 0,
+            .layerCount = 1
+        };
+
+        auto barrier = vk::ImageMemoryBarrier {
+            .srcAccessMask = access_flags.at(0),
+            .dstAccessMask = access_flags.at(1),
+            .oldLayout = layouts.at(0),
+            .newLayout = layouts.at(1),
+            .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+            .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+            .image = *image,
+            .subresourceRange = subres_range
+        };
+
+        return this->barrier(barrier, stages);
+
+    }
     
 }

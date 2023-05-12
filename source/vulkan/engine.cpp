@@ -59,7 +59,6 @@ void Engine::assign_command_buffers() {
 
     try { command_pool = std::make_unique<vk::raii::CommandPool>(*context->device, create_info); } 
     catch (vk::SystemError e) { loge("Failed to create Command Pool: {}", e.what()); return; }
-    logi("Successfully created Command Pool");
 
     auto allocate_info = vk::CommandBufferAllocateInfo {
         .commandPool = **command_pool,
@@ -122,7 +121,7 @@ void Engine::update() {
     auto& frame = swapchain->get_frames().at(frame_index);
     frame.index = swapchain->acquire_image(frame_index);
 
-    record(frame_index, [&]() {
+    record(frame_index, [&] {
 
         frame.commands->bindPipeline(vk::PipelineBindPoint::eGraphics, **pipeline);
         frame.commands->bindVertexBuffers(0, ***vertex_buffer, { 0 });

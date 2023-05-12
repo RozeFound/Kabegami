@@ -96,7 +96,7 @@ struct MipMap {
     bool compression = false;
     uint32_t size;
 
-    std::vector<std::byte> data;
+    std::vector<std::byte> pixels;
 
 };
 
@@ -114,7 +114,7 @@ struct Frame {
 
 };
 
-class Texture {
+class TextureInfo {
 
     Reader reader;
 
@@ -123,15 +123,16 @@ class Texture {
     std::string_view container_version;
     std::string_view animation_version;
 
-    std::unordered_map<uint32_t, std::vector<MipMap>> images;
+    std::unordered_map <uint32_t, std::vector<MipMap>> images;
 
     uint32_t gif_width, gif_height;
     std::vector<Frame> frames;
 
     public:
 
-    Texture (std::span<std::byte> data);
+    TextureInfo (std::span<std::byte> data);
 
     constexpr const Header& get_header() const { return header; }
+    constexpr const auto& get_images() const { return images; }
 
 };

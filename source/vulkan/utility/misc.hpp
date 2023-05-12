@@ -26,7 +26,7 @@ namespace vku {
         
 	};
 
-    vk::ImageViewCreateInfo get_image_view_info (vk::Image& image, 
+    vk::ImageViewCreateInfo get_image_view_info (const vk::Image& image, 
         vk::Format format, vk::ImageAspectFlags flags, uint32_t mip_levels = 1);
 
     constexpr uint32_t to_u32 (std::size_t value) { return static_cast<uint32_t>(value); }

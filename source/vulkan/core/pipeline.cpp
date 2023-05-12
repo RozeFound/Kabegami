@@ -183,8 +183,8 @@ namespace vku {
         }
 
         try { return std::make_unique<vk::raii::PipelineLayout>(context->device, create_info); }
-        catch (vk::SystemError e) { loge("Failed to create PipeLine Layout: {}", e.what()); return nullptr; }
-        logi("Created PipeLine Layout");
+        catch (vk::SystemError e) { loge("Failed to create PipeLine Layout: {}", e.what()); }
+        return nullptr;
 
     }
 

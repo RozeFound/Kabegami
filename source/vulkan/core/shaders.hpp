@@ -35,7 +35,6 @@ namespace vku {
 
             try { this->module = std::make_unique<vk::raii::ShaderModule>(context->device, create_info); }
             catch (vk::SystemError e) { loge("Failed to create shader module: {}", e.what()); return; };
-            logi("Successfully created shader module");
 
             this->stage = vk::PipelineShaderStageCreateInfo {
                 .flags = vk::PipelineShaderStageCreateFlags(),

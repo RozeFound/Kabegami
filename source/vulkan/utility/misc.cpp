@@ -2,7 +2,7 @@
 
 namespace vku {
 
-    vk::ImageViewCreateInfo get_image_view_info (vk::Image& image, 
+    vk::ImageViewCreateInfo get_image_view_info (const vk::Image& image, 
         vk::Format format, vk::ImageAspectFlags flags, uint32_t mip_levels) {
 
         return vk::ImageViewCreateInfo {

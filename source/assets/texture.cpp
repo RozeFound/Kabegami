@@ -29,7 +29,7 @@ MipMap::MipMap (Reader& reader, std::string_view container_version) {
 
         compression = reader.get<uint32_t>();
         auto compressed = reader.get<uint32_t>();
-        data.reserve(compressed);
+        pixels.reserve(compressed);
 
     }
 
@@ -38,11 +38,11 @@ MipMap::MipMap (Reader& reader, std::string_view container_version) {
     if (compression) {
         LZ4_decompress_safe(
             reader.get_range<const char*>(size), 
-            reinterpret_cast<char*>(data.data()),
-            size, data.capacity());
+            reinterpret_cast<char*>(pixels.data()),
+            size, pixels.capacity());
     } else {
         auto uncompressed = reader.get_range(size);
-        data.assign(uncompressed.begin(), uncompressed.end());
+        pixels.assign(uncompressed.begin(), uncompressed.end());
     }
 
     reader.skip(size);
@@ -64,7 +64,7 @@ Frame::Frame (Reader& reader) {
 
 }
 
-Texture::Texture (std::span<std::byte> data) : reader(data), header(reader) {
+TextureInfo::TextureInfo (std::span<std::byte> data) : reader(data), header(reader) {
 
     container_version = reader.get<std::string_view>();
     auto image_count = reader.get<uint32_t>();

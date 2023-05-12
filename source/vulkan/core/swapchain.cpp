@@ -53,7 +53,6 @@ namespace vki {
 
         try { handle = std::make_unique<vk::raii::SwapchainKHR>(context->device, create_info); }
         catch (vk::SystemError) { loge("Failed to create SwapChain"); return; }
-        logi("Successfully created SwapChain");
 
     }
 
@@ -98,10 +97,6 @@ namespace vki {
             } else frames.emplace_back(std::move(frame));
 
 		};
-
-        logi("Successfully created Framebuffers");
-        logi("Created ImageView's for SwapChain");
-        logi("Created syncronization structures");
 
     }
 
