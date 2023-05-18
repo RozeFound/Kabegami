@@ -4,7 +4,7 @@
 
 #include <fmt/core.h>
 
-bool FileSystem::exists (std::string_view path) {
+bool FileSystem::exists (std::string_view path) const {
 
     for (const auto& package : packages)
         if (package.exists(path))

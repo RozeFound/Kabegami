@@ -84,11 +84,53 @@ struct Header {
     uint32_t width;
     uint32_t height;
 
+    std::string_view container;
+    uint32_t image_count;
+
+    enum class Type { /// From Repkg github repo
+        UNKNOWN = -1, /// Unknown format (returned value only, never use it as input value)
+        BMP     = 0,  /// Windows or OS/2 Bitmap File (*.BMP)
+        ICO     = 1,  /// Windows Icon (*.ICO)
+        JPEG    = 2,  /// Independent JPEG Group (*.JPG, *.JIF, *.JPEG, *.JPE)
+        JNG     = 3,  /// JPEG Network Graphics (*.JNG)
+        KOALA   = 4,  /// Commodore 64 Koala format (*.KOA)
+        LBM     = 5,  /// Amiga IFF (*.IFF, *.LBM)
+        MNG     = 6,  /// Multiple Network Graphics (*.MNG)
+        PBM     = 7,  /// Portable Bitmap (ASCII) (*.PBM)
+        PBMRAW  = 8,  /// Portable Bitmap (BINARY) (*.PBM)
+        PCD     = 9,  /// Kodak PhotoCD (*.PCD)
+        PCX     = 10, /// Zsoft Paintbrush PCX bitmap format (*.PCX)
+        PGM     = 11, /// Portable Graymap (ASCII) (*.PGM)
+        PGMRAW  = 12, /// Portable Graymap (BINARY) (*.PGM)
+        PNG     = 13, /// Portable Network Graphics (*.PNG)
+        PPM     = 14, /// Portable Pixelmap (ASCII) (*.PPM)
+        PPMRAW  = 15, /// Portable Pixelmap (BINARY) (*.PPM)
+        RAS     = 16, /// Sun Rasterfile (*.RAS)
+        TARGA   = 17, /// truevision Targa files (*.TGA, *.TARGA)
+        TIFF    = 18, /// Tagged Image File Format (*.TIF, *.TIFF)
+        WBMP    = 19, /// Wireless Bitmap (*.WBMP)
+        PSD     = 20, /// Adobe Photoshop (*.PSD)
+        CUT     = 21, /// Dr. Halo (*.CUT)
+        XBM     = 22, /// X11 Bitmap Format (*.XBM)
+        XPM     = 23, /// X11 Pixmap Format (*.XPM)
+        DDS     = 24, /// DirectDraw Surface (*.DDS)
+        GIF     = 25, /// Graphics Interchange Format (*.GIF)
+        HDR     = 26, /// High Dynamic Range (*.HDR)
+        FAXG3   = 27, /// Raw Fax format CCITT G3 (*.G3)
+        SGI     = 28, /// Silicon Graphics SGI image format (*.SGI)
+        EXR     = 29, /// OpenEXR format (*.EXR)
+        J2K     = 30, /// JPEG-2000 format (*.J2K, *.J2C)
+        JP2     = 31, /// JPEG-2000 format (*.JP2)
+        PFM     = 32, /// portable floatmap (*.pfm)
+        PICT    = 33, /// Macintosh PICT (*.PICT)
+        RAW     = 34, /// RAW camera image (*.*)
+    } type;
+
 };
 
 struct MipMap {
 
-    MipMap (Reader& reader, std::string_view container_version);
+    MipMap (Reader& reader, const Header& header);
 
     uint32_t width;
     uint32_t height;
@@ -96,7 +138,7 @@ struct MipMap {
     bool compression = false;
     uint32_t size;
 
-    std::vector<std::byte> pixels;
+    std::vector <std::byte> pixels;
 
 };
 
@@ -120,7 +162,6 @@ class TextureInfo {
 
     Header header;
 
-    std::string_view container_version;
     std::string_view animation_version;
 
     std::unordered_map <uint32_t, std::vector<MipMap>> images;

@@ -18,7 +18,7 @@ class FileSystem {
     void add_package (std::filesystem::path package) { packages.emplace_back(package); }
     void add_location (std::filesystem::path location) { locations.push_back(location); }
 
-    bool exists (std::string_view path);
+    bool exists (std::string_view path) const;
 
     template <typename T = std::vector <std::byte>> T read (std::string_view path) const;
 

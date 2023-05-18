@@ -58,6 +58,7 @@ namespace vku {
 
         }
 
+        Buffer(Buffer&&) = default;
         ~Buffer () { if constexpr (opts.persistent) memory->unmapMemory(); } 
 
         void upload (const auto& data, std::size_t size = 0, std::ptrdiff_t offset = 0) {

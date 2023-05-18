@@ -55,4 +55,4 @@ include(cmake/shaders.cmake)
 # ---- Link libraries ----
 
 target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt glaze::glaze)
-target_link_libraries(${PROJECT_NAME} PRIVATE lz4 glfw spdlog vulkan)
+target_link_libraries(${PROJECT_NAME} PRIVATE lz4 glfw spdlog stb vulkan)

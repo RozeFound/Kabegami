@@ -1,6 +1,7 @@
 #include "texture.hpp"
 
 #include <lz4.h>
+#include <stb_image.h>
 
 Header::Header (Reader& reader) {
 
@@ -18,14 +19,20 @@ Header::Header (Reader& reader) {
 
     reader.skip<uint32_t>(); // Unknown;
 
+    container = reader.get<std::string_view>();
+    image_count = reader.get<uint32_t>();
+
+    if (container == "TEXB0003")
+        type = reader.get<Type>(); // FreeImageFormat
+
 }
 
-MipMap::MipMap (Reader& reader, std::string_view container_version) {
+MipMap::MipMap (Reader& reader, const Header& header) {
 
     width = reader.get<uint32_t>();
     height = reader.get<uint32_t>();
 
-    if (container_version == "TEXB0002" || container_version == "TEXB0003") {
+    if (header.container == "TEXB0002" || header.container == "TEXB0003") {
 
         compression = reader.get<uint32_t>();
         auto compressed = reader.get<uint32_t>();
@@ -43,6 +50,17 @@ MipMap::MipMap (Reader& reader, std::string_view container_version) {
     } else {
         auto uncompressed = reader.get_range(size);
         pixels.assign(uncompressed.begin(), uncompressed.end());
+    }
+
+    if (header.container == "TEXB0003" && header.type != Header::Type::UNKNOWN) {
+
+        int32_t width, height, channels;
+        auto stbi_image = stbi_load_from_memory((stbi_uc*)pixels.data(),
+                                    size, &width, &height, &channels, 4);
+        auto data = reinterpret_cast<std::byte*>(stbi_image);
+        pixels.assign(data, data + size);
+        stbi_image_free(stbi_image);
+
     }
 
     reader.skip(size);
@@ -66,19 +84,13 @@ Frame::Frame (Reader& reader) {
 
 TextureInfo::TextureInfo (std::span<std::byte> data) : reader(data), header(reader) {
 
-    container_version = reader.get<std::string_view>();
-    auto image_count = reader.get<uint32_t>();
-
-    if (container_version == "TEXB0003")
-        reader.skip<uint32_t>(); // FreeImageFormat
-
-    for (uint32_t image = 0; image < image_count; image++) {
+    for (uint32_t image = 0; image < header.image_count; image++) {
 
         auto mipmap_count = reader.get<uint32_t>();
         auto mipmaps = std::vector<MipMap>();
 
         for (uint32_t i = 0; i < mipmap_count; i ++)
-            mipmaps.emplace_back(reader, container_version);
+            mipmaps.emplace_back(reader, header);
 
         images[image] = mipmaps; // will make a copy?
 

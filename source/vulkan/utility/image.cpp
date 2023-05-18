@@ -97,7 +97,7 @@ namespace vku {
         };
 
         auto pool_info = vk::DescriptorPoolCreateInfo {
-            .flags = vk::DescriptorPoolCreateFlags(),
+            .flags = vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet,
             .maxSets = 1,
             .poolSizeCount = 1,
             .pPoolSizes = &pool_size
@@ -152,9 +152,10 @@ namespace vku {
 
     void Texture::update_mipmaps (const std::vector<MipMap>& mipmaps) {
 
-        auto transient_buffer = TransientBuffer(true);
+        auto buffers = std::vector<BasicBuffer>();
+        auto commands = TransientBuffer(true);
 
-        transient_buffer.barrier(*handle, vk::ImageAspectFlagBits::eColor, 
+        commands.barrier(*handle, vk::ImageAspectFlagBits::eColor, 
             { vk::PipelineStageFlagBits::eHost, vk::PipelineStageFlagBits::eTransfer },
             { vk::AccessFlagBits::eNone, vk::AccessFlagBits::eTransferWrite },
             { vk::ImageLayout::eUndefined,  vk::ImageLayout::eTransferDstOptimal }, mip_levels
@@ -165,9 +166,10 @@ namespace vku {
             // #NOTE Not sure if additional barriers are needed here.
 
             const auto& mip = mipmaps.at(i); 
+            auto size = mip.width * mip.height * 4;
 
-            auto staging = BasicBuffer(mip.size, vk::BufferUsageFlagBits::eTransferSrc);
-            staging.upload(mip.pixels.data(), mip.size);
+            buffers.emplace_back(size, vk::BufferUsageFlagBits::eTransferSrc);
+            buffers.back().upload(mip.pixels.data(), mip.size);
 
             auto subres_layers = vk::ImageSubresourceLayers {
                 .aspectMask = vk::ImageAspectFlagBits::eColor,
@@ -185,13 +187,13 @@ namespace vku {
                 .imageExtent = { mip.width, mip.height, 1 }
             };
 
-            transient_buffer->copyBufferToImage(**staging, **handle, vk::ImageLayout::eTransferDstOptimal, region);
+            commands->copyBufferToImage(**buffers.back(), **handle, vk::ImageLayout::eTransferDstOptimal, region);
 
         }
 
-        transient_buffer.barrier(*handle, vk::ImageAspectFlagBits::eColor, 
+        commands.barrier(*handle, vk::ImageAspectFlagBits::eColor, 
             { vk::PipelineStageFlagBits::eTransfer, vk::PipelineStageFlagBits::eFragmentShader },
-            { vk::AccessFlagBits::eTransferWrite, vk::AccessFlagBits::eTransferRead },
+            { vk::AccessFlagBits::eTransferWrite, vk::AccessFlagBits::eShaderRead },
             { vk::ImageLayout::eTransferDstOptimal,  vk::ImageLayout::eShaderReadOnlyOptimal }, mip_levels
         );
 

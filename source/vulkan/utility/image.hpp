@@ -44,6 +44,7 @@ namespace vku {
         public:
 
         Texture (const TextureInfo& info);
+        Texture (Texture&&) = default;
         ~Texture() { set.reset(); }
 
         constexpr const auto& get_descriptor_set() const { return set; }

@@ -45,3 +45,12 @@ CPMAddPackage(
 
 add_library(lz4 STATIC ${lz4_SOURCE_DIR}/lib/lz4.c)
 target_include_directories(lz4 PUBLIC ${lz4_SOURCE_DIR}/lib)
+
+CPMAddHeaderOnly(
+    NAME stb
+    VERSION stable
+    GITHUB_REPOSITORY nothings/stb
+    GIT_TAG 3ecc60f25ae1391cf6434578ece782afa1458b56
+    HEADER "stb_image.h"
+)
+target_compile_definitions(stb INTERFACE "STB_IMAGE_IMPLEMENTATION")

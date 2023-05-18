@@ -16,12 +16,12 @@ GLZ_META(Object, id, visible, name, alignment, scale, size, origin, angles, colo
                  alpha, particle, parallaxDepth, radius, instanceoverride);
 GLZ_META(Object::Override, id, count, rate, size, lifetime, speed, alpha, colorn);
 
-GLZ_META(Scene, camera, general, objects, version);
-GLZ_META(Scene::Camera, center, eye, up, paths);
+GLZ_META(SceneInfo, camera, general, objects, version);
+GLZ_META(SceneInfo::Camera, center, eye, up, paths);
 
-template <> struct glz::meta<Scene::General> {
+template <> struct glz::meta<SceneInfo::General> {
 
-    using T = Scene::General;
+    using T = SceneInfo::General;
 
     static constexpr auto value = glz::object (
 
@@ -68,34 +68,32 @@ template <> struct glz::meta<Scene::General> {
 
 };
 
-GLZ_META(Scene::General::OrthogonalProjection, height, width);
+GLZ_META(SceneInfo::General::OrthogonalProjection, height, width);
 
 GLZ_META(Model, autosize, fullscreen, passthrough, material, puppet);
 
 GLZ_META(Material, passes);
 
-template <std::size_t size>
-void str_to_vec (auto& vec, std::string_view string) {
-    for (std::size_t i = 0, last_id = 0; i < size; ++i) {
-        auto delimiter_position = string.find(' ');
-        vec.at(i) = std::stod(string.substr(last_id, delimiter_position).data());
+constexpr void str_to_vec (vec_t<double>& vec, std::string_view string) {
+    for (std::size_t i = 0, last_id = 0; i < vec.size(); i++) {
+        auto delimiter_position = string.find(' ', last_id+1);
+        auto str = string.substr(last_id, delimiter_position);
+        vec.at(i) = std::stod(str.data());
         last_id = delimiter_position;
     }
 }
 
 namespace glz::detail {
-    template <> struct from_json<vec2_t> {
+    template <> struct from_json <vec2_t> {
     template <auto Opts> static void op (vec2_t& vec, auto&&... args) {
         std::string_view string = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"; 
         read<json>::op<Opts>(string, args...);
-        str_to_vec<2>(vec, string);
-      }
-   };
-    template <> struct from_json<vec3_t> {
+        str_to_vec(vec, string);
+    }};
+    template <> struct from_json <vec3_t> {
     template <auto Opts> static void op (vec3_t& vec, auto&&... args) {
         std::string_view string = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"; 
         read<json>::op<Opts>(string, args...);
-        str_to_vec<3>(vec, string);
-      }
-   };
+        str_to_vec(vec, string);
+    }};
 }

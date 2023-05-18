@@ -6,11 +6,25 @@
 
 #include <glaze/glaze.hpp>
 
-struct vec2_t {
+template <typename T> struct vec_t {
+
+    constexpr virtual T& operator[] (const std::ptrdiff_t index) = 0;
+
+    constexpr const T& operator[] (const std::ptrdiff_t index) const { return operator[](index); }
+
+    constexpr T& at (const std::ptrdiff_t index) { return operator[](index); }
+    constexpr const T& at (const std::ptrdiff_t index) const { return operator[](index); }
+
+    constexpr virtual std::string string() const = 0;
+    constexpr virtual std::size_t size() const noexcept = 0;
+
+};
+
+struct vec2_t : public vec_t <double> {
 
     double x, y;
 
-    constexpr double& operator[] (const std::ptrdiff_t index) {
+    constexpr double& operator[] (const std::ptrdiff_t index) override {
 
 		switch (index) {
             case 0: return x;
@@ -19,20 +33,18 @@ struct vec2_t {
 		}
 	}
 
-	constexpr const double& operator[] (const std::ptrdiff_t index) const { return this->operator[](index); }
-
-    constexpr double& at (const std::ptrdiff_t index) { return operator[](index); }
-    constexpr const double& at (const std::ptrdiff_t index) const { return operator[](index); }
-
-    std::string to_string() { return fmt::format("{:.2f}, {:.2f}", x, y); }
+    constexpr std::string string() const override { return fmt::format("{:.2f}, {:.2f}", x, y); }
+    constexpr std::size_t size() const noexcept override { return 2; }
 
 };
 
-struct vec3_t {
+struct vec3_t : public vec_t <double> {
 
     double x, y, z;
 
-    constexpr double& operator[] (const std::ptrdiff_t index) {
+    constexpr operator glm::vec3() const noexcept { return { x, y, z }; }
+
+    constexpr double& operator[] (const std::ptrdiff_t index) override {
 
 		switch (index) {
             case 0: return x;
@@ -42,12 +54,8 @@ struct vec3_t {
 		}
 	}
 
-    constexpr const double& operator[] (const std::ptrdiff_t index) const { return this->operator[](index); }
-
-    constexpr double& at (const std::ptrdiff_t index) { return operator[](index); }
-    constexpr const double& at (const std::ptrdiff_t index) const { return operator[](index); }
-
-    std::string to_string() { return fmt::format("{:.2f}, {:.2f}, {:.2f}", x, y, z); }
+    constexpr std::string string() const override { return fmt::format("{:.2f}, {:.2f}, {:.2f}", x, y, z); }
+    constexpr std::size_t size() const noexcept override { return 3; }
 
 };
 
@@ -144,7 +152,7 @@ struct Object {
 
 };
 
-struct Scene {
+struct SceneInfo {
 
     struct Camera {
 
