@@ -39,11 +39,11 @@ namespace vku {
 
         void create_sampler();
         void create_descriptors();
-        void update_mipmaps (const std::vector<MipMap>& mipmaps);
+        void update_mipmaps (const std::vector<assets::MipMap>& mipmaps);
 
         public:
 
-        Texture (const TextureInfo& info);
+        Texture (const assets::TextureParser& parser);
         Texture (Texture&&) = default;
         ~Texture() { set.reset(); }
 

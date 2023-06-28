@@ -43,13 +43,13 @@ namespace vku {
 
     }
 
-    Texture::Texture (const TextureInfo& info) {
+    Texture::Texture (const assets::TextureParser& parser) {
 
-        auto header = info.get_header();
+        auto header = parser.get_header();
         width = header.width; height = header.height;
         format = vk::Format::eR8G8B8A8Srgb;
 
-        auto& mipmaps = info.get_images().at(0);
+        auto& mipmaps = parser.get_images().at(0);
         mip_levels = mipmaps.size();
 
         using enum vk::ImageUsageFlagBits;
@@ -150,7 +150,7 @@ namespace vku {
 
     }
 
-    void Texture::update_mipmaps (const std::vector<MipMap>& mipmaps) {
+    void Texture::update_mipmaps (const std::vector<assets::MipMap>& mipmaps) {
 
         auto buffers = std::vector<BasicBuffer>();
         auto commands = TransientBuffer(true);

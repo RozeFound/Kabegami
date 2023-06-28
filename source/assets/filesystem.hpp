@@ -5,21 +5,25 @@
 
 #include "package.hpp"
 
-class FileSystem {
+namespace assets {
 
-    std::vector <Package> packages;
-    std::vector <std::filesystem::path> locations;
+    class FileSystem {
 
-    public:
+        std::vector <Package> packages;
+        std::vector <std::filesystem::path> locations;
 
-    FileSystem() = default;
-    FileSystem (std::initializer_list<std::filesystem::path> locations) : locations(locations) {}
+        public:
 
-    void add_package (std::filesystem::path package) { packages.emplace_back(package); }
-    void add_location (std::filesystem::path location) { locations.push_back(location); }
+        FileSystem() = default;
+        FileSystem (std::initializer_list<std::filesystem::path> locations) : locations(locations) {}
 
-    bool exists (std::string_view path) const;
+        void add_package (std::filesystem::path package) { packages.emplace_back(package); }
+        void add_location (std::filesystem::path location) { locations.push_back(location); }
 
-    template <typename T = std::vector <std::byte>> T read (std::string_view path) const;
+        bool exists (std::string_view path) const;
 
-};
+        template <typename T = std::vector <std::byte>> T read (std::string_view path) const;
+
+    };
+
+}

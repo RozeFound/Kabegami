@@ -4,8 +4,6 @@
 #include <fmt/core.h>
 
 #include "assets/filesystem.hpp"
-#include "assets/mappings.hpp"
-#include "assets/texture.hpp"
 
 #include "scene.hpp"
 
@@ -32,14 +30,18 @@ Kabegami::~Kabegami() {
 
 void Kabegami::run() {
 
-    auto fs = FileSystem { settings.assets, settings.wallpaper };
+    auto fs = assets::FileSystem { settings.assets, settings.wallpaper };
 
     auto file = glz::get_as_json<std::string, "/file">(fs.read<std::string>("project.json"));
     if (!fs.exists(file.value())) fs.add_package(settings.wallpaper + "/scene.pkg");
 
     auto buffer = fs.read<std::string>(file.value());
-    auto scene_info = glz::read_json<SceneInfo>(buffer);
-    if (!scene_info) loge("Failed to parse scene");
+    auto scene_info = glz::read_json<Context>(buffer);
+
+    if (!scene_info) {
+        auto error = glz::format_error(scene_info.error(), buffer);
+        loge("Failed to parse scene:\n{}", error); return;
+    }
 
     auto scene = std::make_unique<Scene>(*scene_info, fs);
 

@@ -8,31 +8,35 @@
 #include <string>
 #include <vector>
 
-struct Entry {
-    uint32_t offset;
-    uint32_t length;
-};
+namespace assets {
 
-class Package {
+    struct Entry {
+        uint32_t offset;
+        uint32_t length;
+    };
 
-    mutable std::ifstream file;
+    class Package {
 
-    std::ptrdiff_t data_offset;
+        mutable std::ifstream file;
 
-    std::unordered_map <std::string, Entry> entries;
+        std::ptrdiff_t data_offset;
 
-    uint32_t read_int();
-    std::string read_string();
+        std::unordered_map <std::string, Entry> entries;
 
-    public:
+        uint32_t read_int();
+        std::string read_string();
 
-    Package (std::filesystem::path path);
-    Package (Package&&) noexcept = default;
-    Package (Package&) = delete;
+        public:
 
-    std::vector <std::byte> read_file (std::string_view path) const;
-    constexpr bool exists (std::string_view path) const { 
-        return entries.contains({ path.begin(), path.end() });
-    }
+        Package (std::filesystem::path path);
+        Package (Package&&) noexcept = default;
+        Package (Package&) = delete;
 
-};
+        std::vector <std::byte> read_file (std::string_view path) const;
+        constexpr bool exists (std::string_view path) const { 
+            return entries.contains({ path.begin(), path.end() });
+        }
+
+    };
+
+}

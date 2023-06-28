@@ -8,7 +8,7 @@ namespace vki {
 
         auto application_info = vk::ApplicationInfo {
             .pApplicationName = "Kabegami",
-            .apiVersion = VK_VERSION_1_3
+            .apiVersion = VK_API_VERSION_1_3
         };
 
         auto extensions = get_extensions();
