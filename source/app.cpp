@@ -36,7 +36,7 @@ void Kabegami::run() {
     if (!fs.exists(file.value())) fs.add_package(settings.wallpaper + "/scene.pkg");
 
     auto buffer = fs.read<std::string>(file.value());
-    auto scene_info = glz::read_json<Context>(buffer);
+    auto scene_info = glz::read_json<objects::Scene>(buffer);
 
     if (!scene_info) {
         auto error = glz::format_error(scene_info.error(), buffer);

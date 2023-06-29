@@ -1,21 +1,19 @@
 #include "scene.hpp"
 
-Scene::Scene (const Context& info, const assets::FileSystem& fs) {
+Scene::Scene (const objects::Scene& info, const assets::FileSystem& fs) {
 
     camera = { info.camera.center, info.camera.eye, info.camera.up }; 
 
     for (const auto& object : info.objects) {
 
-        logi("Variant index: {}", object.index());
-
         if (auto image = std::get_if<objects::Image>(&object))
-            logi("Found image: {}", image->image.value());
+            images.push_back(*image);
         else if (auto particle = std::get_if<objects::Particle>(&object))
-            logi("Found particle: {}", particle->particle);
+            particles.push_back(*particle);
         else if (auto sound = std::get_if<objects::Sound>(&object))
-            logi("Found sound: {}", sound->sound.at(0));
+            sounds.push_back(*sound);
         else if (auto light = std::get_if<objects::Light>(&object))
-            logi("Found light: {}", light->light);
+            lights.push_back(*light);
 
     }
     
