@@ -17,7 +17,6 @@ class Scene {
     std::vector <objects::Sound> sounds;
     std::vector <objects::Light> lights;
 
-    
     public:
     
     std::array<float, 4> clear_color;
