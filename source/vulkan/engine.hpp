@@ -8,10 +8,12 @@
 
 #include "utility/memory.hpp"
 
+#include "scene.hpp"
 #include "window.hpp"
 
 class Engine {
 
+    std::shared_ptr<Scene> scene;
     std::shared_ptr<vki::Context> context;
     std::unique_ptr<vki::SwapChain> swapchain;
 
@@ -38,6 +40,8 @@ class Engine {
     std::unique_ptr<vku::DeviceBuffer> vertex_buffer;
 
     void update();
+
+    void set_scene (std::shared_ptr<Scene> scene) { scene = scene; }
 
     Engine (const Window& window);
     ~Engine();

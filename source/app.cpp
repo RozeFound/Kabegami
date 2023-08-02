@@ -1,10 +1,8 @@
 #include "app.hpp"
 
-#include <ranges>
 #include <fmt/core.h>
 
 #include "assets/filesystem.hpp"
-
 #include "scene.hpp"
 
 Kabegami::Kabegami() {
@@ -43,7 +41,7 @@ void Kabegami::run() {
         loge("Failed to parse scene:\n{}", error); return;
     }
 
-    auto scene = std::make_unique<Scene>(*scene_info, fs);
+    engine->set_scene(std::make_shared<Scene>(*scene_info, fs));
 
     window->add_key_callback([this](int key, int action, int mods) {
         if (mods == GLFW_MOD_CONTROL && action == GLFW_PRESS) {

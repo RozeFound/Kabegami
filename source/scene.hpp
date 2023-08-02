@@ -16,8 +16,11 @@ class Scene {
     std::vector <objects::Particle> particles;
     std::vector <objects::Sound> sounds;
     std::vector <objects::Light> lights;
+
     
     public:
+    
+    std::array<float, 4> clear_color;
 
     Scene (const objects::Scene& context, const assets::FileSystem& fs);
 

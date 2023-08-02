@@ -4,6 +4,10 @@ Scene::Scene (const objects::Scene& info, const assets::FileSystem& fs) {
 
     camera = { info.camera.center, info.camera.eye, info.camera.up }; 
 
+    clear_color = { (float)info.general.clear_color.r,
+                    (float)info.general.clear_color.g,
+                    (float)info.general.clear_color.b, 1.f }; 
+
     for (const auto& object : info.objects) {
 
         if (auto image = std::get_if<objects::Image>(&object))

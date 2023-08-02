@@ -81,7 +81,7 @@ void Engine::record (uint32_t index, std::function<void()> callback) {
     try { frame.commands->reset(); frame.commands->begin(vk::CommandBufferBeginInfo()); } 
     catch (vk::SystemError e) { loge("Failed to begin command record: {}", e.what()); return; }
 
-    auto clear_value = vk::ClearValue { std::array { .1f, .1f, .1f, 1.f } };
+    auto clear_value = vk::ClearValue { scene->clear_color };
 
     auto begin_info = vk::RenderPassBeginInfo {
         .renderPass = **render_pass,

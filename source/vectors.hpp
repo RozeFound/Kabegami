@@ -1,8 +1,6 @@
 #pragma once
 
-#include <vector>
 #include <string_view>
-#include <optional>
 
 #include <glaze/glaze.hpp>
 
@@ -42,7 +40,9 @@ struct vec2_t : public vec_t {
 
 struct vec3_t : public vec_t {
 
-    double x, y, z;
+    union { double x, r; };
+    union { double y, g; };
+    union { double z, b; };
 
     constexpr operator glm::vec3() const noexcept { return { x, y, z }; }
 
