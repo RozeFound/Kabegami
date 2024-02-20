@@ -1,5 +1,8 @@
 #include "scene.hpp"
 
+#include "objects/model.hpp"
+#include "objects/material.hpp"
+
 Scene::Scene (const objects::Scene& info, const assets::FileSystem& fs) {
 
     camera = { info.camera.center, info.camera.eye, info.camera.up }; 
@@ -18,6 +21,29 @@ Scene::Scene (const objects::Scene& info, const assets::FileSystem& fs) {
             sounds.push_back(*sound);
         else if (auto light = std::get_if<objects::Light>(&object))
             lights.push_back(*light);
+
+    }
+
+    for (const auto& image : images) {
+
+        auto model = glz::read_json<objects::Model>(fs.read<std::string>(image.image.value()));
+        auto material = glz::read_json<objects::Material>(fs.read<std::string>(model->material));
+
+        for (const auto& texture : material->passes 
+        | std::views::transform(&objects::Pass::textures) | std::views::join 
+        | std::views::filter([] (auto& texture) { return texture.has_value(); })) {
+
+            auto parent = model->material.substr(0, model->material.find_last_of('/'));
+            auto path = fmt::format("{}/{}.tex", parent, texture.value());
+
+            if (!fs.exists(path)) continue;
+
+            auto data = fs.read(path);
+            auto parser = assets::TextureParser(data);
+
+            textures.emplace_back(parser);
+
+        }
 
     }
     

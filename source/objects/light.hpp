@@ -30,7 +30,7 @@ template <> struct glz::meta<objects::Light> {
 
     using T = objects::Light;
 
-    static constexpr auto value = glz::object (
+    static constexpr auto value = object (
 
         "visible", &T::visible,
         "name", &T::name,

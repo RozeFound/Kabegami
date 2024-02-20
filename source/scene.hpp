@@ -2,6 +2,8 @@
 
 #include "assets/filesystem.hpp"
 
+#include "vulkan/utility/image.hpp"
+
 #include "objects/scene.hpp"
 
 class Scene {
@@ -12,10 +14,12 @@ class Scene {
         glm::vec3 up;
     } camera; 
 
-    std::vector <objects::Image> images;
-    std::vector <objects::Particle> particles;
-    std::vector <objects::Sound> sounds;
-    std::vector <objects::Light> lights;
+    std::vector<objects::Image> images;
+    std::vector<vku::Texture> textures;
+
+    std::vector<objects::Particle> particles;
+    std::vector<objects::Sound> sounds;
+    std::vector<objects::Light> lights;
 
     public:
     

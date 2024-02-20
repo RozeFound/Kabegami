@@ -11,8 +11,8 @@ namespace vki {
         vk::Image image;
         vk::raii::ImageView view;
 
-        std::unique_ptr <vk::raii::CommandBuffer> commands;
-        std::unique_ptr <vk::raii::Framebuffer> buffer;
+        std::unique_ptr<vk::raii::CommandBuffer> commands;
+        std::unique_ptr<vk::raii::Framebuffer> buffer;
 
         vk::raii::Semaphore image_available;
         vk::raii::Semaphore render_finished;
@@ -22,11 +22,11 @@ namespace vki {
 
     class SwapChain {
 
-        std::unique_ptr <vk::raii::SwapchainKHR> handle;
-        std::unique_ptr <vk::raii::Queue> queue;
+        std::unique_ptr<vk::raii::SwapchainKHR> handle;
+        std::unique_ptr<vk::raii::Queue> queue;
         const vk::raii::RenderPass& render_pass;
 
-        std::shared_ptr <vki::Context> context = vki::Context::get();
+        std::shared_ptr<vki::Context> context = vki::Context::get();
 
         std::vector<Frame> frames;
         vk::Extent2D extent;

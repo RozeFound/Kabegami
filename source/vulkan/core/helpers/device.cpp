@@ -49,13 +49,13 @@ namespace vki {
 
     }
 
-    std::vector <const char*> Device::get_extensions() {
+    std::vector<const char*> Device::get_extensions() {
 
         return std::vector<const char*>{"VK_KHR_swapchain"};
 
     }
 
-    std::vector <const char*> Device::get_layers() {
+    std::vector<const char*> Device::get_layers() {
 
         auto layers = std::vector<const char*>();
 

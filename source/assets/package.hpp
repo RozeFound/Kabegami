@@ -21,7 +21,7 @@ namespace assets {
 
         std::ptrdiff_t data_offset;
 
-        std::unordered_map <std::string, Entry> entries;
+        std::unordered_map<std::string, Entry> entries;
 
         uint32_t read_int();
         std::string read_string();
@@ -32,7 +32,7 @@ namespace assets {
         Package (Package&&) noexcept = default;
         Package (Package&) = delete;
 
-        std::vector <std::byte> read_file (std::string_view path) const;
+        std::vector<std::byte> read_file (std::string_view path) const;
         constexpr bool exists (std::string_view path) const { 
             return entries.contains({ path.begin(), path.end() });
         }

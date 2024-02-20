@@ -1,7 +1,5 @@
 #include "context.hpp"
 
-#include <set>
-
 namespace vki {
 
     static std::weak_ptr<Context> global_context;

@@ -28,7 +28,7 @@ template <> struct glz::meta<objects::Sound> {
 
     using T = objects::Sound;
 
-    static constexpr auto value = glz::object (
+    static constexpr auto value = object (
 
         "id", &T::id,
         "visible", &T::visible,
@@ -41,11 +41,11 @@ template <> struct glz::meta<objects::Sound> {
         "muteineditor", &T::muteineditor,
         "startsilent", &T::startsilent,
 
-        "locktransforms", glz::skip{},
-        "parallaxDepth", glz::skip{},
-        "angles", glz::skip{},
-        "origin", glz::skip{},
-        "scale", glz::skip{}
+        "locktransforms", skip{},
+        "parallaxDepth", skip{},
+        "angles", skip{},
+        "origin", skip{},
+        "scale", skip{}
     
     );
 

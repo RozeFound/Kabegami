@@ -5,34 +5,33 @@ set(CPM_USE_LOCAL_PACKAGES)
 include(cmake/CPM.cmake)
 
 CPMAddPackage(
-    GIT_TAG 9.1.0
+    GIT_TAG 10.2.1
     GITHUB_REPOSITORY fmtlib/fmt
 )
 
 CPMAddPackage(
-    VERSION 1.2.2
+    VERSION 2.1.4
     GITHUB_REPOSITORY stephenberry/glaze
 )
 
 CPMAddPackage(
-    VERSION 3.3.9
+    VERSION 3.4
     GITHUB_REPOSITORY glfw/glfw
-    GIT_TAG 3fa2360720eeba1964df3c0ecf4b5df8648a8e52
+    GIT_TAG 6f1ddf51a130f2dee6ade5fa4d8217e4071124e8
     OPTIONS
         "GLFW_BUILD_TESTS OFF"
         "GLFW_BUILD_EXAMPLES OFF"
         "GLFW_BULID_DOCS OFF"
-        "GLFW_BUILD_WAYLAND ON"
-        "GLFW_BUILD_X11 OFF"
 )
 
 CPMAddPackage(
-    GIT_TAG 0.9.9.8
+    VERSION 1.0.0
+    GIT_TAG adf31f555e73e2bd6fda373bb5d8740f9c6c17c0
     GITHUB_REPOSITORY g-truc/glm
 )
 
 CPMAddPackage(
-    VERSION 1.11.0
+    VERSION 1.13.0
     GITHUB_REPOSITORY gabime/spdlog
     OPTIONS "SPDLOG_FMT_EXTERNAL 1"
 )
@@ -50,7 +49,7 @@ CPMAddHeaderOnly(
     NAME stb
     VERSION stable
     GITHUB_REPOSITORY nothings/stb
-    GIT_TAG 3ecc60f25ae1391cf6434578ece782afa1458b56
+    GIT_TAG ae721c50eaf761660b4f90cc590453cdb0c2acd0
     HEADER "stb_image.h"
 )
 target_compile_definitions(stb INTERFACE "STB_IMAGE_IMPLEMENTATION")

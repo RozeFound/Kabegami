@@ -16,7 +16,7 @@ namespace vku {
         std::unique_ptr<vk::raii::Buffer> handle;
         std::unique_ptr<vk::raii::DeviceMemory> memory;
 
-        std::shared_ptr <vki::Context> context = vki::Context::get();
+        std::shared_ptr<vki::Context> context = vki::Context::get();
 
         void* data_location;
         std::size_t size;

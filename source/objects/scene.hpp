@@ -90,7 +90,7 @@ template <> struct glz::meta<objects::Scene> {
 
     using T = objects::Scene;
 
-    static constexpr auto value = glz::object (
+    static constexpr auto value = object (
 
         "camera", &T::camera,
         "general", &T::general,
@@ -105,7 +105,7 @@ template <> struct glz::meta<objects::Scene::General> {
 
     using T = objects::Scene::General;
 
-    static constexpr auto value = glz::object (
+    static constexpr auto value = object (
 
         "bloom", [] (auto& g) -> auto& { return g.bloom.enabled; },
         "bloomstrength", [] (auto& g) -> auto& { return g.bloom.strength; },
@@ -145,34 +145,6 @@ template <> struct glz::meta<objects::Scene::General> {
         "skylightcolor", &T::skylight_color,
 
         "orthogonalprojection", &T::orthogonal_projection
-
-    );
-
-};
-
-template <> struct glz::meta<objects::Scene::Camera> {
-
-    using T = objects::Scene::Camera;
-
-    static constexpr auto value = glz::object (
-
-        "center", &T::center,
-        "eye", &T::eye,
-        "up", &T::up,
-        "paths", &T::paths
-
-    );
-
-};
-
-template <> struct glz::meta<objects::Scene::General::OrthogonalProjection> {
-
-    using T = objects::Scene::General::OrthogonalProjection;
-
-    static constexpr auto value = glz::object (
-
-        "height", &T::height,
-        "width", &T::width
 
     );
 

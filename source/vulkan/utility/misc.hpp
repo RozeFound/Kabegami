@@ -15,7 +15,7 @@ namespace vku {
 		std::optional<uint32_t> present_family;
         std::optional<uint32_t> compute_family;
 
-        constexpr bool is_complete ( ) {
+        constexpr bool is_complete() {
             if (transfer_family.has_value()
                 && graphics_family.has_value()
                 && present_family.has_value()
@@ -32,8 +32,26 @@ namespace vku {
     constexpr uint32_t to_u32 (std::size_t value) { return static_cast<uint32_t>(value); }
 
     namespace fs {
-        std::vector <std::byte> read (std::filesystem::path path);
-        void write (std::filesystem::path path, std::span <std::byte> data);
+
+        template <class T> concept is_array_like = requires (T cls) { cls.size(); cls.data(); };
+
+        template <typename T = std::byte> std::vector<T> read (std::filesystem::path path) {
+
+            auto file = std::ifstream(path, std::ios::ate | std::ios::binary);
+
+            std::size_t size = file.tellg(); file.seekg(0);
+            auto buffer = std::vector<T>(size);
+
+            file.read(reinterpret_cast<char*>(buffer.data()), size);
+
+            return buffer;
+        }
+
+        template <class T> requires is_array_like<T>
+        void write (std::filesystem::path path, T data) {
+            auto file = std::ofstream(path, std::ios::trunc | std::ios::binary);
+            file.write(reinterpret_cast<char*>(data.data()), data.size());
+        }
     }
 
 }

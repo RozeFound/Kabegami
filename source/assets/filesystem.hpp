@@ -9,8 +9,8 @@ namespace assets {
 
     class FileSystem {
 
-        std::vector <Package> packages;
-        std::vector <std::filesystem::path> locations;
+        std::vector<Package> packages;
+        std::vector<std::filesystem::path> locations;
 
         public:
 
@@ -22,7 +22,7 @@ namespace assets {
 
         bool exists (std::string_view path) const;
 
-        template <typename T = std::vector <std::byte>> T read (std::string_view path) const;
+        template <typename T = std::vector<std::byte>> T read (std::string_view path) const;
 
     };
 

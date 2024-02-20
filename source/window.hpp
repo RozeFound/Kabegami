@@ -4,14 +4,12 @@
 #include <cstddef>
 
 #include <glaze/glaze.hpp>
-#include <glaze/core/macros.hpp>
 
 class Window {
 
     struct Settings {
         bool fullscreen;
         std::size_t width, height;
-        GLZ_LOCAL_META(Settings, width, height, fullscreen);
     } settings;
 
     GLFWwindow* handle;

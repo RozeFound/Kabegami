@@ -13,11 +13,11 @@ namespace vku {
         uint32_t mip_levels = 1;
         vk::Format format;
 
-        std::unique_ptr <vk::raii::Image> handle;
-        std::unique_ptr <vk::raii::ImageView> view;
-        std::unique_ptr <vk::raii::DeviceMemory> memory;
+        std::unique_ptr<vk::raii::Image> handle;
+        std::unique_ptr<vk::raii::ImageView> view;
+        std::unique_ptr<vk::raii::DeviceMemory> memory;
 
-        std::shared_ptr <vki::Context> context = vki::Context::get();
+        std::shared_ptr<vki::Context> context = vki::Context::get();
 
         void create_handle (vk::ImageUsageFlags usage);
         void create_view (vk::ImageAspectFlags flags);

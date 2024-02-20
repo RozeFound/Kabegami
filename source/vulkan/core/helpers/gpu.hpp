@@ -4,7 +4,7 @@ namespace vki {
 
     class GPU {
 
-        std::unique_ptr <vk::raii::PhysicalDevice> handle;
+        std::unique_ptr<vk::raii::PhysicalDevice> handle;
 
         public:
 

@@ -35,7 +35,7 @@ namespace vki {
         const vku::Version get_version() const;
 
         const vku::QueueFamilyIndices get_queue_family_indices() const;
-        std::unique_ptr <vk::raii::RenderPass>  create_render_pass();
+        std::unique_ptr<vk::raii::RenderPass> create_render_pass();
         
     };
 

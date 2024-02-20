@@ -4,7 +4,7 @@ namespace vki {
 
     class Surface {
 
-        std::unique_ptr <vk::raii::SurfaceKHR> handle;
+        std::unique_ptr<vk::raii::SurfaceKHR> handle;
 
         public:
 

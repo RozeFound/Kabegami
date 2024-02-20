@@ -23,26 +23,4 @@ namespace vku {
 
     }
 
-    namespace fs {
-
-        std::vector <std::byte> read (std::filesystem::path path) {
-
-            auto file = std::ifstream(path, std::ios::ate | std::ios::binary);
-
-            std::size_t size = file.tellg(); file.seekg(0);
-            auto buffer = std::vector<std::byte>(size);
-
-            file.read(reinterpret_cast<char*>(buffer.data()), size);
-
-            return buffer;
-
-        }
-
-        void write (std::filesystem::path path, std::span <std::byte> data) {
-            auto file = std::ofstream(path, std::ios::binary);
-            file.write(reinterpret_cast<char*>(data.data()), data.size());
-        }
-
-    }
-
 }

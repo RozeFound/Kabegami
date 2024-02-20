@@ -13,19 +13,3 @@ namespace objects {
     };
 
 }
-
-template <> struct glz::meta<objects::Model> {
-
-    using T = objects::Model;
-
-    static constexpr auto value = glz::object ( 
-
-        "autosize", &T::autosize,
-        "fullscreen", &T::fullscreen,
-        "passthrough", &T::passthrough,
-        "material", &T::material,
-        "puppet", &T::puppet
-
-    );
-
-};

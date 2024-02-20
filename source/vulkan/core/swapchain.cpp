@@ -21,6 +21,11 @@ namespace vki {
         if (image_count > capabilities.maxImageCount)
             image_count = capabilities.maxImageCount;
 
+        auto composite_alpha = vk::CompositeAlphaFlagBitsKHR::eInherit;
+
+        if (capabilities.supportedCompositeAlpha & vk::CompositeAlphaFlagBitsKHR::eOpaque)
+            composite_alpha = vk::CompositeAlphaFlagBitsKHR::eOpaque;
+
         auto create_info = vk::SwapchainCreateInfoKHR {
             .flags = vk::SwapchainCreateFlagsKHR(),
             .surface = context->surface, 
@@ -32,7 +37,7 @@ namespace vki {
             .imageUsage = vk::ImageUsageFlagBits::eColorAttachment,
             // We'll set sharing mode and queue indices below //
             .preTransform = capabilities.currentTransform,
-            .compositeAlpha = vk::CompositeAlphaFlagBitsKHR::eInherit,
+            .compositeAlpha = composite_alpha,
             .presentMode = present_mode,
             .clipped = true
         };

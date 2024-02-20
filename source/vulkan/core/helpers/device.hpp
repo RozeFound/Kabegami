@@ -6,10 +6,10 @@ namespace vki {
 
     class Device {
 
-        std::unique_ptr <vk::raii::Device> handle;
+        std::unique_ptr<vk::raii::Device> handle;
 
-        std::vector <const char*> get_extensions();
-        std::vector <const char*> get_layers();
+        std::vector<const char*> get_extensions();
+        std::vector<const char*> get_layers();
 
         public:
 

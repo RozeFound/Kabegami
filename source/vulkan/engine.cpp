@@ -48,6 +48,8 @@ Engine::~Engine() {
     for (auto& frame : frames) 
         frame.commands.reset();
 
+    scene.reset();
+
 }
 
 void Engine::assign_command_buffers() {

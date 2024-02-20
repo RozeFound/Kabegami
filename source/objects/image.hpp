@@ -52,44 +52,11 @@ namespace objects {
 
 }
 
-template <> struct glz::meta<objects::Image> {
-
-    using T = objects::Image;
-
-    static constexpr auto value = glz::object (
-
-        "id", &T::id,
-        "visible", &T::visible,
-        "name", &T::name,
-        "size", &T::size,
-        "scale", &T::scale,
-        "origin", &T::origin,
-        "angles", &T::angles,
-        "parallaxDepth", &T::parallaxDepth,
-        "color", &T::color,
-        "colorBlendMode", &T::colorBlendMode,
-
-        "ledsource", &T::ledsource,
-        "copybackground", &T::copybackground,
-        "locktransforms", &T::locktransforms,
-        "perspective", &T::perspective,
-        "solid", &T::solid,
-        
-        "alpha", &T::alpha,
-        "brightness", &T::brightness,
-        "effects", &T::effects,
-        "image", &T::image,
-        "alignment", &T::alignment
-
-    );
-
-};
-
 template <> struct glz::meta<objects::Effect> {
 
     using T = objects::Effect;
 
-    static constexpr auto value = glz::object (
+    static constexpr auto value = object (
 
         "id", &T::id,
         "file", &T::file,
@@ -101,17 +68,3 @@ template <> struct glz::meta<objects::Effect> {
     );
 
 };
-
-template <> struct glz::meta<objects::Effect::Visible> {
-
-    using T = objects::Effect::Visible;
-
-    static constexpr auto value = glz::object (
-
-        "user", &T::user,
-        "value", &T::value
-        
-    );
-
-};
-

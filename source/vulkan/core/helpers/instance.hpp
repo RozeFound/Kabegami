@@ -4,10 +4,10 @@ namespace vki {
 
     class Instance {
 
-        std::unique_ptr <vk::raii::Instance> handle;
+        std::unique_ptr<vk::raii::Instance> handle;
 
-        std::vector <const char*> get_extensions();
-        std::vector <const char*> get_layers();
+        std::vector<const char*> get_extensions();
+        std::vector<const char*> get_layers();
 
         void log_properties (const vk::raii::Context& context);
 

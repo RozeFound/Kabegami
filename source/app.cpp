@@ -10,7 +10,7 @@ Kabegami::Kabegami() {
     window = std::make_unique<Window>("Kabegami", 800, 600);
     engine = std::make_unique<Engine>(*window);
 
-    auto ec = glz::read_file(settings, "settings.json");
+    auto ec = glz::read_file_json(settings, "settings.json", std::string{});
 
 }
 

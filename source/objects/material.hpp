@@ -33,23 +33,11 @@ namespace objects {
 
 }
 
-template <> struct glz::meta<objects::Material> {
-
-    using T = objects::Material;
-
-    static constexpr auto value = glz::object( 
-
-        "passes", &T::passes
-
-    );
-
-};
-
 template <> struct glz::meta<objects::Pass> {
 
     using T = objects::Pass;
 
-    static constexpr auto value = glz::object(
+    static constexpr auto value = object(
 
         "id", &T::id,
         "combos", &T::combos,

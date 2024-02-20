@@ -30,7 +30,7 @@ namespace vki {
 
     }
 
-    std::vector <const char*> Instance::get_extensions() {
+    std::vector<const char*> Instance::get_extensions() {
 
         uint32_t glfw_extension_count = 0;
         auto glfw_extensions = glfwGetRequiredInstanceExtensions(&glfw_extension_count);
@@ -48,7 +48,7 @@ namespace vki {
 
     }
 
-    std::vector <const char*> Instance::get_layers() {
+    std::vector<const char*> Instance::get_layers() {
 
         auto layers = std::vector<const char*>();
 
@@ -64,13 +64,13 @@ namespace vki {
 
         logv("Instance can support extensions:");
         for (const auto& extension : extensions)
-            logv("\t{}", extension.extensionName);
+            logv("\t{}", extension.extensionName.data());
 
         auto layers = context.enumerateInstanceLayerProperties();
 
         logv("Instance can support layers:");
         for (const auto& layer : layers)
-            logv("\t{}", layer.layerName);
+            logv("\t{}", layer.layerName.data());
 
     }
 

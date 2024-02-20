@@ -38,7 +38,7 @@ template <> struct glz::meta<objects::Particle> {
 
     using T = objects::Particle;
 
-    static constexpr auto value = glz::object (
+    static constexpr auto value = object (
 
         "id", &T::id,
         "visible", &T::visible,
@@ -51,25 +51,9 @@ template <> struct glz::meta<objects::Particle> {
         "parallaxDepth", &T::parallaxDepth,
         "instanceoverride", &T::instanceoverride,
 
-        "image", glz::skip{},
-        "model", glz::skip{}
+        "image", skip{},
+        "model", skip{}
 
     );
 
-};
-
-template <> struct glz::meta<objects::Particle::Override> {
-
-    using T = objects::Particle::Override;
-
-    static constexpr auto value = glz::object (
-        "id", &T::id,
-        "count", &T::count,
-        "rate", &T::rate,
-        "size", &T::size,
-        "lifetime", &T::lifetime,
-        "speed", &T::speed,
-        "alpha", &T::alpha,
-        "colorn", &T::colorn
-    );
 };

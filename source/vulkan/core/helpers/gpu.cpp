@@ -41,14 +41,14 @@ namespace vki {
             default: device_type = "Other";
         };
 
-        logi("Device Name: {}", properties.deviceName);
+        logi("Device Name: {}", properties.deviceName.data());
         logi("Device Type: {}", device_type);
 
         auto extensions = handle->enumerateDeviceExtensionProperties();
 
         logv("Device can support extensions:");
         for (auto& extension : extensions)
-            logv("\t{}", extension.extensionName);
+            logv("\t{}", extension.extensionName.data());
 
     }
 

@@ -24,7 +24,6 @@ include(cmake/tools.cmake)
 
 # ---- Import dependencies ----
 
-set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 include(cmake/dependencies.cmake)
 
 # ---- Add source files ----
@@ -40,6 +39,8 @@ add_executable(${PROJECT_NAME} ${sources})
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 20)
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/source)
 
+set_property(TARGET ${PROJECT_NAME} PROPERTY "$<$<CONFIG:RELEASE>:INTERPROCEDURAL_OPTIMIZATION>" TRUE)
+
 # Enable precompiled headers
 target_compile_definitions(${PROJECT_NAME} PRIVATE "VULKAN_HPP_NO_CONSTRUCTORS" "VULKAN_HPP_NO_TO_STRING")
 target_precompile_headers(${PROJECT_NAME} PRIVATE <vulkan/vulkan_raii.hpp> "source/logging.hpp" <glm/glm.hpp> <GLFW/glfw3.h>)
@@ -54,5 +55,6 @@ include(cmake/shaders.cmake)
 
 # ---- Link libraries ----
 
-target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt glaze::glaze)
-target_link_libraries(${PROJECT_NAME} PRIVATE lz4 glfw spdlog stb vulkan)
+target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt spdlog glaze::glaze)
+target_link_libraries(${PROJECT_NAME} PRIVATE glfw glm::glm vulkan)
+target_link_libraries(${PROJECT_NAME} PRIVATE lz4 stb)

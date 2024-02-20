@@ -9,7 +9,7 @@ namespace vku {
         std::unique_ptr<vk::raii::ShaderModule> module;
         vk::PipelineShaderStageCreateInfo stage;
 
-        std::shared_ptr <vki::Context> context = vki::Context::get();
+        std::shared_ptr<vki::Context> context = vki::Context::get();
 
         public:
 

@@ -18,7 +18,7 @@ namespace vku {
         } create_info;
         
 
-        std::vector <Shader> shaders;
+        std::vector<Shader> shaders;
 
         public:
 
@@ -32,7 +32,7 @@ namespace vku {
 
         }
 
-        std::unique_ptr <vk::raii::Pipeline> create (const vk::raii::PipelineCache& cache, 
+        std::unique_ptr<vk::raii::Pipeline> create (const vk::raii::PipelineCache& cache, 
             const vk::raii::PipelineLayout& layout, const vk::raii::RenderPass& render_pass);
 
         PipeLineFactory& vertex_binding (const vk::VertexInputBindingDescription& description);
@@ -44,15 +44,15 @@ namespace vku {
         PipeLineFactory& multisampling (vk::SampleCountFlagBits sample_count, bool sample_shading);
         PipeLineFactory& depth_stencil (bool depth_test, bool depth_write, bool stencil_test);
         PipeLineFactory& color_blend (bool enable_blend,
-            std::array <vk::BlendFactor, 2> color_blend_factor, vk::BlendOp color_blend_op,
-            std::array <vk::BlendFactor, 2> alpha_blend_factor, vk::BlendOp alpha_blend_op);
+            std::array<vk::BlendFactor, 2> color_blend_factor, vk::BlendOp color_blend_op,
+            std::array<vk::BlendFactor, 2> alpha_blend_factor, vk::BlendOp alpha_blend_op);
 
     };
 
     class PipeLineLayoutFactory {
 
-        std::vector <vk::DescriptorSetLayout> layouts;
-        std::vector <vk::PushConstantRange> ranges;
+        std::vector<vk::DescriptorSetLayout> layouts;
+        std::vector<vk::PushConstantRange> ranges;
 
         public:
 
@@ -66,8 +66,8 @@ namespace vku {
     class PipeLineCache {
 
         std::filesystem::path path = ".cache/pipeline.cache";
-        std::unique_ptr <vk::raii::PipelineCache> handle;
-        std::vector <std::byte> data;
+        std::unique_ptr<vk::raii::PipelineCache> handle;
+        std::vector<std::byte> data;
 
         public:
 

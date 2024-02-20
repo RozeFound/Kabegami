@@ -216,10 +216,10 @@ namespace vku {
 
     PipeLineCache::~PipeLineCache() {
 
-        for (const auto& byte : handle->getData())
-            data.emplace_back((std::byte)byte);
+        if (!std::filesystem::exists(path))
+            std::filesystem::create_directories(path.parent_path());
 
-        fs::write(path, this->data);
+        fs::write(path, handle->getData());
 
     }
 

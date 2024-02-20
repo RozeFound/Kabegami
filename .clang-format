@@ -1,28 +1,27 @@
 ---
-  Standard: Auto
-  IndentWidth: 4
-  AccessModifierOffset: -4
-  NamespaceIndentation: All
-  ColumnLimit: 135
-  PointerAlignment: Left
-  BreakBeforeBraces: Attach
-  SpaceBeforeAssignmentOperators: true
-  SpaceBeforeCpp11BracedList: true
-  SpaceBeforeInheritanceColon: true
-  SpaceBeforeParens: Custom
-  SpaceBeforeParensOptions:
-    AfterControlStatements: true
-    AfterFunctionDeclarationName: true
-    AfterFunctionDefinitionName: true
-    AfterOverloadedOperator: true
-    AfterRequiresInClause: true
-    AfterRequiresInExpression: true
-    BeforeNonEmptyParentheses: true
-  SpaceInEmptyBlock: true
-  SpaceInEmptyParentheses: false
-  EmptyLineAfterAccessModifier: Always
-  AllowShortBlocksOnASingleLine: Empty
-  AllowShortCaseLabelsOnASingleLine: true
-  AllowShortFunctionsOnASingleLine: All
-  AllowShortIfStatementsOnASingleLine: AllIfsAndElse
-...
+Standard: Auto
+IndentWidth: 4
+AccessModifierOffset: -4
+NamespaceIndentation: All
+ColumnLimit: 135
+PointerAlignment: Left
+BreakBeforeBraces: Attach
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeCpp11BracedList: true
+SpaceBeforeInheritanceColon: true
+SpaceBeforeParens: Custom
+SpaceBeforeParensOptions:
+  AfterControlStatements: true
+  AfterFunctionDeclarationName: false
+  AfterFunctionDefinitionName: false
+  AfterOverloadedOperator: true
+  AfterRequiresInClause: true
+  AfterRequiresInExpression: true
+  BeforeNonEmptyParentheses: true
+SpaceInEmptyBlock: true
+SpaceInEmptyParentheses: false
+EmptyLineAfterAccessModifier: Always
+AllowShortBlocksOnASingleLine: Empty
+AllowShortCaseLabelsOnASingleLine: true
+AllowShortFunctionsOnASingleLine: All
+AllowShortIfStatementsOnASingleLine: AllIfsAndElse

@@ -41,7 +41,7 @@ class Engine {
 
     void update();
 
-    void set_scene (std::shared_ptr<Scene> scene) { scene = scene; }
+    void set_scene (std::shared_ptr<Scene> scene) { this->scene = scene; }
 
     Engine (const Window& window);
     ~Engine();
