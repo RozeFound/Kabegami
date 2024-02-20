@@ -13,7 +13,7 @@ namespace vku {
 
         public:
 
-        Shader (std::convertible_to <std::filesystem::path> auto path) {
+        Shader (std::convertible_to<std::filesystem::path> auto path) {
 
             auto shader_path = std::filesystem::path(path);
             auto stage = vk::ShaderStageFlagBits::eVertex;

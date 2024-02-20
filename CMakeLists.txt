@@ -21,6 +21,7 @@ endif()
 
 set(USE_CCACHE YES)
 include(cmake/tools.cmake)
+include(cmake/shaders.cmake)
 
 # ---- Import dependencies ----
 
@@ -49,9 +50,37 @@ target_precompile_headers(${PROJECT_NAME} PRIVATE <vulkan/vulkan_raii.hpp> "sour
 
 target_compile_definitions(${PROJECT_NAME} PUBLIC "$<$<CONFIG:DEBUG>:DEBUG>")
 
+# ---- Copy over resources ----
+
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/settings.json DESTINATION ${PROJECT_BINARY_DIR})
 
-include(cmake/shaders.cmake)
+file(GLOB_RECURSE RESOURCE_FILES CONFIGURE_DEPENDS "resources/*")
+set(SHADER_EXT .frag .vert .comp)
+
+foreach(FILE ${RESOURCE_FILES})
+
+  file(RELATIVE_PATH REL_PATH ${CMAKE_CURRENT_SOURCE_DIR}/resources ${FILE})
+
+  cmake_path(GET REL_PATH PARENT_PATH REL_DIRS)
+
+  cmake_path(GET FILE FILENAME NAME)
+  cmake_path(GET FILE EXTENSION EXT)
+
+  set(OUT_FILE ${PROJECT_BINARY_DIR}/${REL_DIRS}/${NAME})
+
+  if (EXT IN_LIST SHADER_EXT)
+    list(APPEND SHADER_INPUT_FILES ${FILE})
+    list(APPEND SHADER_OUTPUT_FILES ${OUT_FILE})
+  else()
+    configure_file(${FILE} ${OUT_FILE} COPYONLY)
+  endif()
+
+endforeach()
+
+foreach(SHADER_INPUT SHADER_OUTPUT IN ZIP_LISTS SHADER_INPUT_FILES SHADER_OUTPUT_FILES)
+  add_shader(${PROJECT_NAME} ${SHADER_INPUT} ${SHADER_OUTPUT})
+endforeach()
+
 
 # ---- Link libraries ----
 

@@ -1,26 +1,18 @@
-file(GLOB_RECURSE GLSL_SOURCE_FILES CONFIGURE_DEPENDS "shaders/*.frag" "shaders/*.vert" "shaders/*.comp")
+function(add_shader TARGET INPUT_PATH OUTPUT_PATH)
+  find_program(GLSLC glslc)
 
-foreach(GLSL ${GLSL_SOURCE_FILES})
-  get_filename_component(FILE_NAME ${GLSL} NAME)
-  set(SPIRV "${PROJECT_BINARY_DIR}/shaders/${FILE_NAME}")
+  # Add a custom command to compile GLSL to SPIR-V.
+  cmake_path(GET OUTPUT_PATH PARENT_PATH OUTPUT_DIR)
+  file(MAKE_DIRECTORY ${OUTPUT_DIR})
+
   add_custom_command(
-    OUTPUT ${SPIRV}
-    COMMAND ${CMAKE_COMMAND} -E make_directory "${PROJECT_BINARY_DIR}/shaders/"
-    COMMAND glslc ${GLSL} -o ${SPIRV}
-    DEPENDS ${GLSL})
-  list(APPEND SPIRV_BINARY_FILES ${SPIRV})
-endforeach(GLSL)
+    OUTPUT ${OUTPUT_PATH}
+    COMMAND ${GLSLC} -o ${OUTPUT_PATH} ${INPUT_PATH}
+    DEPENDS ${INPUT_PATH}
+    IMPLICIT_DEPENDS CXX ${INPUT_PATH}
+    VERBATIM)
 
-add_custom_target(
-    Shaders 
-    DEPENDS ${SPIRV_BINARY_FILES}
-    )
-
-add_dependencies(${CMAKE_PROJECT_NAME} Shaders)
-
-add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:${CMAKE_PROJECT_NAME}>/shaders/"
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-        "${PROJECT_BINARY_DIR}/shaders"
-        "$<TARGET_FILE_DIR:${CMAKE_PROJECT_NAME}>/shaders"
-        )
+  # Make sure our build depends on this output.
+  set_source_files_properties(${OUTPUT_PATH} PROPERTIES GENERATED TRUE)
+  target_sources(${TARGET} PRIVATE ${OUTPUT_PATH})
+endfunction(add_shader)
