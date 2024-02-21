@@ -46,6 +46,7 @@ namespace objects {
 
         std::vector<Effect> effects;
         std::optional<std::string_view> image;
+        std::vector<int> dependencies;
         std::string_view alignment;
 
     };

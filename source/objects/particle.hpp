@@ -20,7 +20,7 @@ namespace objects {
         std::string_view parallaxDepth;
 
         struct Override {
-            int id;
+            std::optional<int> id;
             double count;
             double rate;
             double size;
@@ -28,6 +28,7 @@ namespace objects {
             double speed;
             double alpha;
             vec3_t colorn;
+            vec3_t controlpoint1;
         } instanceoverride;
 
     };

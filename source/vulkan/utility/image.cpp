@@ -1,5 +1,8 @@
 #include "image.hpp"
-#include "memory.hpp"
+
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
+
 
 namespace vku {
 
@@ -59,6 +62,30 @@ namespace vku {
         create_sampler();
         create_descriptors();
         update_mipmaps(mipmaps);
+
+    }
+
+    Texture::Texture (std::filesystem::path path) {
+
+        int32_t width, height, channels;
+        auto stbi_image = stbi_load(path.c_str(), &width, &height, &channels, 4);
+        auto pixels = reinterpret_cast<std::byte*>(stbi_image);
+
+        this->width = width; this->height = height;
+        format = vk::Format::eR8G8B8A8Srgb;
+
+        mip_levels = static_cast<uint32_t>(std::floor(std::log2(std::max(width, height)))) + 1;
+
+        using enum vk::ImageUsageFlagBits;
+        Image::create_handle(eTransferSrc | eTransferDst | eSampled);
+        Image::create_view(vk::ImageAspectFlagBits::eColor);
+    
+        create_sampler();
+        create_descriptors();
+
+        auto size = width * height * 4;
+        set_data({pixels, pixels + size});
+        stbi_image_free(pixels);
 
     }
 
@@ -198,5 +225,114 @@ namespace vku {
         );
 
     }
+
+    void Texture::set_data(std::span<std::byte> pixels) {
+
+        auto size = width * height * 4;
+        auto staging = BasicBuffer(size, vk::BufferUsageFlagBits::eTransferSrc);
+        
+        auto commands = TransientBuffer(true);
+
+        commands.barrier(*handle, vk::ImageAspectFlagBits::eColor,
+            { vk::PipelineStageFlagBits::eHost, vk::PipelineStageFlagBits::eTransfer },
+            { vk::AccessFlagBits::eNone, vk::AccessFlagBits::eTransferWrite },
+            { vk::ImageLayout::eUndefined,  vk::ImageLayout::eTransferDstOptimal }, mip_levels
+        );        
+
+        auto subres_layers = vk::ImageSubresourceLayers {
+            .aspectMask = vk::ImageAspectFlagBits::eColor,
+            .mipLevel = 0,
+            .baseArrayLayer = 0,
+            .layerCount = 1
+        };
+
+        auto region = vk::BufferImageCopy {
+            .bufferOffset = 0,
+            .bufferRowLength = 0,
+            .bufferImageHeight = 0,
+            .imageSubresource = subres_layers,
+            .imageOffset = { 0, 0, 0 },
+            .imageExtent = { to_u32(width), to_u32(height), 1 }
+        };
+
+        commands->copyBufferToImage(**staging, **handle, vk::ImageLayout::eTransferDstOptimal, region);
+
+        generate_mipmaps(commands);
+
+    }
+
+    void Texture::generate_mipmaps (const TransientBuffer& commands) {
+
+        auto barrier = vk::ImageMemoryBarrier {
+            .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+            .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+            .image = *handle,
+            .subresourceRange = {
+                .aspectMask = vk::ImageAspectFlagBits::eColor,
+                .levelCount = 1,
+                .baseArrayLayer = 0,
+                .layerCount = 1
+            }
+        };
+
+        int32_t mip_width = std::make_signed_t<uint32_t>(to_u32(width));
+        int32_t mip_height = std::make_signed_t<uint32_t>(to_u32(height));
+
+        for (uint32_t i = 1; i < mip_levels; i++) {
+
+            barrier.subresourceRange.baseMipLevel = i - 1;
+            barrier.srcAccessMask = vk::AccessFlagBits::eTransferWrite;
+            barrier.dstAccessMask = vk::AccessFlagBits::eTransferRead;
+            barrier.oldLayout = vk::ImageLayout::eTransferDstOptimal;
+            barrier.newLayout = vk::ImageLayout::eTransferSrcOptimal;
+
+            commands.barrier(barrier, { vk::PipelineStageFlagBits::eTransfer, vk::PipelineStageFlagBits::eTransfer });
+
+            auto blit = vk::ImageBlit {
+                .srcSubresource = {
+                    .aspectMask = vk::ImageAspectFlagBits::eColor,
+                    .mipLevel = i - 1,
+                    .baseArrayLayer = 0,
+                    .layerCount = 1
+                },
+                .srcOffsets = { { 0, 0, 0, mip_width, mip_height, 1 } },
+                .dstSubresource = {
+                    .aspectMask = vk::ImageAspectFlagBits::eColor,
+                    .mipLevel = i,
+                    .baseArrayLayer = 0,
+                    .layerCount = 1
+                },
+                .dstOffsets ={ { 0, 0, 0, mip_width > 1 ? mip_width / 2 : 1, mip_height > 1 ? mip_height / 2 : 1, 1 } }
+            };
+
+            commands->blitImage(
+                *handle, vk::ImageLayout::eTransferSrcOptimal,
+                *handle, vk::ImageLayout::eTransferDstOptimal,
+                blit, vk::Filter::eLinear
+            );
+
+            barrier.srcAccessMask = vk::AccessFlagBits::eTransferRead;
+            barrier.dstAccessMask = vk::AccessFlagBits::eShaderRead;
+            barrier.oldLayout = vk::ImageLayout::eTransferSrcOptimal;
+            barrier.newLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
+
+            commands.barrier(barrier, { vk::PipelineStageFlagBits::eTransfer, vk::PipelineStageFlagBits::eFragmentShader });
+
+            if (mip_width > 1) mip_width /= 2;
+            if (mip_height > 1) mip_height /= 2;
+
+        }
+
+        barrier.subresourceRange.baseMipLevel = mip_levels - 1;
+        barrier.srcAccessMask = vk::AccessFlagBits::eTransferWrite;
+        barrier.dstAccessMask = vk::AccessFlagBits::eShaderRead;
+        barrier.oldLayout = vk::ImageLayout::eTransferDstOptimal;
+        barrier.newLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
+
+        commands.barrier(barrier, { vk::PipelineStageFlagBits::eTransfer, vk::PipelineStageFlagBits::eFragmentShader });
+
+    }
+
+
 
 }

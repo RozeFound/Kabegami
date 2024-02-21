@@ -19,24 +19,6 @@ Engine::Engine (const Window& window) {
     auto graphics = context->get_queue_family_indices().graphics_family.value();
     queue = std::make_unique<vk::raii::Queue>(context->device, graphics, 0);
 
-    pipeline_layout = vku::PipeLineLayoutFactory().create();
-    pipeline_cache = std::make_unique<vku::PipeLineCache>();
-
-    pipeline = vku::PipeLineFactory()
-        .vertex_binding(vku::Vertex::get_binding_description())
-        .vertex_attributes(vku::Vertex::get_attribute_descriptions())
-        .stage("shaders/basic.vert").stage("shaders/basic.frag")
-        .create(**pipeline_cache, *pipeline_layout, *render_pass);
-
-    auto vertecies = std::vector<vku::Vertex> {
-        {{0.0f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
-        {{0.5f, 0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
-        {{-0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}},
-    };
-
-    vertex_buffer = std::make_unique<vku::DeviceBuffer>(vertecies.size() * sizeof(vku::Vertex), vk::BufferUsageFlagBits::eVertexBuffer);
-    vertex_buffer->upload(vertecies.data(), vertecies.size() * sizeof(vku::Vertex));
-
 }
 
 Engine::~Engine() {
@@ -51,6 +33,30 @@ Engine::~Engine() {
     scene.reset();
 
 }
+
+void Engine::set_scene (std::shared_ptr<Scene> scene) {
+
+    this->scene = scene;
+
+    pipeline_layout = vku::PipeLineLayoutFactory().create();
+    pipeline_cache = std::make_unique<vku::PipeLineCache>();
+
+    pipeline = vku::PipeLineFactory()
+        .vertex_binding(vku::Vertex::get_binding_description())
+        .vertex_attributes(vku::Vertex::get_attribute_descriptions())
+        .stages(scene->get_shaders())
+        .create(**pipeline_cache, *pipeline_layout, *render_pass);
+
+    auto vertecies = std::vector<vku::Vertex> {
+        {{0.0f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
+        {{0.5f, 0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
+        {{-0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}},
+    };
+
+    vertex_buffer = std::make_unique<vku::DeviceBuffer>(vertecies.size() * sizeof(vku::Vertex), vk::BufferUsageFlagBits::eVertexBuffer);
+    vertex_buffer->upload(vertecies.data(), vertecies.size() * sizeof(vku::Vertex));
+
+};
 
 void Engine::assign_command_buffers() {
 

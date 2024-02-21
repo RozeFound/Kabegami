@@ -2,13 +2,13 @@
 // [COMBO_OFF] {"material":"ui_editor_properties_specular","combo":"SPECULAR","type":"options","default":0}
 
 layout(location = 0) in vec4 v_TexCoord;
-layout(location = 1) in vec2 v_Scroll;
+layout(location = 1) in vec4 v_TexCoordRipple;
 
 layout(binding = 0) uniform sampler2D g_Texture0; // {"material":"ui_editor_properties_framebuffer","hidden":true}
 layout(binding = 1) uniform sampler2D g_Texture1; // {"material":"ui_editor_properties_water_normal"}
 layout(binding = 2) uniform sampler2D g_Texture2; // {"material":"ui_editor_properties_opacity_mask","mode":"opacitymask","default":"util/white"}
 
-layout(set=0, binding = 4) uniform globals {
+layout(set=0, binding = 0) uniform globals {
 
 	uniform float g_Strength; // {"material":"ui_editor_properties_ripple_strength","default":0.1,"range":[0,1]}
 	uniform float g_SpecularPower; // {"material":"ui_editor_properties_ripple_specular_power","default":1.0,"range":[0,100]}
@@ -16,8 +16,6 @@ layout(set=0, binding = 4) uniform globals {
 	uniform vec3 g_SpecularColor; // {"material":"ui_editor_properties_ripple_specular_color","default":"1 1 1","type":"color"}
 
 };
-
-layout(location = 2) in vec4 v_TexCoordRipple;
 
 layout(location = 0) out vec4 diffuseColor;
 

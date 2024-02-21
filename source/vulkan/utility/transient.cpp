@@ -57,7 +57,7 @@ namespace vku {
         const vk::ImageAspectFlags aspect_flags, 
         const std::array<vk::PipelineStageFlags, 2> stages, 
         const std::array<vk::AccessFlags, 2> access_flags, 
-        const std::array<vk::ImageLayout, 2> layouts, uint32_t mip_levels) {
+        const std::array<vk::ImageLayout, 2> layouts, uint32_t mip_levels) const {
 
         auto subres_range = vk::ImageSubresourceRange {
             .aspectMask = aspect_flags,

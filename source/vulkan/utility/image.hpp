@@ -2,6 +2,7 @@
 
 #include "vulkan/core/context.hpp"
 #include "assets/texture.hpp"
+#include "memory.hpp"
 
 namespace vku {
 
@@ -40,12 +41,17 @@ namespace vku {
         void create_sampler();
         void create_descriptors();
         void update_mipmaps (const std::vector<assets::MipMap>& mipmaps);
+        void generate_mipmaps (const TransientBuffer& commands);
+
 
         public:
 
         Texture (const assets::TextureParser& parser);
+        Texture (std::filesystem::path path);
         Texture (Texture&&) = default;
         ~Texture() { set.reset(); }
+
+        void set_data(std::span<std::byte> pixels);
 
         constexpr const auto& get_descriptor_set() const { return set; }
         

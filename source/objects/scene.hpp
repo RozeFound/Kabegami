@@ -59,8 +59,8 @@ namespace objects {
             bool norecompile;
             bool hdr;
 
-            double nearz;
-            double farz;
+            double nearz = 0;
+            double farz = 1000;
             double fov;
 
             double zoom;

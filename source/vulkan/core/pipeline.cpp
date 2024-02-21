@@ -78,10 +78,11 @@ namespace vku {
         return *this;
 
     }
+    
+    PipeLineFactory& PipeLineFactory::stages (const std::vector<std::string_view>& shaders) {
 
-    PipeLineFactory& PipeLineFactory::stage (Shader shader) {
-
-        shaders.push_back(std::move(shader));
+        for (auto& shader : shaders)
+            this->shaders.emplace_back(shader);
 
         return *this;
 

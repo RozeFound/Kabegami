@@ -52,4 +52,4 @@ CPMAddHeaderOnly(
     GIT_TAG ae721c50eaf761660b4f90cc590453cdb0c2acd0
     HEADER "stb_image.h"
 )
-target_compile_definitions(stb INTERFACE "STB_IMAGE_IMPLEMENTATION")
+#target_compile_definitions(stb INTERFACE "STB_IMAGE_IMPLEMENTATION")

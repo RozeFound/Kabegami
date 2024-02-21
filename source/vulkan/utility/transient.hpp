@@ -18,12 +18,12 @@ namespace vku {
         TransientBuffer (bool graphics_capable = false);
         ~TransientBuffer();
 
-        constexpr void barrier (const vk::ImageMemoryBarrier& barrier, const std::array<vk::PipelineStageFlags, 2> stages) {
+        constexpr void barrier (const vk::ImageMemoryBarrier& barrier, const std::array<vk::PipelineStageFlags, 2> stages) const {
             buffer->pipelineBarrier(stages.at(0), stages.at(1), vk::DependencyFlags(), nullptr, nullptr, barrier);
         }
 
         void barrier (const vk::raii::Image& image, const vk::ImageAspectFlags aspect_flags, const std::array<vk::PipelineStageFlags, 2> stages, 
-            const std::array<vk::AccessFlags, 2> access_flags, const std::array<vk::ImageLayout, 2> layouts, uint32_t mip_levels = 1);
+            const std::array<vk::AccessFlags, 2> access_flags, const std::array<vk::ImageLayout, 2> layouts, uint32_t mip_levels = 1) const;
 
         constexpr const auto& operator->() const { return buffer; }
 
