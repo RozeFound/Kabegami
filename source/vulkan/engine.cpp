@@ -1,6 +1,7 @@
 #include "engine.hpp"
 
 #include "utility/primitives.hpp"
+#include "core/descriptor_set.hpp"
 
 Engine::Engine (const Window& window) {
 
@@ -38,7 +39,33 @@ void Engine::set_scene (std::shared_ptr<Scene> scene) {
 
     this->scene = scene;
 
-    pipeline_layout = vku::PipeLineLayoutFactory().create();
+    auto vertex_pc_range = vk::PushConstantRange {
+        .stageFlags = vk::ShaderStageFlagBits::eVertex,
+        .offset = 0,
+        .size = sizeof(VertexPC)
+    };
+
+    logi("Vertex PC range: {}-{}", vertex_pc_range.offset, vertex_pc_range.offset + vertex_pc_range.size);
+
+    auto fragment_pc_range = vk::PushConstantRange {
+        .stageFlags = vk::ShaderStageFlagBits::eFragment,
+        .offset = sizeof(VertexPC),
+        .size = sizeof(FragmentPC)
+    };
+
+    logi("Fragment PC range: {}-{}", fragment_pc_range.offset, fragment_pc_range.offset + fragment_pc_range.size);
+
+    auto descriptor_set_layout = vku::DescriptorSetLayoutFactory()
+        .add_binding(0, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment)
+        .create();
+
+    pipeline_layout = vku::PipeLineLayoutFactory()
+        .set_layout(**descriptor_set_layout)
+        .set_layout(**descriptor_set_layout)
+        .set_layout(**descriptor_set_layout)
+        .push_constant(vertex_pc_range)
+        .push_constant(fragment_pc_range)
+        .create();
     pipeline_cache = std::make_unique<vku::PipeLineCache>();
 
     pipeline = vku::PipeLineFactory()
@@ -46,15 +73,6 @@ void Engine::set_scene (std::shared_ptr<Scene> scene) {
         .vertex_attributes(vku::Vertex::get_attribute_descriptions())
         .stages(scene->get_shaders())
         .create(**pipeline_cache, *pipeline_layout, *render_pass);
-
-    auto vertecies = std::vector<vku::Vertex> {
-        {{0.0f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
-        {{0.5f, 0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
-        {{-0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}},
-    };
-
-    vertex_buffer = std::make_unique<vku::DeviceBuffer>(vertecies.size() * sizeof(vku::Vertex), vk::BufferUsageFlagBits::eVertexBuffer);
-    vertex_buffer->upload(vertecies.data(), vertecies.size() * sizeof(vku::Vertex));
 
 };
 
@@ -131,9 +149,8 @@ void Engine::update() {
 
     record(frame_index, [&] {
 
-        frame.commands->bindPipeline(vk::PipelineBindPoint::eGraphics, **pipeline);
-        frame.commands->bindVertexBuffers(0, ***vertex_buffer, { 0 });
-        frame.commands->draw(3, 1, 0, 0);
+        scene->bind(*frame.commands, *pipeline, *pipeline_layout);
+        scene->draw(*frame.commands);
 
     });
 

@@ -1,17 +1,17 @@
 #version 450
 #include "common.h"
 
-layout(set=0, binding = 0) uniform globals {
+layout(push_constant) uniform globals {
 
-	uniform mat4 g_ModelViewProjectionMatrix;
-	uniform float g_Time;
-	uniform vec4 g_Texture0Resolution;
-	uniform vec4 g_Texture2Resolution;
+	mat4 g_ModelViewProjectionMatrix;
+	float g_Time;
+	vec4 g_Texture0Resolution;
+	vec4 g_Texture2Resolution;
 
-	uniform float g_AnimationSpeed; // {"material":"ui_editor_properties_animation_speed","default":0.15,"range":[0,0.5]}
-	uniform float g_Scale; // {"material":"ui_editor_properties_ripple_scale","default":1,"range":[0,10]}
-	uniform float g_ScrollSpeed; // {"material":"ui_editor_properties_scroll_speed","default":0,"range":[0,0.5]}
-	uniform float g_Direction; // {"material":"ui_editor_properties_scroll_direction","default":0,"range":[0,6.28]}
+	float g_AnimationSpeed; // {"material":"ui_editor_properties_animation_speed","default":0.15,"range":[0,0.5]}
+	float g_Scale; // {"material":"ui_editor_properties_ripple_scale","default":1,"range":[0,10]}
+	float g_ScrollSpeed; // {"material":"ui_editor_properties_scroll_speed","default":0,"range":[0,0.5]}
+	float g_Direction; // {"material":"ui_editor_properties_scroll_direction","default":0,"range":[0,6.28]}
 
 };
 

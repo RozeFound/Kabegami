@@ -37,8 +37,6 @@ class Engine {
 
     public:
 
-    std::unique_ptr<vku::DeviceBuffer> vertex_buffer;
-
     void update();
 
     void set_scene (std::shared_ptr<Scene> scene);

@@ -9,10 +9,10 @@ VKAPI_ATTR constexpr VkBool32 VKAPI_CALL debug_callback(VkDebugUtilsMessageSever
     using enum vk::DebugUtilsMessageTypeFlagBitsEXT;
     using enum vk::DebugUtilsMessageSeverityFlagBitsEXT;
 
-    if (severity_flags == eError) loge("Vulkan Error: {}", pCallbackData->pMessage);
-    if (severity_flags == eWarning) logw("Vulkan Warning: {}", pCallbackData->pMessage);
-    if (severity_flags == eInfo) logi("Vulkan Info: {}", pCallbackData->pMessage);
-    if (severity_flags == eVerbose) logv("Vulkan: {}", pCallbackData->pMessage);
+    if (severity_flags == eError) loge("Vulkan {}", pCallbackData->pMessage);
+    if (severity_flags == eWarning) logw("Vulkan {}", pCallbackData->pMessage);
+    if (severity_flags == eInfo) logi("Vulkan {}", pCallbackData->pMessage);
+    if (severity_flags == eVerbose) logv("Vulkan {}", pCallbackData->pMessage);
 
     return VK_FALSE;
 }
