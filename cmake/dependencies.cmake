@@ -10,7 +10,7 @@ CPMAddPackage(
 )
 
 CPMAddPackage(
-    VERSION 2.1.4
+    VERSION 2.1.7
     GITHUB_REPOSITORY stephenberry/glaze
 )
 
@@ -22,6 +22,7 @@ CPMAddPackage(
         "GLFW_BUILD_TESTS OFF"
         "GLFW_BUILD_EXAMPLES OFF"
         "GLFW_BULID_DOCS OFF"
+        "GLFW_BUILD_X11 OFF"
 )
 
 CPMAddPackage(

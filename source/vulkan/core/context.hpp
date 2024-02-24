@@ -32,6 +32,7 @@ namespace vki {
 
         const vk::Extent2D get_extent() const;
         const vk::SurfaceFormatKHR get_format() const;
+        const vk::Format get_depth_format() const;
         const vku::Version get_version() const;
 
         const vku::QueueFamilyIndices get_queue_family_indices() const;

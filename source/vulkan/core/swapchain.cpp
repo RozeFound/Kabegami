@@ -65,6 +65,14 @@ namespace vki {
 
         auto images = handle->getImages();
 
+        using enum vk::ImageUsageFlagBits;
+        using enum vk::SampleCountFlagBits;
+
+        auto sample_count = vk::SampleCountFlagBits::e1;
+
+        depth_buffer = std::make_unique<vku::Image>(extent.width, extent.height, context->get_depth_format(), eDepthStencilAttachment);
+        color_buffer = std::make_unique<vku::Image>(extent.width, extent.height, context->get_format().format, eTransientAttachment | eColorAttachment);
+
         for (std::size_t i = 0; i < images.size(); i++) {
 
             auto format = context->get_format().format;
@@ -81,7 +89,7 @@ namespace vki {
                 .in_flight = vk::raii::Fence(context->device, fence_info)
             };
 
-            auto attachments = std::array { *frame.view };
+            auto attachments = std::array { *color_buffer->get_view(), *frame.view, *depth_buffer->get_view() };
 
             auto buffer_info = vk::FramebufferCreateInfo {
                 .flags = vk::FramebufferCreateFlags(),

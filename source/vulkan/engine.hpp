@@ -7,6 +7,7 @@
 #include "core/pipeline.hpp"
 
 #include "utility/memory.hpp"
+#include "utility/fps_limiter.hpp"
 
 #include "scene.hpp"
 #include "window.hpp"
@@ -26,6 +27,7 @@ class Engine {
     std::unique_ptr<vk::raii::Queue> queue;
 
     std::unique_ptr<vk::raii::DebugUtilsMessengerEXT> debug_messenger;
+    vku::FPSLimiter fps_limiter;
 
     uint32_t frame_index = 0;
     uint32_t image_count = 0;

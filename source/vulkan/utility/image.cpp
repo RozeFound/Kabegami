@@ -3,10 +3,14 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
+#include "vulkan/core/descriptor_set.hpp"
+
 
 namespace vku {
 
     void Image::create_handle (vk::ImageUsageFlags usage) {
+
+        auto sample_count = context->gpu.get_samples();
 
         auto create_info = vk::ImageCreateInfo {
             .flags = vk::ImageCreateFlags(),
@@ -15,7 +19,7 @@ namespace vku {
             .extent = {to_u32(width), to_u32(height), 1},
             .mipLevels = mip_levels,
             .arrayLayers = 1,
-            .samples = vk::SampleCountFlagBits::e1,
+            .samples = samples,
             .tiling = vk::ImageTiling::eOptimal,
             .usage = usage,
             .sharingMode = vk::SharingMode::eExclusive,
@@ -79,7 +83,7 @@ namespace vku {
         using enum vk::ImageUsageFlagBits;
         Image::create_handle(eTransferSrc | eTransferDst | eSampled);
         Image::create_view(vk::ImageAspectFlagBits::eColor);
-    
+
         create_sampler();
         create_descriptors();
 
@@ -133,25 +137,14 @@ namespace vku {
         try { pool = std::make_unique<vk::raii::DescriptorPool>(context->device, pool_info); }
         catch (vk::SystemError e) { loge("Failed to create Descriptor Pool: {}", e.what()); }
 
-        auto binding = vk::DescriptorSetLayoutBinding {
-            .binding = 0,
-            .descriptorType = vk::DescriptorType::eCombinedImageSampler,
-            .descriptorCount = 1,
-            .stageFlags = vk::ShaderStageFlagBits::eFragment,
-        };
-
-        auto layout_info = vk::DescriptorSetLayoutCreateInfo {
-            .flags = vk::DescriptorSetLayoutCreateFlags(),
-            .bindingCount = 1,
-            .pBindings = &binding
-        };
-
-        auto layout = vk::raii::DescriptorSetLayout(context->device, layout_info);
+        auto layout = vku::DescriptorSetLayoutFactory()
+            .add_binding(0, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment)
+            .create();
 
         auto allocate_info = vk::DescriptorSetAllocateInfo {
             .descriptorPool = **pool,
             .descriptorSetCount = 1,
-            .pSetLayouts = &*layout
+            .pSetLayouts = &**layout
         };
 
         try { auto sets = vk::raii::DescriptorSets(context->device, allocate_info);
@@ -228,8 +221,8 @@ namespace vku {
 
     void Texture::set_data(std::span<std::byte> pixels) {
 
-        auto size = width * height * 4;
-        auto staging = BasicBuffer(size, vk::BufferUsageFlagBits::eTransferSrc);
+        auto staging = BasicBuffer(pixels.size(), vk::BufferUsageFlagBits::eTransferSrc);
+        staging.upload(pixels.data(), pixels.size());
         
         auto commands = TransientBuffer(true);
 

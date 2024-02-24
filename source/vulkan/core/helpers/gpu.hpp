@@ -17,6 +17,8 @@ namespace vki {
         constexpr const auto& operator* () const { return get_handle(); }
         constexpr const auto& operator->() const { return handle; }
 
+        const vk::SampleCountFlagBits get_samples() const;
+
     };
 
 }

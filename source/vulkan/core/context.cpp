@@ -70,6 +70,22 @@ namespace vki {
 
     }
 
+    const vk::Format Context::get_depth_format() const {
+
+        auto candidates = { vk::Format::eD32Sfloat, vk::Format::eD32SfloatS8Uint, vk::Format::eD24UnormS8Uint };
+
+        for (const auto& format : candidates) {
+
+            auto properties = gpu->getFormatProperties(format);
+
+            if (properties.optimalTilingFeatures & vk::FormatFeatureFlagBits::eDepthStencilAttachment)
+                return format;
+        }
+
+        throw std::runtime_error("Failed to retrieve Depth Format");
+
+    }
+
     const vku::Version Context::get_version() const {
 
         auto version = handle.enumerateInstanceVersion();
@@ -84,11 +100,30 @@ namespace vki {
 
     std::unique_ptr<vk::raii::RenderPass> Context::create_render_pass() {
 
-        auto attachment = vk::AttachmentDescription {
+        auto sample_count = gpu.get_samples();
+
+        auto color_attachment = vk::AttachmentDescription {
+            .flags = vk::AttachmentDescriptionFlags(),
+            .format = get_format().format,
+            .samples = sample_count,
+            .loadOp = vk::AttachmentLoadOp::eClear,
+            .storeOp = vk::AttachmentStoreOp::eDontCare,
+            .stencilLoadOp = vk::AttachmentLoadOp::eDontCare,
+            .stencilStoreOp = vk::AttachmentStoreOp::eDontCare,
+            .initialLayout = vk::ImageLayout::eUndefined,
+            .finalLayout = vk::ImageLayout::eColorAttachmentOptimal
+        };
+
+        auto color_attachment_reference = vk::AttachmentReference {
+            .attachment = 0,
+            .layout = vk::ImageLayout::eColorAttachmentOptimal
+        };
+
+        auto resolve_attachment = vk::AttachmentDescription {
             .flags = vk::AttachmentDescriptionFlags(),
             .format = get_format().format,
             .samples = vk::SampleCountFlagBits::e1,
-            .loadOp = vk::AttachmentLoadOp::eClear,
+            .loadOp = vk::AttachmentLoadOp::eDontCare,
             .storeOp = vk::AttachmentStoreOp::eStore,
             .stencilLoadOp = vk::AttachmentLoadOp::eDontCare,
             .stencilStoreOp = vk::AttachmentStoreOp::eDontCare,
@@ -96,26 +131,54 @@ namespace vki {
             .finalLayout = vk::ImageLayout::ePresentSrcKHR
         };
 
-        auto attachment_reference = vk::AttachmentReference {
-            .attachment = 0,
+        auto resolve_attachment_reference = vk::AttachmentReference {
+            .attachment = 1,
             .layout = vk::ImageLayout::eColorAttachmentOptimal
+        };
+
+        auto depth_attachment = vk::AttachmentDescription {
+            .flags = vk::AttachmentDescriptionFlags(),
+            .format = get_depth_format(),
+            .samples = sample_count,
+            .loadOp = vk::AttachmentLoadOp::eClear,
+            .storeOp = vk::AttachmentStoreOp::eDontCare,
+            .stencilLoadOp = vk::AttachmentLoadOp::eDontCare,
+            .stencilStoreOp = vk::AttachmentStoreOp::eDontCare,
+            .initialLayout = vk::ImageLayout::eUndefined,
+            .finalLayout = vk::ImageLayout::eDepthStencilAttachmentOptimal
+        };
+
+        auto depth_attachment_reference = vk::AttachmentReference {
+            .attachment = 2,
+            .layout = vk::ImageLayout::eDepthStencilAttachmentOptimal
         };
 
         auto subpass = vk::SubpassDescription {
             .flags = vk::SubpassDescriptionFlags(),
             .pipelineBindPoint = vk::PipelineBindPoint::eGraphics,
             .colorAttachmentCount = 1,
-            .pColorAttachments = &attachment_reference
+            .pColorAttachments = &color_attachment_reference,
+            .pResolveAttachments = &resolve_attachment_reference,
+            .pDepthStencilAttachment = &depth_attachment_reference
         };
 
-        auto subpass_dependency = vk::SubpassDependency {
-            .srcSubpass = VK_SUBPASS_EXTERNAL,
-            .srcStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput,
-            .dstStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput,
-            .dstAccessMask = vk::AccessFlagBits::eColorAttachmentWrite
+        auto subpass_dependencies = std::array {
+            vk::SubpassDependency {
+                .srcSubpass = VK_SUBPASS_EXTERNAL,
+                .srcStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput | vk::PipelineStageFlagBits::eEarlyFragmentTests,
+                .dstStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput | vk::PipelineStageFlagBits::eLateFragmentTests,
+                .srcAccessMask = vk::AccessFlagBits::eColorAttachmentWrite,
+                .dstAccessMask = vk::AccessFlagBits::eColorAttachmentWrite | vk::AccessFlagBits::eColorAttachmentRead
+            },
+            vk::SubpassDependency {
+                .srcSubpass = VK_SUBPASS_EXTERNAL,
+                .srcStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput,
+                .dstStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput,
+                .dstAccessMask = vk::AccessFlagBits::eColorAttachmentWrite | vk::AccessFlagBits::eColorAttachmentRead
+            }
         };
 
-        auto attachments = std::array { attachment };
+        auto attachments = std::array { color_attachment, resolve_attachment, depth_attachment };
 
         auto create_info = vk::RenderPassCreateInfo {
             .flags = vk::RenderPassCreateFlags(),
@@ -123,8 +186,8 @@ namespace vki {
             .pAttachments = attachments.data(),
             .subpassCount = 1,
             .pSubpasses = &subpass,
-            .dependencyCount = 1,
-            .pDependencies = &subpass_dependency
+            .dependencyCount = vku::to_u32(subpass_dependencies.size()),
+            .pDependencies = subpass_dependencies.data()
         };
 
         try { return std::make_unique<vk::raii::RenderPass>(device, create_info); }

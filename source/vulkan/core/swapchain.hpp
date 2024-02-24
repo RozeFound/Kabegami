@@ -2,6 +2,8 @@
 
 #include "context.hpp"
 
+#include "vulkan/utility/image.hpp"
+
 namespace vki {
 
     struct Frame {
@@ -25,6 +27,9 @@ namespace vki {
         std::unique_ptr<vk::raii::SwapchainKHR> handle;
         std::unique_ptr<vk::raii::Queue> queue;
         const vk::raii::RenderPass& render_pass;
+
+        std::unique_ptr<vku::Image> depth_buffer;
+        std::unique_ptr<vku::Image> color_buffer;
 
         std::shared_ptr<vki::Context> context = vki::Context::get();
 

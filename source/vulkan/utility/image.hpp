@@ -18,6 +18,8 @@ namespace vku {
         std::unique_ptr<vk::raii::ImageView> view;
         std::unique_ptr<vk::raii::DeviceMemory> memory;
 
+        vk::SampleCountFlagBits samples = vk::SampleCountFlagBits::e1;
+
         std::shared_ptr<vki::Context> context = vki::Context::get();
 
         void create_handle (vk::ImageUsageFlags usage);
@@ -26,8 +28,21 @@ namespace vku {
         public:
 
         Image() = default;
-        Image (std::size_t width, std::size_t height, vk::ImageUsageFlags usage)
-            : width(width), height(height), mip_levels(1) { create_handle(usage); }
+        Image (std::size_t width, std::size_t height, vk::Format format, vk::ImageUsageFlags usage)
+            : width(width), height(height), mip_levels(1), format(format) { 
+
+            samples = context->gpu.get_samples();
+            
+            create_handle(usage); 
+
+            auto image_aspect = vk::ImageAspectFlagBits::eColor;
+            if (usage == vk::ImageUsageFlagBits::eDepthStencilAttachment)
+                image_aspect = vk::ImageAspectFlagBits::eDepth;
+
+            create_view(image_aspect);
+        }
+
+        constexpr const auto& get_view() const { return *view; }
 
     };
 
@@ -53,7 +68,7 @@ namespace vku {
 
         void set_data(std::span<std::byte> pixels);
 
-        constexpr const auto& get_descriptor_set() const { return set; }
+        constexpr const auto& get_descriptor_set() const { return *set; }
         
     };
 

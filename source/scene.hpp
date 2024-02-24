@@ -27,9 +27,6 @@ struct FragmentPC {
 
 class Scene {
 
-    std::chrono::time_point<std::chrono::high_resolution_clock> time;
-
-    glm::mat4x4 projection;
 
     std::unordered_map<std::string_view, std::shared_ptr<vku::Texture>> textures;
     std::vector<std::string_view> shaders;

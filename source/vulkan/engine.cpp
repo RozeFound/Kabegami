@@ -20,6 +20,9 @@ Engine::Engine (const Window& window) {
     auto graphics = context->get_queue_family_indices().graphics_family.value();
     queue = std::make_unique<vk::raii::Queue>(context->device, graphics, 0);
 
+    fps_limiter.is_enabled = true;
+    fps_limiter.set_target(120);
+
 }
 
 Engine::~Engine() {
@@ -39,7 +42,7 @@ void Engine::set_scene (std::shared_ptr<Scene> scene) {
 
     this->scene = scene;
 
-    auto vertex_pc_range = vk::PushConstantRange {
+auto vertex_pc_range = vk::PushConstantRange {
         .stageFlags = vk::ShaderStageFlagBits::eVertex,
         .offset = 0,
         .size = sizeof(VertexPC)
@@ -67,8 +70,8 @@ void Engine::set_scene (std::shared_ptr<Scene> scene) {
         .push_constant(fragment_pc_range)
         .create();
     pipeline_cache = std::make_unique<vku::PipeLineCache>();
-
     pipeline = vku::PipeLineFactory()
+        .multisampling(context->gpu.get_samples(), true)
         .vertex_binding(vku::Vertex::get_binding_description())
         .vertex_attributes(vku::Vertex::get_attribute_descriptions())
         .stages(scene->get_shaders())
@@ -107,14 +110,18 @@ void Engine::record (uint32_t index, std::function<void()> callback) {
     try { frame.commands->reset(); frame.commands->begin(vk::CommandBufferBeginInfo()); } 
     catch (vk::SystemError e) { loge("Failed to begin command record: {}", e.what()); return; }
 
-    auto clear_value = vk::ClearValue { scene->clear_color };
+    auto clear_values = std::array {
+        vk::ClearValue { scene->clear_color },
+        vk::ClearValue {},
+        vk::ClearValue { .depthStencil = { 1.f, 0 } }
+    };
 
     auto begin_info = vk::RenderPassBeginInfo {
         .renderPass = **render_pass,
         .framebuffer = **frame.buffer,
         .renderArea = {{0, 0}, swapchain->get_extent()},
-        .clearValueCount = 1,
-        .pClearValues = &clear_value
+        .clearValueCount = vku::to_u32(clear_values.size()),
+        .pClearValues = clear_values.data()
     };
 
     frame.commands->beginRenderPass(begin_info, vk::SubpassContents::eInline);
@@ -143,6 +150,7 @@ void Engine::record (uint32_t index, std::function<void()> callback) {
 void Engine::update() {
 
     if (swapchain->resize_if_needed()) frame_index = 0;
+    fps_limiter.delay();
 
     auto& frame = swapchain->get_frames().at(frame_index);
     frame.index = swapchain->acquire_image(frame_index);
