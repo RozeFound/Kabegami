@@ -1,8 +1,5 @@
 #include "engine.hpp"
 
-#include "utility/primitives.hpp"
-#include "core/descriptor_set.hpp"
-
 Engine::Engine (const Window& window) {
 
     context = std::make_shared<vki::Context>(window);
@@ -21,7 +18,7 @@ Engine::Engine (const Window& window) {
     queue = std::make_unique<vk::raii::Queue>(context->device, graphics, 0);
 
     fps_limiter.is_enabled = true;
-    fps_limiter.set_target(120);
+    fps_limiter.set_target(144);
 
 }
 
@@ -41,41 +38,7 @@ Engine::~Engine() {
 void Engine::set_scene (std::shared_ptr<Scene> scene) {
 
     this->scene = scene;
-
-auto vertex_pc_range = vk::PushConstantRange {
-        .stageFlags = vk::ShaderStageFlagBits::eVertex,
-        .offset = 0,
-        .size = sizeof(VertexPC)
-    };
-
-    logi("Vertex PC range: {}-{}", vertex_pc_range.offset, vertex_pc_range.offset + vertex_pc_range.size);
-
-    auto fragment_pc_range = vk::PushConstantRange {
-        .stageFlags = vk::ShaderStageFlagBits::eFragment,
-        .offset = sizeof(VertexPC),
-        .size = sizeof(FragmentPC)
-    };
-
-    logi("Fragment PC range: {}-{}", fragment_pc_range.offset, fragment_pc_range.offset + fragment_pc_range.size);
-
-    auto descriptor_set_layout = vku::DescriptorSetLayoutFactory()
-        .add_binding(0, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment)
-        .create();
-
-    pipeline_layout = vku::PipeLineLayoutFactory()
-        .set_layout(**descriptor_set_layout)
-        .set_layout(**descriptor_set_layout)
-        .set_layout(**descriptor_set_layout)
-        .push_constant(vertex_pc_range)
-        .push_constant(fragment_pc_range)
-        .create();
-    pipeline_cache = std::make_unique<vku::PipeLineCache>();
-    pipeline = vku::PipeLineFactory()
-        .multisampling(context->gpu.get_samples(), true)
-        .vertex_binding(vku::Vertex::get_binding_description())
-        .vertex_attributes(vku::Vertex::get_attribute_descriptions())
-        .stages(scene->get_shaders())
-        .create(**pipeline_cache, *pipeline_layout, *render_pass);
+    scene->allocate_resources(*render_pass);
 
 };
 
@@ -157,7 +120,6 @@ void Engine::update() {
 
     record(frame_index, [&] {
 
-        scene->bind(*frame.commands, *pipeline, *pipeline_layout);
         scene->draw(*frame.commands);
 
     });

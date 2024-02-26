@@ -15,14 +15,12 @@ CPMAddPackage(
 )
 
 CPMAddPackage(
-    VERSION 3.4
+    GIT_TAG 3.4
     GITHUB_REPOSITORY glfw/glfw
-    GIT_TAG 6f1ddf51a130f2dee6ade5fa4d8217e4071124e8
     OPTIONS
         "GLFW_BUILD_TESTS OFF"
         "GLFW_BUILD_EXAMPLES OFF"
         "GLFW_BULID_DOCS OFF"
-        "GLFW_BUILD_X11 OFF"
 )
 
 CPMAddPackage(

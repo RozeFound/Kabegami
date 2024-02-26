@@ -17,10 +17,6 @@ class Engine {
     std::shared_ptr<Scene> scene;
     std::shared_ptr<vki::Context> context;
     std::unique_ptr<vki::SwapChain> swapchain;
-
-    std::unique_ptr<vk::raii::Pipeline> pipeline;
-    std::unique_ptr<vk::raii::PipelineLayout> pipeline_layout;
-    std::unique_ptr<vku::PipeLineCache> pipeline_cache;
     
     std::unique_ptr<vk::raii::RenderPass> render_pass;
     std::unique_ptr<vk::raii::CommandPool> command_pool;

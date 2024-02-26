@@ -3,6 +3,7 @@
 #include "assets/filesystem.hpp"
 
 #include "vulkan/utility/image.hpp"
+#include "vulkan/core/pipeline.hpp"
 
 #include "objects/scene.hpp"
 
@@ -27,9 +28,14 @@ struct FragmentPC {
 
 class Scene {
 
+    glm::mat4 modelViewProjection;
 
     std::unordered_map<std::string_view, std::shared_ptr<vku::Texture>> textures;
-    std::vector<std::string_view> shaders;
+
+    std::unique_ptr<vku::PipeLineCache> pipeline_cache;
+    
+    std::unordered_map<std::string_view, std::unique_ptr<vk::raii::PipelineLayout>> pipeline_layouts;
+    std::unordered_map<std::string_view, std::unique_ptr<vk::raii::Pipeline>> pipelines;
 
     std::unique_ptr<vku::DeviceBuffer> vertex_buffer;
     std::unique_ptr<vku::DeviceBuffer> index_buffer;
@@ -39,11 +45,9 @@ class Scene {
     
     std::array<float, 4> clear_color;
 
-    Scene (const objects::Scene& context, const assets::FileSystem& fs);
+    Scene (const objects::Scene& info, const assets::FileSystem& fs);
+    void allocate_resources (const vk::raii::RenderPass& render_pass);
 
-    void bind (const vk::raii::CommandBuffer& commands, const vk::raii::Pipeline& pipeline, const vk::raii::PipelineLayout& layout) const;
     void draw (const vk::raii::CommandBuffer& commands) const;
-
-    constexpr const std::vector<std::string_view>& get_shaders() { return shaders; }
 
 };

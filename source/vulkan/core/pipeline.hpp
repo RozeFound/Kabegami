@@ -25,7 +25,7 @@ namespace vku {
             color_blend(false, {}, {}, {}, {});
             topology(vk::PrimitiveTopology::eTriangleList);
             cull_mode(vk::CullModeFlagBits::eBack);
-            multisampling(vk::SampleCountFlagBits::e1, false);
+            multisampling(vki::Context::get()->gpu.get_samples(), false);
             depth_stencil(false, false, false);
 
         }
