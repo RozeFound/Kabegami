@@ -1,22 +1,43 @@
 # ---- Add dependencies via CPM ----
 # see https://github.com/TheLartians/CPM.cmake for more info
 
-set(CPM_USE_LOCAL_PACKAGES)
+# Read the dependencies file
+file(READ "dependencies.json" json_content)
+string(JSON library_list LENGTH ${json_content})
+math(EXPR library_list "${library_list} - 1")
+
+foreach(IDX RANGE ${library_list})
+    string(JSON library_name GET ${json_content} ${IDX} name)
+    string(JSON library_tag GET ${json_content} ${IDX} tag)
+    string(JSON library_repo GET ${json_content} ${IDX} github)
+    string(JSON library_commit GET ${json_content} ${IDX} commit)
+
+    set(${library_name}_repo ${library_repo})
+    set(${library_name}_tag ${library_tag})
+    set(${library_name}_commit ${library_commit})
+endforeach()
+
 include(cmake/CPM.cmake)
 
 CPMAddPackage(
-    GIT_TAG 10.2.1
-    GITHUB_REPOSITORY fmtlib/fmt
+    GIT_TAG ${fmt_tag}
+    GITHUB_REPOSITORY ${fmt_repo}
 )
 
 CPMAddPackage(
-    VERSION 2.1.7
-    GITHUB_REPOSITORY stephenberry/glaze
+    GIT_TAG ${spdlog_tag}
+    GITHUB_REPOSITORY ${spdlog_repo}
+    OPTIONS "SPDLOG_FMT_EXTERNAL 1"
 )
 
 CPMAddPackage(
-    GIT_TAG 3.4
-    GITHUB_REPOSITORY glfw/glfw
+    GIT_TAG ${glaze_tag}
+    GITHUB_REPOSITORY ${glaze_repo}
+)
+
+CPMAddPackage(
+    GIT_TAG ${glfw_tag}
+    GITHUB_REPOSITORY ${glfw_repo}
     OPTIONS
         "GLFW_BUILD_TESTS OFF"
         "GLFW_BUILD_EXAMPLES OFF"
@@ -24,20 +45,13 @@ CPMAddPackage(
 )
 
 CPMAddPackage(
-    VERSION 1.0.0
-    GIT_TAG adf31f555e73e2bd6fda373bb5d8740f9c6c17c0
-    GITHUB_REPOSITORY g-truc/glm
+    GIT_TAG ${glm_commit}
+    GITHUB_REPOSITORY ${glm_repo}
 )
 
 CPMAddPackage(
-    VERSION 1.13.0
-    GITHUB_REPOSITORY gabime/spdlog
-    OPTIONS "SPDLOG_FMT_EXTERNAL 1"
-)
-
-CPMAddPackage(
-    VERSION 1.9.4
-    GITHUB_REPOSITORY lz4/lz4
+    GIT_TAG ${lz4_tag}
+    GITHUB_REPOSITORY ${lz4_repo}
     DOWNLOAD_ONLY
 )
 
@@ -46,9 +60,41 @@ target_include_directories(lz4 PUBLIC ${lz4_SOURCE_DIR}/lib)
 
 CPMAddHeaderOnly(
     NAME stb
-    VERSION stable
-    GITHUB_REPOSITORY nothings/stb
-    GIT_TAG ae721c50eaf761660b4f90cc590453cdb0c2acd0
+    GITHUB_REPOSITORY ${stb_repo}
+    GIT_TAG ${stb_commit}
     HEADER "stb_image.h"
 )
 #target_compile_definitions(stb INTERFACE "STB_IMAGE_IMPLEMENTATION")
+
+CPMAddPackage(
+  GITHUB_REPOSITORY ${SPIRV-Headers_repo}
+  GIT_TAG ${SPIRV-Headers_commit}
+  DOWNLOAD_ONLY YES
+)
+
+CPMAddPackage(
+  GITHUB_REPOSITORY ${SPIRV-Tools_repo}
+  GIT_TAG ${SPIRV-Tools_commit}
+  OPTIONS
+    "SPIRV_SKIP_TESTS ON"
+    "SPIRV_SKIP_EXECUTABLES ON"
+)
+
+CPMAddPackage(
+  GITHUB_REPOSITORY ${glslang_repo}
+  GIT_TAG ${glslang_commit}
+  OPTIONS
+    "ENABLE_CTEST OFF"
+    "ENABLE_GLSLANG_BINARIES OFF"
+    "BUILD_EXTERNAL OFF"
+)
+
+CPMAddPackage(
+  GITHUB_REPOSITORY ${shaderc_repo}
+  GIT_TAG ${shaderc_commit}
+  OPTIONS
+    "SHADERC_SKIP_TESTS ON"
+    "SHADERC_SKIP_EXAMPLES ON"
+    "SHADERC_SKIP_COPYRIGHT_CHECK ON"
+    "SHADERC_ENABLE_SHARED_CRT ON"
+)

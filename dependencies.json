@@ -1,0 +1,79 @@
+[
+    {
+        "name": "glfw",
+        "github": "glfw/glfw",
+        "branch": "master",
+        "tag": "3.4",
+        "commit": "7b6aead9fb88b3623e3b3725ebb42670cbe4c579"
+    },
+    {
+        "name": "glm",
+        "github": "g-truc/glm",
+        "branch": "master",
+        "tag": "1.0.0",
+        "commit": "adf31f555e73e2bd6fda373bb5d8740f9c6c17c0"
+    },
+    {
+        "name": "fmt",
+        "github": "fmtlib/fmt",
+        "branch": "master",
+        "tag": "10.2.1",
+        "commit": "f68f452deaa15f222c7b2eee5f41c7a9bd249793"
+    },
+    {
+        "name": "glaze",
+        "github": "stephenberry/glaze",
+        "branch": "main",
+        "tag": "v2.1.8",
+        "commit": "b8ca0e711f74e19a227289b7c552613d8f4e142d"
+    },
+    {
+        "name": "spdlog",
+        "github": "gabime/spdlog",
+        "branch": "v1.x",
+        "tag": "v1.13.0",
+        "commit": "d387fdf96c24d343ee6a988d4632b4969215bf5e"
+    },
+    {
+        "name": "stb",
+        "github": "nothings/stb",
+        "branch": "master",
+        "tag": "ae721c50eaf761660b4f90cc590453cdb0c2acd0",
+        "commit": "ae721c50eaf761660b4f90cc590453cdb0c2acd0"
+    },
+    {
+        "name": "lz4",
+        "github": "lz4/lz4",
+        "branch": "dev",
+        "tag": "v1.9.4",
+        "commit": "610c94f80802f67b59c00cac1f229e3d13b8de35"
+    },
+    {
+        "name": "SPIRV-Headers",
+        "github": "KhronosGroup/SPIRV-Headers",
+        "branch": "master",
+        "tag": "05cc486580771e4fa7ddc89f5c9ee1e97382689a",
+        "commit": "05cc486580771e4fa7ddc89f5c9ee1e97382689a"
+    },
+    {
+        "name": "SPIRV-Tools",
+        "github": "KhronosGroup/SPIRV-Tools",
+        "branch": "master",
+        "tag": "v2023.2",
+        "commit": "fbc7a14b3e5e494113a464bbfafc48b94516446a"
+    },
+    {
+        "name": "glslang",
+        "github": "KhronosGroup/glslang",
+        "branch": "master",
+        "tag": "14.0.0",
+        "commit": "b0df68c490363ac347e454f79886293f661ce4f6"
+    },
+    {
+        "name": "shaderc",
+        "github": "google/shaderc",
+        "branch": "main",
+        "tag": "65fa097f2f0aae1a9c233bcf7d03ca3dcd296c6e",
+        "commit": "65fa097f2f0aae1a9c233bcf7d03ca3dcd296c6e"
+    }
+]

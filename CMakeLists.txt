@@ -55,7 +55,6 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC "$<$<CONFIG:DEBUG>:DEBUG>")
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/settings.json DESTINATION ${PROJECT_BINARY_DIR})
 
 file(GLOB_RECURSE RESOURCE_FILES CONFIGURE_DEPENDS "resources/*")
-set(SHADER_EXT .frag .vert .comp)
 
 foreach(FILE ${RESOURCE_FILES})
 
@@ -67,23 +66,13 @@ foreach(FILE ${RESOURCE_FILES})
   cmake_path(GET FILE EXTENSION EXT)
 
   set(OUT_FILE ${PROJECT_BINARY_DIR}/${REL_DIRS}/${NAME})
+  configure_file(${FILE} ${OUT_FILE} COPYONLY)
 
-  if (EXT IN_LIST SHADER_EXT)
-    list(APPEND SHADER_INPUT_FILES ${FILE})
-    list(APPEND SHADER_OUTPUT_FILES ${OUT_FILE})
-  else()
-    configure_file(${FILE} ${OUT_FILE} COPYONLY)
-  endif()
-
-endforeach()
-
-foreach(SHADER_INPUT SHADER_OUTPUT IN ZIP_LISTS SHADER_INPUT_FILES SHADER_OUTPUT_FILES)
-  add_shader(${PROJECT_NAME} ${SHADER_INPUT} ${SHADER_OUTPUT})
 endforeach()
 
 
 # ---- Link libraries ----
 
 target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt spdlog glaze::glaze)
-target_link_libraries(${PROJECT_NAME} PRIVATE glfw glm::glm vulkan)
+target_link_libraries(${PROJECT_NAME} PRIVATE glfw glm::glm vulkan shaderc)
 target_link_libraries(${PROJECT_NAME} PRIVATE lz4 stb)
