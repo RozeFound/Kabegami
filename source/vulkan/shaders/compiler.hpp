@@ -12,7 +12,7 @@ namespace glsl {
         
         vk::ShaderStageFlagBits stage;
         std::vector<uint32_t> spirv;
-        std::string info_log;
+        std::string log;
 
         Includer includer;
 
@@ -23,7 +23,7 @@ namespace glsl {
         bool compile(std::vector<uint8_t> source);
 
         constexpr const auto& get_spirv() const { return spirv; }
-        constexpr const auto& get_logs() const { return info_log; }
+        constexpr const auto& get_log() const { return log; }
 
     };
 

@@ -60,7 +60,7 @@ void Scene::allocate_resources(const vk::raii::RenderPass& render_pass) {
         .size = sizeof(VertexPC)
     };
 
-    logv("Vertex PC range: {}-{}", vertex_pc_range.offset, vertex_pc_range.offset + vertex_pc_range.size);
+    logd("Vertex PC range: {}-{}", vertex_pc_range.offset, vertex_pc_range.offset + vertex_pc_range.size);
 
     auto fragment_pc_range = vk::PushConstantRange {
         .stageFlags = vk::ShaderStageFlagBits::eFragment,
@@ -68,7 +68,7 @@ void Scene::allocate_resources(const vk::raii::RenderPass& render_pass) {
         .size = sizeof(FragmentPC)
     };
 
-    logv("Fragment PC range: {}-{}", fragment_pc_range.offset, fragment_pc_range.offset + fragment_pc_range.size);
+    logd("Fragment PC range: {}-{}", fragment_pc_range.offset, fragment_pc_range.offset + fragment_pc_range.size);
 
     auto descriptor_set_layout = vku::DescriptorSetLayoutFactory()
         .add_binding(0, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment)

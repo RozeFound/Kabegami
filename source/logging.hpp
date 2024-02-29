@@ -2,6 +2,7 @@
 
 #include <spdlog/spdlog.h>
 
+#define logd(FS...) spdlog::get("kabegami")->debug(FS)
 #define logv(FS...) spdlog::get("kabegami")->trace(FS)
 #define logi(FS...) spdlog::get("kabegami")->info(FS)
 #define logw(FS...) spdlog::get("kabegami")->warn(FS)

@@ -35,22 +35,22 @@ namespace glsl {
 
         shader.setPreamble("#extension GL_ARB_shading_language_include : require\n");
 
-        logv("Compiling shader: {}", source);
+        logd("Compiling shader:\n{}", source);
 
         std::string processed_source;
 
         if (!shader.preprocess(resources, 460, profile, false, false, messages, &processed_source, includer)) {
-            info_log += std::string(shader.getInfoLog()) + "\n" + std::string(shader.getInfoDebugLog());
+            log += std::string(shader.getInfoLog()) + "\n" + std::string(shader.getInfoDebugLog());
             return false;
         }
 
-        logv("Preprocessed shader: {}", processed_source);
+        logd("Preprocessed shader:\n{}", processed_source);
 
         const char* preprocessed_sources[1] = { processed_source.c_str() };
         shader.setStrings(preprocessed_sources, 1);
 
         if (!shader.parse(resources, 460, profile, false, false, messages, includer)) {
-            info_log += std::string(shader.getInfoLog()) + "\n" + std::string(shader.getInfoDebugLog());
+            log += std::string(shader.getInfoLog()) + "\n" + std::string(shader.getInfoDebugLog());
             return false;
         }
 
@@ -58,14 +58,14 @@ namespace glsl {
         program.addShader(&shader);
 
         if (!program.link(messages)) {
-            info_log += std::string(program.getInfoLog()) + "\n" + std::string(program.getInfoDebugLog());
+            log += std::string(program.getInfoLog()) + "\n" + std::string(program.getInfoDebugLog());
             return false;
         }
 
         if (shader.getInfoLog())
-            info_log += std::string(shader.getInfoLog()) + "\n" + std::string(shader.getInfoDebugLog());
+            log += std::string(shader.getInfoLog()) + "\n" + std::string(shader.getInfoDebugLog());
         if (program.getInfoLog())
-            info_log += std::string(program.getInfoLog()) + "\n" + std::string(program.getInfoDebugLog());
+            log += std::string(program.getInfoLog()) + "\n" + std::string(program.getInfoDebugLog());
 
         auto intermediate = program.getIntermediate(language);
 
@@ -82,7 +82,7 @@ namespace glsl {
 
         glslang::FinalizeProcess();
 
-        info_log += logger.getAllMessages() + "\n";
+        log += logger.getAllMessages() + "\n";
 
         return true;
     }

@@ -32,7 +32,7 @@ namespace vku {
 
             if (!compiler.compile(glsl_source)) {
                 loge("Failed to compile shader: {}", shader_path.string());
-                logv("\n{}",compiler.get_logs());
+                logd("\n{}",compiler.get_log());
             }
 
             auto buffer = compiler.get_spirv();
