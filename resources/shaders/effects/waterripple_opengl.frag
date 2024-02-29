@@ -1,4 +1,4 @@
-#version 450
+
 // [COMBO_OFF] {"material":"ui_editor_properties_specular","combo":"SPECULAR","type":"options","default":0}
 
 layout(location = 0) in vec4 v_TexCoord;

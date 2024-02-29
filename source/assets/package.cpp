@@ -45,17 +45,4 @@ namespace assets {
 
     }
 
-    std::vector<std::byte> Package::read_file (std::string_view path) const {
-
-        auto& entry = entries.at({ path.begin(), path.end() });
-        auto result = std::vector<std::byte>(entry.length);
-
-        file.seekg(data_offset + entry.offset);
-
-        file.read(reinterpret_cast<char*>(result.data()), entry.length);
-        
-        return result;
-
-    }
-
 }

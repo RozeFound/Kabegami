@@ -4,6 +4,7 @@
 #include <filesystem>
 
 #include "package.hpp"
+#include "vulkan/utility/misc.hpp"
 
 namespace assets {
 
@@ -22,7 +23,28 @@ namespace assets {
 
         bool exists (std::string_view path) const;
 
-        template <typename T = std::vector<std::byte>> T read (std::string_view path) const;
+        template <typename T = std::byte> std::vector<T> read (std::string_view path) const {
+
+            for (auto& package : packages)
+                if (package.exists(path))
+                    return package.read_file<T>(path);
+
+            for (const auto& location : locations) {
+
+                auto full_path = location / path;
+
+                if (!std::filesystem::exists(full_path))
+                    continue;
+
+                return vku::fs::read<T>(full_path);
+                
+            }
+
+            throw std::runtime_error(fmt::format("Error reading file: {}", path));
+
+        }
+
+        const std::string read_as_string(std::string_view path) const;
 
     };
 

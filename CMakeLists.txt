@@ -21,7 +21,6 @@ endif()
 
 set(USE_CCACHE YES)
 include(cmake/tools.cmake)
-include(cmake/shaders.cmake)
 
 # ---- Import dependencies ----
 
@@ -74,5 +73,6 @@ endforeach()
 # ---- Link libraries ----
 
 target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt spdlog glaze::glaze)
-target_link_libraries(${PROJECT_NAME} PRIVATE glfw glm::glm vulkan shaderc)
+target_link_libraries(${PROJECT_NAME} PRIVATE glfw glm::glm vulkan)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${glslang-link-targets})
 target_link_libraries(${PROJECT_NAME} PRIVATE lz4 stb)

@@ -1,5 +1,3 @@
-#version 450
-
 // vulkan NDC:	x: -1(left), 1(right)
 //				y: -1(top), 1(bottom)
 

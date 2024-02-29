@@ -1,5 +1,4 @@
-#version 450
-#include "common.h"
+#include "common.glsl"
 
 layout(push_constant) uniform globals {
 

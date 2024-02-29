@@ -45,7 +45,7 @@ CPMAddPackage(
 )
 
 CPMAddPackage(
-    GIT_TAG ${glm_commit}
+    GIT_TAG ${glm_tag}
     GITHUB_REPOSITORY ${glm_repo}
 )
 
@@ -84,17 +84,12 @@ CPMAddPackage(
   GITHUB_REPOSITORY ${glslang_repo}
   GIT_TAG ${glslang_commit}
   OPTIONS
-    "ENABLE_CTEST OFF"
+    "GLSLANG_TESTS OFF"
     "ENABLE_GLSLANG_BINARIES OFF"
     "BUILD_EXTERNAL OFF"
 )
 
-CPMAddPackage(
-  GITHUB_REPOSITORY ${shaderc_repo}
-  GIT_TAG ${shaderc_commit}
-  OPTIONS
-    "SHADERC_SKIP_TESTS ON"
-    "SHADERC_SKIP_EXAMPLES ON"
-    "SHADERC_SKIP_COPYRIGHT_CHECK ON"
-    "SHADERC_ENABLE_SHARED_CRT ON"
-)
+set(glslang-link-targets 
+    glslang
+    SPIRV
+    glslang-default-resource-limits)

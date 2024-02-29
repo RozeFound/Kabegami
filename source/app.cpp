@@ -30,10 +30,10 @@ void Kabegami::run() {
 
     auto fs = assets::FileSystem { settings.assets, settings.wallpaper };
 
-    auto file = glz::get_as_json<std::string, "/file">(fs.read<std::string>("project.json"));
+    auto file = glz::get_as_json<std::string, "/file">(fs.read_as_string("project.json"));
     if (!fs.exists(file.value())) fs.add_package(settings.wallpaper + "/scene.pkg");
 
-    auto buffer = fs.read<std::string>(file.value());
+    auto buffer = fs.read_as_string(file.value());
     auto scene_info = glz::read_json<objects::Scene>(buffer);
 
     if (!scene_info) {

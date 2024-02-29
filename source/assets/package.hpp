@@ -32,7 +32,19 @@ namespace assets {
         Package (Package&&) noexcept = default;
         Package (Package&) = delete;
 
-        std::vector<std::byte> read_file (std::string_view path) const;
+        template<typename T> std::vector<T> read_file (std::string_view path) const {
+
+            auto& entry = entries.at({ path.begin(), path.end() });
+            auto result = std::vector<T>(entry.length / sizeof(T));
+
+            file.seekg(data_offset + entry.offset);
+
+            file.read(reinterpret_cast<char*>(result.data()), entry.length);
+            
+            return result;
+
+        }
+        
         constexpr bool exists (std::string_view path) const { 
             return entries.contains({ path.begin(), path.end() });
         }

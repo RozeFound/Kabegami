@@ -1,6 +1,6 @@
 #pragma once
 
-#include "shaders.hpp"
+#include "vulkan/shaders/module.hpp"
 
 namespace vku {
 
@@ -16,7 +16,7 @@ namespace vku {
         } create_info;
         
 
-        std::vector<Shader> shaders;
+        std::vector<ShaderModule> shader_modules;
 
         public:
 
@@ -36,7 +36,7 @@ namespace vku {
         PipeLineFactory& vertex_binding (const vk::VertexInputBindingDescription& description);
         PipeLineFactory& vertex_attributes (const std::vector<vk::VertexInputAttributeDescription>& description);
 
-        PipeLineFactory& stages (const std::vector<std::string_view>& shaders);
+        PipeLineFactory& stages (const std::vector<std::string_view>& shaders, const assets::FileSystem& fs);
         PipeLineFactory& topology (vk::PrimitiveTopology topology);
         PipeLineFactory& cull_mode (vk::CullModeFlagBits cull_mode);
         PipeLineFactory& multisampling (vk::SampleCountFlagBits sample_count, bool sample_shading);
