@@ -23,6 +23,19 @@ Scene::Scene (const objects::Scene& info, const assets::FileSystem& fs) {
         std::make_pair("white", std::make_shared<vku::Texture>("materials/white.png"))
     };
 
+    auto basic_vert = assets::ShaderParser("shaders/basic.vert", fs);
+    auto basic_frag = assets::ShaderParser("shaders/basic.frag", fs);
+    
+    auto waterriple_vert = assets::ShaderParser("shaders/effects/waterripple_opengl.vert", fs);
+    auto waterriple_frag = assets::ShaderParser("shaders/effects/waterripple_opengl.frag", fs);
+
+    shaders = {
+        std::make_pair("basic_vert", std::make_shared<vku::ShaderModule>(basic_vert)),
+        std::make_pair("basic_frag", std::make_shared<vku::ShaderModule>(basic_frag)),
+        std::make_pair("waterriple_vert", std::make_shared<vku::ShaderModule>(waterriple_vert)),
+        std::make_pair("waterriple_frag", std::make_shared<vku::ShaderModule>(waterriple_frag))
+    };
+
     auto vertecies = std::vector<vku::Vertex> {
         {{1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
         {{1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}},
@@ -91,16 +104,13 @@ void Scene::allocate_resources(const vk::raii::RenderPass& render_pass) {
         .push_constant(fragment_pc_range)
         .create();
 
-    auto shaders_fs = assets::FileSystem();
-    shaders_fs.add_location("./shaders/");
-
     pipelines["basic"] = vku::PipeLineFactory()
         .vertex_binding(vku::Vertex::get_binding_description())
         .vertex_attributes(vku::Vertex::get_attribute_descriptions())
         .color_blend(true,
             { vk::BlendFactor::eSrcAlpha, vk::BlendFactor::eOneMinusSrcAlpha }, vk::BlendOp::eAdd,
             { vk::BlendFactor::eSrcAlpha, vk::BlendFactor::eOneMinusSrcAlpha }, vk::BlendOp::eAdd)
-        .stages({"basic.vert", "basic.frag"}, shaders_fs)
+        .stage(shaders.at("basic_vert")).stage(shaders.at("basic_frag"))
         .create(**pipeline_cache, *pipeline_layouts.at("basic"), render_pass);
 
     pipelines["water"] = vku::PipeLineFactory()
@@ -110,7 +120,7 @@ void Scene::allocate_resources(const vk::raii::RenderPass& render_pass) {
         .color_blend(true,
             { vk::BlendFactor::eSrcAlpha, vk::BlendFactor::eOneMinusSrcAlpha }, vk::BlendOp::eAdd,
             { vk::BlendFactor::eSrcAlpha, vk::BlendFactor::eOneMinusSrcAlpha }, vk::BlendOp::eAdd)
-        .stages({"effects/waterripple_opengl.vert", "effects/waterripple_opengl.frag"}, shaders_fs)
+        .stage(shaders.at("waterriple_vert")).stage(shaders.at("waterriple_frag"))
         .create(**pipeline_cache, *pipeline_layouts.at("water"), render_pass);
 
 }

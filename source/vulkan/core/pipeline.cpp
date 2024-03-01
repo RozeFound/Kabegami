@@ -34,7 +34,8 @@ namespace vku {
         };
 
         auto stages = std::vector<vk::PipelineShaderStageCreateInfo>();
-        for (const auto& module : shader_modules) stages.push_back(module.get_stage());
+        for (const auto& module : shader_modules)
+            stages.push_back(module->get_stage());
 
         auto pipeline_create_info = vk::GraphicsPipelineCreateInfo {
             .flags = vk::PipelineCreateFlags(),
@@ -79,13 +80,12 @@ namespace vku {
 
     }
     
-    PipeLineFactory& PipeLineFactory::stages (const std::vector<std::string_view>& stages, const assets::FileSystem& fs) {
-
-        for (auto& stage : stages)
-            shader_modules.emplace_back(stage, fs);
+    PipeLineFactory& PipeLineFactory::stage (const std::shared_ptr<vku::ShaderModule> module) {
+        
+        shader_modules.push_back(module);
 
         return *this;
-
+        
     }
 
     PipeLineFactory& PipeLineFactory::topology (vk::PrimitiveTopology topology) {

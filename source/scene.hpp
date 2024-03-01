@@ -31,6 +31,7 @@ class Scene {
     glm::mat4 modelViewProjection;
 
     std::unordered_map<std::string_view, std::shared_ptr<vku::Texture>> textures;
+    std::unordered_map<std::string_view, std::shared_ptr<vku::ShaderModule>> shaders;
 
     std::unique_ptr<vku::PipeLineCache> pipeline_cache;
     

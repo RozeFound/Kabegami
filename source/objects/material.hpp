@@ -8,13 +8,7 @@ namespace objects {
 
         int id;
 
-        struct Combo {
-            int AUDIOPROCESSING;
-            int DIRECTION;
-            int NOISE;
-            int VERTICAL;
-            int version;
-        } combos;
+        std::unordered_map<std::string_view, int> combos;
 
         std::string_view blending;
         std::string_view cullmode;
@@ -22,7 +16,7 @@ namespace objects {
         std::string_view depthwrite;
         std::string_view shader;
 
-        std::unordered_map<std::string, glz::json_t> constantshadervalues;
+        std::unordered_map<std::string_view, glz::json_t> constantshadervalues;
         std::vector<std::optional<std::string_view>> textures;
 
     };

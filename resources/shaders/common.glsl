@@ -38,4 +38,3 @@ float greyscale(vec3 color)
 {
     return dot(color, vec3(0.11, 0.59, 0.3));
 }
-

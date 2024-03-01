@@ -2,6 +2,8 @@
 
 #include "vulkan/core/context.hpp"
 
+#include "assets/shader.hpp"
+
 #include "compiler.hpp"
 
 namespace vku {
@@ -15,23 +17,14 @@ namespace vku {
 
         public:
 
-        ShaderModule (std::convertible_to<std::filesystem::path> auto path, const assets::FileSystem& fs) {
+        ShaderModule (const assets::ShaderParser& parser) {
 
-            auto shader_path = std::filesystem::path(path);
-            auto stage = vk::ShaderStageFlagBits::eVertex;
+            auto stage = parser.get_stage();
 
-            if (shader_path.extension() == ".vert")
-                stage = vk::ShaderStageFlagBits::eVertex;
-            if (shader_path.extension() == ".frag")
-                stage = vk::ShaderStageFlagBits::eFragment;
-            if (shader_path.extension() == ".comp")
-                stage = vk::ShaderStageFlagBits::eCompute;
+            auto compiler = glsl::Compiler(stage);
 
-            auto glsl_source = fs.read<uint8_t>(path);
-            auto compiler = glsl::Compiler(stage, fs);
-
-            if (!compiler.compile(glsl_source)) {
-                loge("Failed to compile shader: {}", shader_path.string());
+            if (!compiler.compile(parser.get_source())) {
+                loge("Failed to compile shader: {}", parser.get_path());
                 logd("\n{}",compiler.get_log());
             }
 

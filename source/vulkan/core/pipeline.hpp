@@ -16,7 +16,7 @@ namespace vku {
         } create_info;
         
 
-        std::vector<ShaderModule> shader_modules;
+        std::vector<std::shared_ptr<ShaderModule>> shader_modules;
 
         public:
 
@@ -36,7 +36,7 @@ namespace vku {
         PipeLineFactory& vertex_binding (const vk::VertexInputBindingDescription& description);
         PipeLineFactory& vertex_attributes (const std::vector<vk::VertexInputAttributeDescription>& description);
 
-        PipeLineFactory& stages (const std::vector<std::string_view>& shaders, const assets::FileSystem& fs);
+        PipeLineFactory& stage (const std::shared_ptr<vku::ShaderModule> module);
         PipeLineFactory& topology (vk::PrimitiveTopology topology);
         PipeLineFactory& cull_mode (vk::CullModeFlagBits cull_mode);
         PipeLineFactory& multisampling (vk::SampleCountFlagBits sample_count, bool sample_shading);

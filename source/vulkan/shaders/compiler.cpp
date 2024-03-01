@@ -2,7 +2,7 @@
 
 namespace glsl {
 
-    constexpr EShLanguage find_shader_language(vk::ShaderStageFlagBits stage) {
+    constexpr EShLanguage Compiler::find_shader_language(vk::ShaderStageFlagBits stage) {
         switch (stage)
         {
             case vk::ShaderStageFlagBits::eVertex: return EShLangVertex;
@@ -12,7 +12,7 @@ namespace glsl {
         }
     }
 
-    bool Compiler::compile (std::vector<uint8_t> glsl_source) {
+    bool Compiler::compile (std::string_view source) {
 
         glslang::InitializeProcess();
 
@@ -24,8 +24,7 @@ namespace glsl {
 
         auto shader = glslang::TShader(language);
 
-        auto source = std::string(glsl_source.begin(), glsl_source.end());
-        const char* sources[1] = { source.c_str() };
+        const char* sources[1] = { source.data() };
         shader.setStrings(sources, 1);
 
         shader.setEnvClient(glslang::EShClientVulkan, glslang::EShTargetVulkan_1_3);
@@ -33,11 +32,11 @@ namespace glsl {
 
         shader.setEntryPoint("main");
 
-        shader.setPreamble("#extension GL_ARB_shading_language_include : require\n");
-
         logd("Compiling shader:\n{}", source);
 
         std::string processed_source;
+
+        auto includer = glslang::TShader::ForbidIncluder{};
 
         if (!shader.preprocess(resources, 460, profile, false, false, messages, &processed_source, includer)) {
             log += std::string(shader.getInfoLog()) + "\n" + std::string(shader.getInfoDebugLog());
@@ -49,7 +48,7 @@ namespace glsl {
         const char* preprocessed_sources[1] = { processed_source.c_str() };
         shader.setStrings(preprocessed_sources, 1);
 
-        if (!shader.parse(resources, 460, profile, false, false, messages, includer)) {
+        if (!shader.parse(resources, 460, profile, false, false, messages)) {
             log += std::string(shader.getInfoLog()) + "\n" + std::string(shader.getInfoDebugLog());
             return false;
         }

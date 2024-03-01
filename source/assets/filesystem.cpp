@@ -21,7 +21,8 @@ namespace assets {
     }
 
     const std::string FileSystem::read_as_string (std::string_view path) const {
-        return reinterpret_cast<char*>(read(path).data());
+        auto content = read<char>(path);
+        return std::string(content.data(), content.size());
     }
 
 }
