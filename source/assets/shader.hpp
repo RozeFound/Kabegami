@@ -5,23 +5,20 @@
 namespace assets {
 
     struct ShaderUnit {
-        std::string src;
+        std::string source;
         vk::ShaderStageFlagBits stage;
     };
 
+
     class ShaderParser {
 
-        vk::ShaderStageFlagBits stage;
-        std::string_view path;
-        std::string source;
+        std::array<ShaderUnit, 2> units;
 
         public:
 
-        ShaderParser (std::string_view path, const FileSystem& fs);
+        ShaderParser (std::string path, const FileSystem& fs);
 
-        constexpr const auto& get_stage() const { return stage; }
-        constexpr const auto& get_source() const { return source; }
-        constexpr const auto& get_path() const { return path; }
+        constexpr auto& get_units() { return units; }
 
     };
 

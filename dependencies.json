@@ -4,7 +4,7 @@
         "github": "glfw/glfw",
         "branch": "master",
         "tag": "3.4",
-        "commit": "7b6aead9fb88b3623e3b3725ebb42670cbe4c579"
+        "commit": "dc557ecf38a42b0b93898a7aef69f6dc48bf0e57"
     },
     {
         "name": "glm",
@@ -18,21 +18,21 @@
         "github": "fmtlib/fmt",
         "branch": "master",
         "tag": "10.2.1",
-        "commit": "ae1e93d34de6caff6f318abdb06ff0db33a00792"
+        "commit": "09935d82390440cebf80ac427548049d79d29ff7"
     },
     {
         "name": "glaze",
         "github": "stephenberry/glaze",
         "branch": "main",
-        "tag": "v2.1.8",
-        "commit": "b8ca0e711f74e19a227289b7c552613d8f4e142d"
+        "tag": "v2.1.9",
+        "commit": "5ee728a099cf7138155b80b0275ef6a3a182f8e6"
     },
     {
         "name": "spdlog",
         "github": "gabime/spdlog",
         "branch": "v1.x",
         "tag": "v1.13.0",
-        "commit": "d387fdf96c24d343ee6a988d4632b4969215bf5e"
+        "commit": "5532231bbc31bbdf95ac15febdac0413ee1d07ad"
     },
     {
         "name": "stb",
@@ -46,27 +46,34 @@
         "github": "lz4/lz4",
         "branch": "dev",
         "tag": "v1.9.4",
-        "commit": "610c94f80802f67b59c00cac1f229e3d13b8de35"
+        "commit": "a07d8125dabd359179e9124d1b6952571d9ede65"
     },
     {
         "name": "SPIRV-Headers",
         "github": "KhronosGroup/SPIRV-Headers",
         "branch": "master",
-        "tag": "b73e168ca5e123dcf3dea8a34b19a5130f421ae1",
-        "commit": "b73e168ca5e123dcf3dea8a34b19a5130f421ae1"
+        "tag": "8b246ff75c6615ba4532fe4fde20f1be090c3764",
+        "commit": "8b246ff75c6615ba4532fe4fde20f1be090c3764"
     },
     {
         "name": "SPIRV-Tools",
         "github": "KhronosGroup/SPIRV-Tools",
         "branch": "master",
         "tag": "v2023.2",
-        "commit": "9bd44d028e8ca257dde9c24d5f67adabee3275ab"
+        "commit": "75ad1345d4af5268448a9b26797294b48795cd69"
     },
     {
         "name": "glslang",
         "github": "KhronosGroup/glslang",
         "branch": "master",
         "tag": "14.0.0",
-        "commit": "b0df68c490363ac347e454f79886293f661ce4f6"
+        "commit": "bf08e1db5cc7d20530f86b1d9bdfc6a0c2da372c"
+    },
+    {
+        "name": "xxHash",
+        "github": "Cyan4973/xxHash",
+        "branch": "dev",
+        "tag": "v0.8.2",
+        "commit": "1864a50c9b5cf8500d8e9e61ed92aa0dd3772750"
     }
 ]

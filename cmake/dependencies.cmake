@@ -93,3 +93,13 @@ set(glslang-link-targets
     glslang
     SPIRV
     glslang-default-resource-limits)
+
+CPMAddPackage(
+    GITHUB_REPOSITORY ${xxHash_repo}
+    GIT_TAG ${xxHash_commit}
+    OPTIONS 
+        "XXHASH_BUILD_ENABLE_INLINE_API OFF"
+        "XXHASH_BUILD_XXHSUM OFF"
+    SOURCE_SUBDIR cmake_unofficial
+)
+

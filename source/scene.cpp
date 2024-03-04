@@ -23,6 +23,8 @@ Scene::Scene (const objects::Scene& info, const assets::FileSystem& fs) {
         std::make_pair("white", std::make_shared<vku::Texture>("materials/white.png"))
     };
 
+    auto basic = assets::ShaderParser("shaders/basic", fs);
+
     auto basic_vert = assets::ShaderParser("shaders/basic.vert", fs);
     auto basic_frag = assets::ShaderParser("shaders/basic.frag", fs);
     

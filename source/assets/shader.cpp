@@ -64,32 +64,30 @@ namespace assets {
 
     }
 
-    constexpr vk::ShaderStageFlagBits parse_stage(std::string_view path) {
+    ShaderParser::ShaderParser(std::string path, const FileSystem& fs) {
 
-        auto ext = path.substr(path.find_last_of("."));
+        units[0] = {
+            .source = pre_shader_code + resolve_includes(fs.read_as_string(path + ".vert"), fs),
+            .stage = vk::ShaderStageFlagBits::eVertex
+        };
+            
+        units[1] = {
+            .source = pre_shader_code + resolve_includes(fs.read_as_string(path + ".frag"), fs),
+            .stage = vk::ShaderStageFlagBits::eFragment
+        };
 
-        if (ext == ".vert") {
-            return vk::ShaderStageFlagBits::eVertex;
-        } else if (ext == ".frag") {
-            return vk::ShaderStageFlagBits::eFragment;
-        } else if (ext == ".comp") {
-            return vk::ShaderStageFlagBits::eCompute;
-        } else if (ext == ".tesc") {
-            return vk::ShaderStageFlagBits::eTessellationControl;
-        } else if (ext == ".tese") {
-            return vk::ShaderStageFlagBits::eTessellationEvaluation;
-        } else if (ext == ".geom") {
-            return vk::ShaderStageFlagBits::eGeometry;
-        } else {
-            throw std::runtime_error("Unknown shader extension");
+        for (auto& unit : units) {
+  
+            if (unit.stage == vk::ShaderStageFlagBits::eVertex) {
+                constexpr auto code = "#define attribute in;"
+                                      "#defnie varying out;";
+                unit.source = code + unit.source;
+            } else {
+                constexpr auto code = "#defnie varying in;"
+                                      "out vec4 diffuseColor;";
+                unit.source = code + unit.source;
+            }
         }
-
-    }
-
-    ShaderParser::ShaderParser(std::string_view path, const FileSystem& fs)
-        : path(path), stage(parse_stage(path)) {
-
-        source = pre_shader_code + resolve_includes(fs.read_as_string(path), fs);
 
     }
 
