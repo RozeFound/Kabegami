@@ -11,7 +11,7 @@
         "github": "g-truc/glm",
         "branch": "master",
         "tag": "1.0.1",
-        "commit": "f8df2f3e2e74de152c1b87e7bf61e0ba998deb37"
+        "commit": "61caae4d054bbce8b41ee958d34abaadd4833375"
     },
     {
         "name": "fmt",
@@ -24,8 +24,8 @@
         "name": "glaze",
         "github": "stephenberry/glaze",
         "branch": "main",
-        "tag": "v2.1.9",
-        "commit": "5ee728a099cf7138155b80b0275ef6a3a182f8e6"
+        "tag": "v2.2.0",
+        "commit": "ff25937c26a09942fa307940118d180f22ba9dbe"
     },
     {
         "name": "spdlog",
@@ -51,29 +51,29 @@
     {
         "name": "SPIRV-Headers",
         "github": "KhronosGroup/SPIRV-Headers",
-        "branch": "master",
+        "branch": "main",
         "tag": "8b246ff75c6615ba4532fe4fde20f1be090c3764",
         "commit": "8b246ff75c6615ba4532fe4fde20f1be090c3764"
     },
     {
         "name": "SPIRV-Tools",
         "github": "KhronosGroup/SPIRV-Tools",
-        "branch": "master",
+        "branch": "main",
         "tag": "v2023.2",
-        "commit": "75ad1345d4af5268448a9b26797294b48795cd69"
+        "commit": "5bc7c2876359787f120ceb9f9bedbbc4907438c4"
     },
     {
         "name": "glslang",
         "github": "KhronosGroup/glslang",
-        "branch": "master",
+        "branch": "main",
         "tag": "14.0.0",
-        "commit": "bf08e1db5cc7d20530f86b1d9bdfc6a0c2da372c"
+        "commit": "bada5c87ec6db4441db129d8506742c4a72bd610"
     },
     {
         "name": "xxHash",
         "github": "Cyan4973/xxHash",
         "branch": "dev",
         "tag": "v0.8.2",
-        "commit": "1864a50c9b5cf8500d8e9e61ed92aa0dd3772750"
+        "commit": "337b83a9b8cb7c7cc3d1b2c5936ec44117e39d22"
     }
 ]

@@ -1,18 +1,16 @@
 #pragma once
 
+#include "vulkan/shaders/compiler.hpp"
+
 #include "filesystem.hpp"
 
 namespace assets {
 
-    struct ShaderUnit {
-        std::string source;
-        vk::ShaderStageFlagBits stage;
-    };
-
-
     class ShaderParser {
 
-        std::array<ShaderUnit, 2> units;
+        std::vector<glsl::ShaderUnit> units;
+
+        std::string preprocess (glsl::ShaderUnit& unit);
 
         public:
 

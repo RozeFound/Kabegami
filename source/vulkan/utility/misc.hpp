@@ -63,9 +63,10 @@ namespace vku {
         }
 
         template <class T> requires is_array_like<T>
-        std::filesystem::path write_temp (T data, std::string_view name = "") {
+        std::filesystem::path write_temp (T data) {
 
-            auto path = std::filesystem::temp_directory_path() / (name.empty() ? hash::XXH3(data) : name);
+            auto hash = std::to_string(hash::XXH3(data));
+            auto path = std::filesystem::temp_directory_path() / hash;
 
             write(path, data);
 

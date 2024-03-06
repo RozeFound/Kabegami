@@ -17,23 +17,12 @@ namespace vku {
 
         public:
 
-        ShaderModule (const assets::ShaderParser& parser) {
-
-            auto stage = parser.get_stage();
-
-            auto compiler = glsl::Compiler(stage);
-
-            if (!compiler.compile(parser.get_source())) {
-                loge("Failed to compile shader: {}", parser.get_path());
-                logd("\n{}",compiler.get_log());
-            }
-
-            auto buffer = compiler.get_spirv();
+        ShaderModule (const glsl::SPIRV& spirv) {
 
             auto create_info = vk::ShaderModuleCreateInfo {
                 .flags = vk::ShaderModuleCreateFlags(),
-                .codeSize = buffer.size() * sizeof(uint32_t),
-                .pCode = buffer.data()
+                .codeSize = spirv.size,
+                .pCode = spirv.code.data()
             };
 
             try { this->module = std::make_unique<vk::raii::ShaderModule>(context->device, create_info); }
@@ -41,7 +30,7 @@ namespace vku {
 
             this->stage = vk::PipelineShaderStageCreateInfo {
                 .flags = vk::PipelineShaderStageCreateFlags(),
-                .stage = stage,
+                .stage = spirv.stage,
                 .module = **module,
                 .pName = "main"
             };

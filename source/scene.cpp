@@ -3,11 +3,10 @@
 #include "glm/ext/matrix_clip_space.hpp"
 #include "glm/ext/matrix_transform.hpp"
 
-#include "objects/model.hpp"
-#include "objects/material.hpp"
-
 #include "vulkan/utility/primitives.hpp"
 #include "vulkan/core/descriptor_set.hpp"
+
+#include "vulkan/shaders/shader.hpp"
 
 Scene::Scene (const objects::Scene& info, const assets::FileSystem& fs) {
 
@@ -23,19 +22,14 @@ Scene::Scene (const objects::Scene& info, const assets::FileSystem& fs) {
         std::make_pair("white", std::make_shared<vku::Texture>("materials/white.png"))
     };
 
-    auto basic = assets::ShaderParser("shaders/basic", fs);
-
-    auto basic_vert = assets::ShaderParser("shaders/basic.vert", fs);
-    auto basic_frag = assets::ShaderParser("shaders/basic.frag", fs);
-    
-    auto waterriple_vert = assets::ShaderParser("shaders/effects/waterripple_opengl.vert", fs);
-    auto waterriple_frag = assets::ShaderParser("shaders/effects/waterripple_opengl.frag", fs);
+    auto basic = vku::Shader("shaders/basic", fs);
+    auto waterripple = vku::Shader("shaders/effects/waterripple_opengl", fs);
 
     shaders = {
-        std::make_pair("basic_vert", std::make_shared<vku::ShaderModule>(basic_vert)),
-        std::make_pair("basic_frag", std::make_shared<vku::ShaderModule>(basic_frag)),
-        std::make_pair("waterriple_vert", std::make_shared<vku::ShaderModule>(waterriple_vert)),
-        std::make_pair("waterriple_frag", std::make_shared<vku::ShaderModule>(waterriple_frag))
+        std::make_pair("basic_vert", basic.vertex_module),
+        std::make_pair("basic_frag", basic.fragment_module),
+        std::make_pair("waterriple_vert", waterripple.vertex_module),
+        std::make_pair("waterriple_frag", waterripple.fragment_module)
     };
 
     auto vertecies = std::vector<vku::Vertex> {
@@ -162,8 +156,8 @@ void Scene::draw (const vk::raii::CommandBuffer& commands) const {
 
     auto sets = std::array { 
         *textures.at("water")->get_descriptor_set(),
-        *textures.at("waterripple_normal")->get_descriptor_set(),
-        *textures.at("white")->get_descriptor_set()
+        *textures.at("white")->get_descriptor_set(),
+        *textures.at("waterripple_normal")->get_descriptor_set()
      };    
 
     commands.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, *pipeline_layouts.at("water"), 0, sets, nullptr);

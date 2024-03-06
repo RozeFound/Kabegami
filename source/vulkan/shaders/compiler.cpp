@@ -1,26 +1,10 @@
 #include "compiler.hpp"
 
+#include "vulkan/utility/misc.hpp"
+
 namespace glsl {
 
-    bool Compiler::preprocess (assets::ShaderUnit& unit, glslang::TShader& shader, Options options) {
-
-        constexpr auto profile = EProfile::ECoreProfile;
-        auto includer = glslang::TShader::ForbidIncluder{};
-
-        if (!shader.preprocess(resource_limits, 110, profile, false, false, messages, &unit.source, includer)) {
-            auto tmp_path = vku::fs::write_temp(unit.source);
-            logi("--- shader preprocess failed ---");
-            loge("shader source is at {}", tmp_path.string());
-            loge("glslang(parse): {}", shader.getInfoLog());
-            logi("--- end ---");
-            return false;
-        }
-
-        return true;
-
-    }
-
-    bool Compiler::parse (assets::ShaderUnit& unit, glslang::TShader& shader, Options options) {
+    bool Compiler::parse (ShaderUnit& unit, glslang::TShader& shader, Options options) {
 
         auto* data   = unit.source.c_str();
         auto  client = get_client(options.client_version);
@@ -52,7 +36,7 @@ namespace glsl {
 
     }
 
-    bool Compiler::compile (std::array<assets::ShaderUnit, 2>& units) {
+    bool Compiler::compile (std::vector<ShaderUnit>& units) {
 
         glslang::InitializeProcess();
 
@@ -63,10 +47,8 @@ namespace glsl {
         std::vector<std::unique_ptr<glslang::TShader>> shaders;
 
         for (auto& unit : units) {
-            auto language = find_shader_language(unit.stage);
-            shaders.emplace_back(std::make_unique<glslang::TShader>(language));
+            shaders.emplace_back(std::make_unique<glslang::TShader>(unit.language));
             auto& shader = *shaders.back();
-            if (!preprocess(unit, shader, options)) return false;
             if (!parse(unit, shader, options)) return false;
             program.addShader(&shader);
         }
@@ -75,10 +57,7 @@ namespace glsl {
             loge("glslang(link): {}\n", program.getInfoLog());
             return false;
         }
-
-        auto language = find_shader_language(units.front().stage);
-
-        auto* intermediate = program.getIntermediate(language);
+        auto* intermediate = program.getIntermediate(units.front().language);
         auto resolver = glslang::TDefaultGlslIoResolver(*intermediate);
         auto io_mapper = glslang::TGlslIoMapper();
 
@@ -93,12 +72,19 @@ namespace glsl {
         spv_options.generateDebugInfo = false;
 
         for (auto& unit : units) {
-            auto language = find_shader_language(unit.stage);
-            auto intermediate = program.getIntermediate(language);
+            auto intermediate = program.getIntermediate(unit.language);
             intermediate->setOriginUpperLeft();
+
             auto spirv = std::vector<uint32_t>();
+            
             glslang::GlslangToSpv(*intermediate, spirv, &logger, &spv_options);
-            spvs.emplace(unit.stage, std::move(spirv));
+            
+            spvs.emplace(unit.stage, 
+                SPIRV {
+                    .code = std::move(spirv),
+                    .size = spirv.size() * sizeof(uint32_t),
+                    .stage = unit.stage 
+                });
 
             auto messages = logger.getAllMessages();
             if (messages.length() > 0) loge("glslang(spv): {}\n", messages);
