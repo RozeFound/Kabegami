@@ -11,21 +11,21 @@
         "github": "g-truc/glm",
         "branch": "master",
         "tag": "1.0.1",
-        "commit": "61caae4d054bbce8b41ee958d34abaadd4833375"
+        "commit": "7a812397a2439462106c57c2ac7e11474dcda3e1"
     },
     {
         "name": "fmt",
         "github": "fmtlib/fmt",
         "branch": "master",
         "tag": "10.2.1",
-        "commit": "09935d82390440cebf80ac427548049d79d29ff7"
+        "commit": "dfe5b12c08dfa803fe5a275b380991df25f4b52d"
     },
     {
         "name": "glaze",
         "github": "stephenberry/glaze",
         "branch": "main",
-        "tag": "v2.2.0",
-        "commit": "ff25937c26a09942fa307940118d180f22ba9dbe"
+        "tag": "v2.2.1",
+        "commit": "a1678b2561df0919b18885df0d335e15fea33041"
     },
     {
         "name": "spdlog",
@@ -60,7 +60,7 @@
         "github": "KhronosGroup/SPIRV-Tools",
         "branch": "main",
         "tag": "v2023.2",
-        "commit": "5bc7c2876359787f120ceb9f9bedbbc4907438c4"
+        "commit": "7c363050de047e37ca168c74e0a960fd4b097173"
     },
     {
         "name": "glslang",

@@ -17,12 +17,12 @@ namespace vku {
 
         public:
 
-        ShaderModule (const glsl::SPIRV& spirv) {
+        ShaderModule (const std::vector<uint32_t>& spirv, vk::ShaderStageFlagBits stage) {
 
             auto create_info = vk::ShaderModuleCreateInfo {
                 .flags = vk::ShaderModuleCreateFlags(),
-                .codeSize = spirv.size,
-                .pCode = spirv.code.data()
+                .codeSize = spirv.size() * sizeof(uint32_t),
+                .pCode = spirv.data()
             };
 
             try { this->module = std::make_unique<vk::raii::ShaderModule>(context->device, create_info); }
@@ -30,7 +30,7 @@ namespace vku {
 
             this->stage = vk::PipelineShaderStageCreateInfo {
                 .flags = vk::PipelineShaderStageCreateFlags(),
-                .stage = spirv.stage,
+                .stage = stage,
                 .module = **module,
                 .pName = "main"
             };

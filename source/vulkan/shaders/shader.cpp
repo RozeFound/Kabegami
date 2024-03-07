@@ -1,14 +1,26 @@
 #include "shader.hpp"
 
+#include "assets/shader.hpp"
+
 namespace vku {
 
     Shader::Shader (assets::ShaderParser parser) {
 
-        auto compiler = glsl::Compiler();
-        compiler.compile(parser.get_units());
+        glsl::Compiler::Options options;
+        options.auto_map_locations = true;
+        options.auto_map_bindings = true;
 
-        vertex_module = std::make_shared<ShaderModule>(compiler.get_spv(vk::ShaderStageFlagBits::eVertex));
-        fragment_module = std::make_shared<ShaderModule>(compiler.get_spv(vk::ShaderStageFlagBits::eFragment));
+        auto compiler = glsl::Compiler(options);
+
+        for (auto& unit : parser.get_units()) {
+
+            std::vector<uint32_t> spriv;
+            compiler.compile(unit, spriv);
+
+            auto module = std::make_shared<vku::ShaderModule>(spriv, unit.stage);
+            modules.emplace_back(module);
+
+        }
 
     }
 

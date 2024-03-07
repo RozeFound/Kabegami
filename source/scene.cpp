@@ -6,8 +6,6 @@
 #include "vulkan/utility/primitives.hpp"
 #include "vulkan/core/descriptor_set.hpp"
 
-#include "vulkan/shaders/shader.hpp"
-
 Scene::Scene (const objects::Scene& info, const assets::FileSystem& fs) {
 
     clear_color = { (float)info.general.clear_color.r,
@@ -22,21 +20,16 @@ Scene::Scene (const objects::Scene& info, const assets::FileSystem& fs) {
         std::make_pair("white", std::make_shared<vku::Texture>("materials/white.png"))
     };
 
-    auto basic = vku::Shader("shaders/basic", fs);
-    auto waterripple = vku::Shader("shaders/effects/waterripple_opengl", fs);
-
     shaders = {
-        std::make_pair("basic_vert", basic.vertex_module),
-        std::make_pair("basic_frag", basic.fragment_module),
-        std::make_pair("waterriple_vert", waterripple.vertex_module),
-        std::make_pair("waterriple_frag", waterripple.fragment_module)
+        std::make_pair("basic", std::make_shared<vku::Shader>(fs, "shaders/basic")),
+        std::make_pair("waterriple", std::make_shared<vku::Shader>(fs, "shaders/effects/waterripple_opengl")),
     };
 
     auto vertecies = std::vector<vku::Vertex> {
-        {{1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
-        {{1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}},
-        {{-1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
-        {{-1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}},
+        {{1.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
+        {{1.0f, -1.0f, 0.0f}, {1.0f, 1.0f}},
+        {{-1.0f, -1.0f, 0.0f}, {0.0f, 1.0f}},
+        {{-1.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
     };
 
     auto indices = std::vector<uint16_t> { 0, 1, 2, 0, 2, 3 };
@@ -106,7 +99,8 @@ void Scene::allocate_resources(const vk::raii::RenderPass& render_pass) {
         .color_blend(true,
             { vk::BlendFactor::eSrcAlpha, vk::BlendFactor::eOneMinusSrcAlpha }, vk::BlendOp::eAdd,
             { vk::BlendFactor::eSrcAlpha, vk::BlendFactor::eOneMinusSrcAlpha }, vk::BlendOp::eAdd)
-        .stage(shaders.at("basic_vert")).stage(shaders.at("basic_frag"))
+        .stage(shaders.at("basic")->get_modules().at(0))
+        .stage(shaders.at("basic")->get_modules().at(1))
         .create(**pipeline_cache, *pipeline_layouts.at("basic"), render_pass);
 
     pipelines["water"] = vku::PipeLineFactory()
@@ -116,7 +110,8 @@ void Scene::allocate_resources(const vk::raii::RenderPass& render_pass) {
         .color_blend(true,
             { vk::BlendFactor::eSrcAlpha, vk::BlendFactor::eOneMinusSrcAlpha }, vk::BlendOp::eAdd,
             { vk::BlendFactor::eSrcAlpha, vk::BlendFactor::eOneMinusSrcAlpha }, vk::BlendOp::eAdd)
-        .stage(shaders.at("waterriple_vert")).stage(shaders.at("waterriple_frag"))
+        .stage(shaders.at("waterriple")->get_modules().at(0))
+        .stage(shaders.at("waterriple")->get_modules().at(1))
         .create(**pipeline_cache, *pipeline_layouts.at("water"), render_pass);
 
 }

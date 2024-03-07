@@ -4,16 +4,29 @@
 
 namespace glsl {
 
-    bool Compiler::parse (ShaderUnit& unit, glslang::TShader& shader, Options options) {
+    constexpr auto find_shader_language (vk::ShaderStageFlagBits stage) {
+        switch (stage)
+        {
+            case vk::ShaderStageFlagBits::eVertex: return EShLangVertex;
+            case vk::ShaderStageFlagBits::eFragment: return EShLangFragment;
+            case vk::ShaderStageFlagBits::eGeometry: return EShLangGeometry;
+            default: return EShLangVertex;
+        }
+    }
+
+    bool Compiler::parse (ShaderUnit& unit, glslang::TShader& shader) {
 
         auto* data   = unit.source.c_str();
         auto  client = get_client(options.client_version);
 
         shader.setStrings(&data, 1);
         shader.setEnvInput(options.hlsl ? glslang::EShSourceHlsl : glslang::EShSourceGlsl,
-                        EShLanguage::EShLangVertex, client, 100);
+                           EShLanguage::EShLangVertex, client, 110);
         shader.setEnvClient(client, options.client_version);
         shader.setEnvTarget(glslang::EShTargetLanguage::EShTargetSpv, get_target_version(options.client_version));
+
+        shader.setPreamble(unit.get_preamble().c_str());
+        shader.addProcesses(unit.get_processes());
 
         if (options.auto_map_locations) shader.setAutoMapLocations(true);
         if (options.auto_map_bindings) shader.setAutoMapBindings(true);
@@ -36,59 +49,50 @@ namespace glsl {
 
     }
 
-    bool Compiler::compile (std::vector<ShaderUnit>& units) {
+    bool Compiler::compile (ShaderUnit& unit, std::vector<uint32_t>& spirv) {
 
+        // Initialize glslang library.
         glslang::InitializeProcess();
 
-        Options options;
+        auto language = find_shader_language(unit.stage);
+        auto shader = glslang::TShader(language);
 
+        if (!parse(unit, shader))
+            return false;
+
+        // Add shader to new program object.
         glslang::TProgram program;
+        program.addShader(&shader);
 
-        std::vector<std::unique_ptr<glslang::TShader>> shaders;
-
-        for (auto& unit : units) {
-            shaders.emplace_back(std::make_unique<glslang::TShader>(unit.language));
-            auto& shader = *shaders.back();
-            if (!parse(unit, shader, options)) return false;
-            program.addShader(&shader);
-        }
-
+        // Link program.
         if (!program.link(messages)) {
-            loge("glslang(link): {}\n", program.getInfoLog());
+            loge("glslang(link): {}", program.getInfoLog());
             return false;
         }
-        auto* intermediate = program.getIntermediate(units.front().language);
-        auto resolver = glslang::TDefaultGlslIoResolver(*intermediate);
-        auto io_mapper = glslang::TGlslIoMapper();
 
-        if (!(program.mapIO(&resolver, &io_mapper))) {
-            loge("glslang(mapIo): {}\n", program.getInfoLog());
+        auto intermediate = program.getIntermediate(language);
+
+        // Translate to SPIRV.
+        if (!intermediate) {
+            loge("Failed to get shared intermediate code.\n");
             return false;
         }
 
         spv::SpvBuildLogger logger;
         glslang::SpvOptions spv_options;
-        spv_options.validate = true;
-        spv_options.generateDebugInfo = false;
 
-        for (auto& unit : units) {
-            auto intermediate = program.getIntermediate(unit.language);
-            intermediate->setOriginUpperLeft();
+        if constexpr (!debug) {
+            spv_options.disableOptimizer = !options.optimize;
+            spv_options.optimizeSize = options.optimize_size;
+        } else spv_options.validate = true;
+        
+        glslang::GlslangToSpv(*intermediate, spirv, &logger, &spv_options);
 
-            auto spirv = std::vector<uint32_t>();
-            
-            glslang::GlslangToSpv(*intermediate, spirv, &logger, &spv_options);
-            
-            spvs.emplace(unit.stage, 
-                SPIRV {
-                    .code = std::move(spirv),
-                    .size = spirv.size() * sizeof(uint32_t),
-                    .stage = unit.stage 
-                });
+        auto log = logger.getAllMessages();
+        if (log.size()) loge("glslang(spirv): {}", log);
 
-            auto messages = logger.getAllMessages();
-            if (messages.length() > 0) loge("glslang(spv): {}\n", messages);
-        }
+        // Shutdown glslang library.
+        glslang::FinalizeProcess();
 
         return true;
 

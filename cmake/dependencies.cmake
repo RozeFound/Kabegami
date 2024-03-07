@@ -67,18 +67,18 @@ CPMAddHeaderOnly(
 )
 #target_compile_definitions(stb INTERFACE "STB_IMAGE_IMPLEMENTATION")
 
-# CPMAddPackage(
-#   GITHUB_REPOSITORY ${SPIRV-Headers_repo}
-#   GIT_TAG ${SPIRV-Headers_commit}
-# )
+CPMAddPackage(
+  GITHUB_REPOSITORY ${SPIRV-Headers_repo}
+  GIT_TAG ${SPIRV-Headers_commit}
+)
 
-# CPMAddPackage(
-#   GITHUB_REPOSITORY ${SPIRV-Tools_repo}
-#   GIT_TAG ${SPIRV-Tools_commit}
-#   OPTIONS
-#     "SPIRV_SKIP_TESTS ON"
-#     "SPIRV_SKIP_EXECUTABLES ON"
-# )
+CPMAddPackage(
+  GITHUB_REPOSITORY ${SPIRV-Tools_repo}
+  GIT_TAG ${SPIRV-Tools_commit}
+  OPTIONS
+    "SPIRV_SKIP_TESTS ON"
+    "SPIRV_SKIP_EXECUTABLES ON"
+)
 
 CPMAddPackage(
   GITHUB_REPOSITORY ${glslang_repo}
@@ -87,7 +87,6 @@ CPMAddPackage(
     "GLSLANG_TESTS OFF"
     "ENABLE_GLSLANG_BINARIES OFF"
     "BUILD_EXTERNAL OFF"
-    "ENABLE_OPT 0"
 )
 
 set(glslang-link-targets 

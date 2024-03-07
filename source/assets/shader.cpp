@@ -32,6 +32,7 @@ namespace assets {
         #define float3 vec3
         #define float4 vec4
         #define lerp mix
+
     )";
 
     std::string load_glsl_include (const FileSystem& fs, std::string_view source) {
@@ -66,30 +67,19 @@ namespace assets {
 
     }
 
-    std::string ShaderParser::preprocess (glsl::ShaderUnit& unit) {
+    std::string ShaderParser::pre_header (glsl::ShaderUnit& unit) {
 
         auto header = std::string(pre_shader_code);
 
         if (unit.stage == vk::ShaderStageFlagBits::eVertex)
             header += "#define attribute in;\n"
-                      "#defnie varying out;\n";
+                      "#define varying out;\n";
         else if (unit.stage == vk::ShaderStageFlagBits::eFragment)
-            header += "#defnie varying in;\n"
+            header += "#define varying in;\n"
                       "#define gl_FragColor diffuseColor\n"
                       "out vec4 diffuseColor;\n";
 
-        constexpr auto profile = EProfile::ECoreProfile;
-        auto includer = glslang::TShader::ForbidIncluder{};
-        auto shader = glslang::TShader(unit.language);
-
-        auto messages = (EShMessages)(EShMsgDefault | EShMsgSpvRules | EShMsgRelaxedErrors | EShMsgSuppressWarnings | EShMsgVulkanRules);
-
-        auto* data = unit.source.c_str();
-        std::string result;
-        shader.setStrings(&data, 1);
-        shader.preprocess(GetDefaultResources(), 110, profile, false, false, messages, &result, includer);
-
-        return result;
+        return header;
 
     }
 
@@ -110,25 +100,20 @@ namespace assets {
         
         include = load_glsl_include(fs, include);
 
-        return include + source;
+        return include + new_source;
 
     }
 
     ShaderParser::ShaderParser(std::string path, const FileSystem& fs) {
 
-        units = {
-            {
-                .source = load_glsl_file(fs, path + ".vert"),
-                .stage = vk::ShaderStageFlagBits::eVertex
-            }, 
-            {
-                .source = load_glsl_file(fs, path + ".frag"),
-                .stage = vk::ShaderStageFlagBits::eFragment
-            }
-        };
+        units.emplace_back(load_glsl_file(fs, path + ".vert"), vk::ShaderStageFlagBits::eVertex);
+        units.emplace_back(load_glsl_file(fs, path + ".frag"), vk::ShaderStageFlagBits::eFragment);
 
-        units[0].source = preprocess(units[0]);
-        units[1].source = preprocess(units[1]);
+        if (fs.exists(path + ".geom"))
+            units.emplace_back(load_glsl_file(fs, path + ".geom"), vk::ShaderStageFlagBits::eGeometry);
+
+        for (auto& unit : units)
+            unit.source = pre_header(unit) + unit.source;
 
     }
 

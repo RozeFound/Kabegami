@@ -10,7 +10,7 @@ namespace assets {
 
         std::vector<glsl::ShaderUnit> units;
 
-        std::string preprocess (glsl::ShaderUnit& unit);
+        std::string pre_header (glsl::ShaderUnit& unit);
 
         public:
 

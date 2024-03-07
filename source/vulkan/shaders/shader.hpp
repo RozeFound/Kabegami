@@ -1,21 +1,21 @@
 #pragma once
 
-#include "assets/shader.hpp"
 #include "module.hpp"
 
 namespace vku {
 
     class Shader {
 
-        public:
+        std::vector<std::shared_ptr<vku::ShaderModule>> modules;
 
-        std::shared_ptr<ShaderModule> vertex_module;
-        std::shared_ptr<ShaderModule> fragment_module;
+        public:
 
         Shader() = delete;
         Shader (assets::ShaderParser parser);
-        Shader (std::string path, const assets::FileSystem& fs)
-            : Shader(assets::ShaderParser(path, fs)) {};
+        Shader (const assets::FileSystem& fs, std::string path)
+            : Shader(assets::ShaderParser(path, fs)) {}
+
+        constexpr const auto get_modules() const { return modules; }
 
 
     };

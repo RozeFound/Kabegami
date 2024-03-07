@@ -3,52 +3,44 @@
 #include <glslang/SPIRV/GlslangToSpv.h>
 #include <glslang/Public/ShaderLang.h>
 #include <glslang/Public/ResourceLimits.h>
-#include <glslang/MachineIndependent/iomapper.h>
 
 namespace glsl {
 
-    constexpr auto find_shader_language (vk::ShaderStageFlagBits stage) {
-            switch (stage)
-            {
-                case vk::ShaderStageFlagBits::eVertex: return EShLangVertex;
-                case vk::ShaderStageFlagBits::eFragment: return EShLangFragment;
-                case vk::ShaderStageFlagBits::eGeometry: return EShLangGeometry;
-                default: return EShLangVertex;
-            }
+    class ShaderUnit {
+
+        std::string preamble;
+        std::vector<std::string> processes;
+
+        public:
+
+        std::string source;
+        const vk::ShaderStageFlagBits stage;
+
+        ShaderUnit(const std::string& source, vk::ShaderStageFlagBits stage) : source(source), stage(stage) {}
+
+        void define (const std::string& name) {
+            preamble += "#define " + name + "\n";
+            processes.emplace_back("D" + name);
         }
 
-    struct ShaderUnit {
-        std::string source;
-        vk::ShaderStageFlagBits stage;
-        EShLanguage language = find_shader_language(stage);
-    };
+        void define (const std::string& name, const std::string& value) {
+            preamble += "#define " + name + " " + value + "\n";
+            processes.emplace_back("D" + name + "=" + value);
+        }
+        void undefine (const std::string& name) {
+            preamble += "#undef " + name + "\n";
+            processes.emplace_back("U" + name);
+        }
 
-    struct SPIRV {
-        std::vector<uint32_t> code;
-        std::size_t size;
-        vk::ShaderStageFlagBits stage;
+        constexpr const auto get_preamble() const { return preamble; }
+        constexpr const auto get_processes() const { return processes; }
+
     };
 
     class Compiler {
 
-        struct Options {
-
-            glslang::EShTargetClientVersion client_version = glslang::EShTargetVulkan_1_3;
-
-            bool hlsl = false;
-
-            bool auto_map_locations = false;
-            bool auto_map_bindings = false;
-
-            bool relaxed_rules_vulkan = false;
-            bool global_uniform_binding = false;
-
-        };
-
         const TBuiltInResource* resource_limits = GetDefaultResources();
         const EShMessages messages = static_cast<EShMessages>(EShMsgDefault | EShMsgVulkanRules | EShMsgSpvRules);
-
-        std::unordered_map<vk::ShaderStageFlagBits, SPIRV> spvs;
         
         constexpr auto get_client (glslang::EShTargetClientVersion version) {
             switch (version) {
@@ -74,12 +66,29 @@ namespace glsl {
 
         public:
 
-        bool parse (ShaderUnit& unit, glslang::TShader& shader, Options options);
-        bool compile (std::vector<ShaderUnit>& units);
+        struct Options {
 
-        constexpr auto get_spv (vk::ShaderStageFlagBits stage) {
-            return spvs.at(stage);
-        }
+            glslang::EShTargetClientVersion client_version = glslang::EShTargetVulkan_1_3;
+
+            bool hlsl = false;
+
+            bool auto_map_locations = false;
+            bool auto_map_bindings = false;
+
+            bool relaxed_rules_vulkan = false;
+            bool global_uniform_binding = false;
+
+            bool optimize = false;
+            bool optimize_size = false;
+            
+        } const options;
+
+        Compiler() = default;
+        Compiler (Options options) : options(options) {};
+
+        bool parse (ShaderUnit& unit, glslang::TShader& shader);
+        bool compile (ShaderUnit& unit, std::vector<uint32_t>& spriv);
+
 
     };
 
