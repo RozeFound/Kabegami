@@ -4,13 +4,34 @@
 
 namespace glsl {
 
-    constexpr auto find_shader_language (vk::ShaderStageFlagBits stage) {
-        switch (stage)
-        {
-            case vk::ShaderStageFlagBits::eVertex: return EShLangVertex;
-            case vk::ShaderStageFlagBits::eFragment: return EShLangFragment;
-            case vk::ShaderStageFlagBits::eGeometry: return EShLangGeometry;
-            default: return EShLangVertex;
+    void Compiler::set_messages() {
+        auto messages = static_cast<EShMessages>(EShMsgDefault | EShMsgSpvRules);
+        if (options.relaxed_errors_glsl) messages = (EShMessages)(messages | EShMsgRelaxedErrors);
+        if (options.suppress_warnings_glsl) messages = (EShMessages)(messages | EShMsgSuppressWarnings);
+        if (get_client(options.client_version) == glslang::EShClientVulkan)
+            messages = (EShMessages)(messages | EShMsgVulkanRules);
+        this->messages = messages;
+    }
+
+    constexpr glslang::EShClient Compiler::get_client (glslang::EShTargetClientVersion version) {
+        switch (version) {
+            case glslang::EShTargetVulkan_1_0:
+            case glslang::EShTargetVulkan_1_1:
+            case glslang::EShTargetVulkan_1_2:
+            case glslang::EShTargetVulkan_1_3: return glslang::EShClientVulkan;
+            case glslang::EShTargetOpenGL_450: return glslang::EShClientOpenGL;
+            default: return glslang::EShClientVulkan;
+        }
+    }
+
+    constexpr glslang::EShTargetLanguageVersion Compiler::get_target_version (glslang::EShTargetClientVersion version) {
+        switch (version) {
+            case glslang::EShTargetVulkan_1_0: return glslang::EShTargetSpv_1_0;
+            case glslang::EShTargetVulkan_1_1: return glslang::EShTargetSpv_1_3;
+            case glslang::EShTargetVulkan_1_2: return glslang::EShTargetSpv_1_5;
+            case glslang::EShTargetVulkan_1_3: return glslang::EShTargetSpv_1_6;
+            case glslang::EShTargetOpenGL_450: return glslang::EShTargetSpv_1_0;
+            default: return glslang::EShTargetSpv_1_0;
         }
     }
 
@@ -51,11 +72,7 @@ namespace glsl {
 
     bool Compiler::compile (ShaderUnit& unit, std::vector<uint32_t>& spirv) {
 
-        // Initialize glslang library.
-        glslang::InitializeProcess();
-
-        auto language = find_shader_language(unit.stage);
-        auto shader = glslang::TShader(language);
+        auto shader = glslang::TShader(unit.language);
 
         if (!parse(unit, shader))
             return false;
@@ -70,7 +87,7 @@ namespace glsl {
             return false;
         }
 
-        auto intermediate = program.getIntermediate(language);
+        auto intermediate = program.getIntermediate(unit.language);
 
         // Translate to SPIRV.
         if (!intermediate) {
@@ -90,9 +107,6 @@ namespace glsl {
 
         auto log = logger.getAllMessages();
         if (log.size()) loge("glslang(spirv): {}", log);
-
-        // Shutdown glslang library.
-        glslang::FinalizeProcess();
 
         return true;
 

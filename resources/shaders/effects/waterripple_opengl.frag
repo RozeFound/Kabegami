@@ -4,14 +4,10 @@
 varying vec4 v_TexCoord;
 varying vec4 v_TexCoordRipple;
 
-layout(push_constant) uniform globals {
-
-	layout(offset=128) float g_Strength; // {"material":"ui_editor_properties_ripple_strength","default":0.1,"range":[0,1]}
-	float g_SpecularPower; // {"material":"ui_editor_properties_ripple_specular_power","default":1.0,"range":[0,100]}
-	float g_SpecularStrength; // {"material":"ui_editor_properties_ripple_specular_strength","default":1.0,"range":[0,10]}
-	vec3 g_SpecularColor; // {"material":"ui_editor_properties_ripple_specular_color","default":"1 1 1","type":"color"}
-
-};
+uniform float g_Strength; // {"material":"ui_editor_properties_ripple_strength","default":0.1,"range":[0,1]}
+uniform float g_SpecularPower; // {"material":"ui_editor_properties_ripple_specular_power","default":1.0,"range":[0,100]}
+uniform float g_SpecularStrength; // {"material":"ui_editor_properties_ripple_specular_strength","default":1.0,"range":[0,10]}
+uniform vec3 g_SpecularColor; // {"material":"ui_editor_properties_ripple_specular_color","default":"1 1 1","type":"color"}
 
 layout(set=0, binding = 0) uniform sampler2D g_Texture0; // {"material":"ui_editor_properties_framebuffer","hidden":true}
 layout(set=1, binding = 0) uniform sampler2D g_Texture1; // {"material":"ui_editor_properties_water_normal"}

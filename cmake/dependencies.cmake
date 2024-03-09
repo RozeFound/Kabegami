@@ -102,4 +102,3 @@ CPMAddPackage(
         "XXHASH_BUILD_XXHSUM OFF"
     SOURCE_SUBDIR cmake_unofficial
 )
-

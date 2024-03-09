@@ -6,15 +6,22 @@
 
 namespace assets {
 
+    struct Parameter {
+        std::string type;
+        std::string name;
+        union {
+            uint32_t location;
+            uint32_t binding;
+        };
+    };
+
     class ShaderParser {
 
         std::vector<glsl::ShaderUnit> units;
 
-        std::string pre_header (glsl::ShaderUnit& unit);
-
         public:
 
-        ShaderParser (std::string path, const FileSystem& fs);
+        ShaderParser (const FileSystem& fs, std::string path);
 
         constexpr auto& get_units() { return units; }
 

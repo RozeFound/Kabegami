@@ -4,15 +4,13 @@
 attribute vec3 inPosition;
 attribute vec2 inTexCoord;
 
-layout(push_constant) uniform globals {
-	mat4x4 modelViewProjection;
-};
+uniform mat4x4 g_ModelViewProjectionMatrix;
 
 varying vec2 fragTexCoord;
 
 void main() {
 
-	gl_Position = vec4(inPosition, 1.0) * modelViewProjection;
+	gl_Position = vec4(inPosition, 1.0) * g_ModelViewProjectionMatrix;
 
 	fragTexCoord = inTexCoord;
 	

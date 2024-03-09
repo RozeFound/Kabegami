@@ -4,13 +4,11 @@
 
 namespace vku {
 
-    Shader::Shader (assets::ShaderParser parser) {
+    Shader::Shader (const assets::FileSystem& fs, std::string path) {
 
         glsl::Compiler::Options options;
-        options.auto_map_locations = true;
-        options.auto_map_bindings = true;
-
         auto compiler = glsl::Compiler(options);
+        auto parser = assets::ShaderParser(fs, path);
 
         for (auto& unit : parser.get_units()) {
 

@@ -11,9 +11,7 @@ namespace vku {
         public:
 
         Shader() = delete;
-        Shader (assets::ShaderParser parser);
-        Shader (const assets::FileSystem& fs, std::string path)
-            : Shader(assets::ShaderParser(path, fs)) {}
+        Shader (const assets::FileSystem& fs, std::string path);
 
         constexpr const auto get_modules() const { return modules; }
 
