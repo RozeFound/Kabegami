@@ -2,7 +2,7 @@
 
 #include "vulkan/core/context.hpp"
 #include "assets/texture.hpp"
-#include "memory.hpp"
+#include "transient.hpp"
 
 namespace vku {
 
@@ -50,25 +50,18 @@ namespace vku {
 
         std::unique_ptr<vk::raii::Sampler> sampler;
 
-        std::unique_ptr<vk::raii::DescriptorPool> pool;
-        std::unique_ptr<vk::raii::DescriptorSet> set;
-
         void create_sampler();
-        void create_descriptors();
         void update_mipmaps (const std::vector<assets::MipMap>& mipmaps);
         void generate_mipmaps (const TransientBuffer& commands);
-
 
         public:
 
         Texture (const assets::TextureParser& parser);
         Texture (std::filesystem::path path);
         Texture (Texture&&) = default;
-        ~Texture() { set.reset(); }
 
-        void set_data(std::span<std::byte> pixels);
-
-        constexpr const auto& get_descriptor_set() const { return *set; }
+        void write_descriptors (vk::raii::DescriptorSet& set, uint32_t binding);
+        void set_data (std::span<std::byte> pixels);
         
     };
 

@@ -2,8 +2,6 @@
 
 #include "context.hpp"
 
-#include <algorithm>
-
 namespace vku {
 
     std::unique_ptr<vk::raii::Pipeline> PipeLineFactory::create (const vk::raii::PipelineCache& cache,

@@ -147,24 +147,24 @@ precision highp float;
                 parameters << fmt::format("layout(location={}) in {} {};\n", input.location, input.type, input.name);
             parameters << "\n\n";
         }
-        
-        if (!outputs.empty()) {
-            for (auto& output : outputs)
-                parameters << fmt::format("layout(location={}) out {} {};\n", output.location, output.type, output.name);
-            parameters << "\n\n";
-        }
-
-        if (!textures.empty()) {
-            for (auto& texture : textures)
-                parameters << fmt::format("layout(set=0, binding={}) uniform {} {};\n", texture.binding, texture.type, texture.name);
-            parameters << "\n\n";
-        }
 
         if (!uniforms.empty()) {
             parameters << "layout(binding=0) uniform GLOBAL {\n";
             for (auto& uniform : uniforms)
                 parameters << fmt::format("\t{} {};\n", uniform.type, uniform.name);
             parameters << "};\n\n";
+        }
+
+        if (!textures.empty()) {
+            for (auto& texture : textures)
+                parameters << fmt::format("layout(binding={}) uniform {} {};\n", 1 + texture.binding, texture.type, texture.name);
+            parameters << "\n\n";
+        }
+
+        if (!outputs.empty()) {
+            for (auto& output : outputs)
+                parameters << fmt::format("layout(location={}) out {} {};\n", output.location, output.type, output.name);
+            parameters << "\n\n";
         }
 
         parameters << "\n\n";

@@ -9,9 +9,9 @@ uniform float g_SpecularPower; // {"material":"ui_editor_properties_ripple_specu
 uniform float g_SpecularStrength; // {"material":"ui_editor_properties_ripple_specular_strength","default":1.0,"range":[0,10]}
 uniform vec3 g_SpecularColor; // {"material":"ui_editor_properties_ripple_specular_color","default":"1 1 1","type":"color"}
 
-layout(set=0, binding = 0) uniform sampler2D g_Texture0; // {"material":"ui_editor_properties_framebuffer","hidden":true}
-layout(set=1, binding = 0) uniform sampler2D g_Texture1; // {"material":"ui_editor_properties_water_normal"}
-layout(set=2, binding = 0) uniform sampler2D g_Texture2; // {"material":"ui_editor_properties_opacity_mask","mode":"opacitymask","default":"util/white"}
+uniform sampler2D g_Texture0; // {"material":"ui_editor_properties_framebuffer","hidden":true}
+uniform sampler2D g_Texture1; // {"material":"ui_editor_properties_water_normal"}
+uniform sampler2D g_Texture2; // {"material":"ui_editor_properties_opacity_mask","mode":"opacitymask","default":"util/white"}
 
 void main() {
 	vec2 texCoord = v_TexCoord.xy;

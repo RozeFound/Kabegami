@@ -42,9 +42,9 @@ Scene::Scene (const objects::Scene& info, const assets::FileSystem& fs) {
 
     pipeline_cache = std::make_unique<vku::PipeLineCache>();
 
-    glm::mat4 orthoProjection = glm::ortho( -1.0f, 1.0f,
+    glm::mat4 orthoProjection = glm::ortho(-1.0f,  1.0f,
                                             1.0f, -1.0f,
-                                            0.0f, 1.0f);
+                                            0.0f,  1.0f);
     glm::mat4 viewMatrix = glm::lookAt( glm::vec3(0.0f, 0.0f, 1.0f),
                                         glm::vec3(0.0f, 0.0f, 0.0f),
                                         glm::vec3(0.0f, 1.0f, 0.0f));
@@ -56,41 +56,42 @@ Scene::Scene (const objects::Scene& info, const assets::FileSystem& fs) {
 
 void Scene::allocate_resources(const vk::raii::RenderPass& render_pass) {
 
-    auto vertex_pc_range = vk::PushConstantRange {
-        .stageFlags = vk::ShaderStageFlagBits::eVertex,
-        .offset = 0,
-        .size = sizeof(VertexPC)
-    };
-
-    logd("Vertex PC range: {}-{}", vertex_pc_range.offset, vertex_pc_range.offset + vertex_pc_range.size);
-
-    auto fragment_pc_range = vk::PushConstantRange {
-        .stageFlags = vk::ShaderStageFlagBits::eFragment,
-        .offset = sizeof(VertexPC),
-        .size = sizeof(FragmentPC)
-    };
-
-    logd("Fragment PC range: {}-{}", fragment_pc_range.offset, fragment_pc_range.offset + fragment_pc_range.size);
-
-    auto descriptor_set_layout = vku::DescriptorSetLayoutFactory()
-        .add_binding(0, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment)
+    auto basic_set_layout = vku::DescriptorSetLayoutFactory()
+        .add_binding(0, vk::DescriptorType::eUniformBuffer, vk::ShaderStageFlagBits::eVertex)
+        .add_binding(1, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment)
         .create();
+
+    sets["background"] = vku::DescriptorSetFactory()
+        .set_layout(basic_set_layout)
+        .create();
+    textures.at("background")->write_descriptors(*sets.at("background"), 1);
+
+    sets["mud"] = vku::DescriptorSetFactory()
+        .set_layout(basic_set_layout)
+        .create();
+    textures.at("mud")->write_descriptors(*sets.at("mud"), 1);
 
     pipeline_layouts["basic"] = vku::PipeLineLayoutFactory()
-        .push_constant({
-            .stageFlags = vk::ShaderStageFlagBits::eVertex,
-            .offset = 0,
-            .size = sizeof(glm::mat4)
-        })
-        .set_layout(**descriptor_set_layout)
+        .set_layout(**basic_set_layout)
         .create();
 
+    auto water_set_layout = vku::DescriptorSetLayoutFactory()
+        .add_binding(0, vk::DescriptorType::eUniformBuffer, vk::ShaderStageFlagBits::eVertex)
+        .add_binding(0, vk::DescriptorType::eUniformBuffer, vk::ShaderStageFlagBits::eFragment)
+        .add_binding(1, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment)
+        .add_binding(2, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment)
+        .add_binding(3, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment)
+        .create();
+
+    sets["water"] = vku::DescriptorSetFactory()
+        .set_layout(water_set_layout)
+        .create();
+    textures.at("water")->write_descriptors(*sets.at("water"), 1);
+    textures.at("mud")->write_descriptors(*sets.at("water"), 2);
+    textures.at("waterripple_normal")->write_descriptors(*sets.at("water"), 3);
+
     pipeline_layouts["water"] = vku::PipeLineLayoutFactory()
-        .set_layout(**descriptor_set_layout)
-        .set_layout(**descriptor_set_layout)
-        .set_layout(**descriptor_set_layout)
-        .push_constant(vertex_pc_range)
-        .push_constant(fragment_pc_range)
+        .set_layout(**water_set_layout)
         .create();
 
     pipelines["basic"] = vku::PipeLineFactory()
@@ -149,20 +150,14 @@ void Scene::draw (const vk::raii::CommandBuffer& commands) const {
 
     commands.bindPipeline(vk::PipelineBindPoint::eGraphics, *pipelines.at("water"));
 
-    auto sets = std::array { 
-        *textures.at("water")->get_descriptor_set(),
-        *textures.at("white")->get_descriptor_set(),
-        *textures.at("waterripple_normal")->get_descriptor_set()
-     };    
-
-    commands.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, *pipeline_layouts.at("water"), 0, sets, nullptr);
+    commands.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, *pipeline_layouts.at("water"), 0, **sets.at("water"), nullptr);
     commands.bindPipeline(vk::PipelineBindPoint::eGraphics, *pipelines.at("water"));
 
     commands.bindVertexBuffers(0, ***vertex_buffer, *offsets.data());
     commands.bindIndexBuffer(**index_buffer, 0, vk::IndexType::eUint16);
     commands.drawIndexed(6, 1, 0, 0, 0);
 
-    commands.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, *pipeline_layouts.at("basic"), 0, *textures.at("mud")->get_descriptor_set(), nullptr);
+    commands.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, *pipeline_layouts.at("basic"), 0, **sets.at("mud"), nullptr);
     commands.pushConstants<glm::mat4x4>(*pipeline_layouts.at("basic"), vk::ShaderStageFlagBits::eVertex, 0, modelViewProjection);
     commands.bindPipeline(vk::PipelineBindPoint::eGraphics, *pipelines.at("basic"));
 
@@ -170,7 +165,7 @@ void Scene::draw (const vk::raii::CommandBuffer& commands) const {
     commands.bindIndexBuffer(**index_buffer, 0, vk::IndexType::eUint16);
     commands.drawIndexed(6, 1, 0, 0, 0);
 
-    commands.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, *pipeline_layouts.at("basic"), 0, *textures.at("background")->get_descriptor_set(), nullptr);
+    commands.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, *pipeline_layouts.at("basic"), 0, **sets.at("background"), nullptr);
     commands.pushConstants<glm::mat4x4>(*pipeline_layouts.at("basic"), vk::ShaderStageFlagBits::eVertex, 0, modelViewProjection);
     commands.bindPipeline(vk::PipelineBindPoint::eGraphics, *pipelines.at("basic"));
 

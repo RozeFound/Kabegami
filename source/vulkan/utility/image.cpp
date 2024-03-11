@@ -3,7 +3,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
-#include "vulkan/core/descriptor_set.hpp"
+#include "vulkan/utility/memory.hpp"
 
 
 namespace vku {
@@ -64,7 +64,6 @@ namespace vku {
         Image::create_view(vk::ImageAspectFlagBits::eColor);
 
         create_sampler();
-        create_descriptors();
         update_mipmaps(mipmaps);
 
     }
@@ -85,7 +84,6 @@ namespace vku {
         Image::create_view(vk::ImageAspectFlagBits::eColor);
 
         create_sampler();
-        create_descriptors();
 
         auto size = width * height * 4;
         set_data({pixels, pixels + size});
@@ -120,36 +118,7 @@ namespace vku {
 
     }
 
-    void Texture::create_descriptors() {
-
-        auto pool_size = vk::DescriptorPoolSize {
-            .type = vk::DescriptorType::eCombinedImageSampler,
-            .descriptorCount = 1
-        };
-
-        auto pool_info = vk::DescriptorPoolCreateInfo {
-            .flags = vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet,
-            .maxSets = 1,
-            .poolSizeCount = 1,
-            .pPoolSizes = &pool_size
-        };
-
-        try { pool = std::make_unique<vk::raii::DescriptorPool>(context->device, pool_info); }
-        catch (vk::SystemError e) { loge("Failed to create Descriptor Pool: {}", e.what()); }
-
-        auto layout = vku::DescriptorSetLayoutFactory()
-            .add_binding(0, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment)
-            .create();
-
-        auto allocate_info = vk::DescriptorSetAllocateInfo {
-            .descriptorPool = **pool,
-            .descriptorSetCount = 1,
-            .pSetLayouts = &**layout
-        };
-
-        try { auto sets = vk::raii::DescriptorSets(context->device, allocate_info);
-              set = std::make_unique<vk::raii::DescriptorSet>(std::move(sets.back()));
-        } catch (vk::SystemError e) { loge("Failed to allocate DescriptorSet's: {}", e.what()); }
+    void Texture::write_descriptors (vk::raii::DescriptorSet& set, uint32_t binding) {
 
         auto image_info = vk::DescriptorImageInfo {
             .sampler = **sampler,
@@ -158,8 +127,8 @@ namespace vku {
         };
 
         auto write_info = vk::WriteDescriptorSet {
-            .dstSet = **set,
-            .dstBinding = 0,
+            .dstSet = *set,
+            .dstBinding = binding,
             .dstArrayElement = 0,
             .descriptorCount = 1,
             .descriptorType = vk::DescriptorType::eCombinedImageSampler,
@@ -219,7 +188,7 @@ namespace vku {
 
     }
 
-    void Texture::set_data(std::span<std::byte> pixels) {
+    void Texture::set_data (std::span<std::byte> pixels) {
 
         auto staging = BasicBuffer(pixels.size(), vk::BufferUsageFlagBits::eTransferSrc);
         staging.upload(pixels.data(), pixels.size());
