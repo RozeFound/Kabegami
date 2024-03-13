@@ -4,35 +4,35 @@
         "github": "glfw/glfw",
         "branch": "master",
         "tag": "3.4",
-        "commit": "dc557ecf38a42b0b93898a7aef69f6dc48bf0e57"
+        "commit": "bf945f1213728a98f7647380616f9cff9f6b3611"
     },
     {
         "name": "glm",
         "github": "g-truc/glm",
         "branch": "master",
         "tag": "1.0.1",
-        "commit": "7a812397a2439462106c57c2ac7e11474dcda3e1"
+        "commit": "ab913bbdd0bd10462114a17bcb65cf5a368c1f32"
     },
     {
         "name": "fmt",
         "github": "fmtlib/fmt",
         "branch": "master",
         "tag": "10.2.1",
-        "commit": "13cfaa2ab03d681dc27ee23ae7e675842f32e337"
+        "commit": "df6e7b22f7fef9c37736b3718c5ccb357df7dcd2"
     },
     {
         "name": "glaze",
         "github": "stephenberry/glaze",
         "branch": "main",
-        "tag": "v2.2.1",
-        "commit": "a57cfa47bcfda8033e12eeaaefee75c499bd3a0b"
+        "tag": "v2.2.2",
+        "commit": "1bc1f97b2a662b6ec3f7ae4ee50eff8438fc339c"
     },
     {
         "name": "spdlog",
         "github": "gabime/spdlog",
         "branch": "v1.x",
         "tag": "v1.13.0",
-        "commit": "5532231bbc31bbdf95ac15febdac0413ee1d07ad"
+        "commit": "ae525b75c31adaad130dd4501d37ff632ec5eade"
     },
     {
         "name": "stb",
@@ -46,7 +46,7 @@
         "github": "lz4/lz4",
         "branch": "dev",
         "tag": "v1.9.4",
-        "commit": "20c2f3cb6481d03176af5682c1d2f33e881623f4"
+        "commit": "a3be31154f2e4c928ae6dcba9fe7e89e7678c74b"
     },
     {
         "name": "SPIRV-Headers",
@@ -60,7 +60,7 @@
         "github": "KhronosGroup/SPIRV-Tools",
         "branch": "main",
         "tag": "v2023.2",
-        "commit": "04896c462d9f3f504c99a4698605b6524af813c1"
+        "commit": "f869d391a5eaff5e121428a568c80823a2cafbda"
     },
     {
         "name": "glslang",
