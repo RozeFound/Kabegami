@@ -4,9 +4,7 @@
 
 #include "core/context.hpp"
 #include "core/swapchain.hpp"
-#include "core/pipeline.hpp"
 
-#include "utility/memory.hpp"
 #include "utility/fps_limiter.hpp"
 
 #include "scene.hpp"

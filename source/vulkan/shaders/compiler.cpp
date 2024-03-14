@@ -35,7 +35,7 @@ namespace glsl {
         }
     }
 
-    bool Compiler::parse (ShaderUnit& unit, glslang::TShader& shader) {
+    bool Compiler::parse (const ShaderUnit& unit, glslang::TShader& shader) {
 
         auto* data   = unit.source.c_str();
         auto  client = get_client(options.client_version);
@@ -70,43 +70,61 @@ namespace glsl {
 
     }
 
-    bool Compiler::compile (ShaderUnit& unit, std::vector<uint32_t>& spirv) {
+    bool Compiler::compile (const std::vector<ShaderUnit>& units, std::vector<SPV>& spvs) {
 
-        auto shader = glslang::TShader(unit.language);
-
-        if (!parse(unit, shader))
-            return false;
-
-        // Add shader to new program object.
+        std::vector<std::unique_ptr<glslang::TShader>> shaders;
         glslang::TProgram program;
-        program.addShader(&shader);
 
-        // Link program.
+        // Add shaders
+        for (auto& unit : units) {
+            shaders.emplace_back(std::make_unique<glslang::TShader>(unit.language));
+            auto& shader = *shaders.back();
+            if (!parse(unit, shader)) return false;
+            program.addShader(&shader);
+        }
+
+        // Link program
         if (!program.link(messages)) {
             loge("glslang(link): {}", program.getInfoLog());
             return false;
         }
 
-        auto intermediate = program.getIntermediate(unit.language);
+        for (auto& unit : units) {
+            (void)program.getIntermediate(unit.language);
+        }
 
-        // Translate to SPIRV.
-        if (!intermediate) {
-            loge("Failed to get shared intermediate code.\n");
+        auto intermediate = program.getIntermediate(units.front().language);
+        auto resolver = glslang::TDefaultGlslIoResolver(*intermediate);
+        auto mapper = glslang::TGlslIoMapper();
+
+        // Map IO
+        if (!program.mapIO(&resolver, &mapper)) {
+            loge("glslang(mapIO): {}", program.getInfoLog());
             return false;
         }
 
+        // Compile to SPV
         spv::SpvBuildLogger logger;
         glslang::SpvOptions spv_options;
+        spv_options.generateDebugInfo = false;
 
         if constexpr (!debug) {
             spv_options.disableOptimizer = !options.optimize;
             spv_options.optimizeSize = options.optimize_size;
         } else spv_options.validate = true;
-        
-        glslang::GlslangToSpv(*intermediate, spirv, &logger, &spv_options);
 
-        auto log = logger.getAllMessages();
-        if (log.size()) loge("glslang(spirv): {}", log);
+        for (auto& unit : units) {
+            auto intermediate = program.getIntermediate(unit.language);
+            intermediate->setOriginUpperLeft();
+
+            std::vector<uint32_t> spirv;
+            glslang::GlslangToSpv(*intermediate, spirv, &logger, &spv_options);
+            
+            spvs.emplace_back(std::move(spirv), spirv.size() * sizeof(uint32_t), unit.stage);
+
+            auto log = logger.getAllMessages();
+            if (log.length()) loge("glslang(spirv): {}", log);
+        }
 
         return true;
 

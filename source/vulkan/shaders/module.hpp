@@ -1,9 +1,6 @@
 #pragma once
 
 #include "vulkan/core/context.hpp"
-
-#include "assets/shader.hpp"
-
 #include "compiler.hpp"
 
 namespace vku {
@@ -17,12 +14,12 @@ namespace vku {
 
         public:
 
-        ShaderModule (const std::vector<uint32_t>& spirv, vk::ShaderStageFlagBits stage) {
+        ShaderModule (const glsl::SPV& spv) {
 
             auto create_info = vk::ShaderModuleCreateInfo {
                 .flags = vk::ShaderModuleCreateFlags(),
-                .codeSize = spirv.size() * sizeof(uint32_t),
-                .pCode = spirv.data()
+                .codeSize = spv.size,
+                .pCode = spv.code.data()
             };
 
             try { this->module = std::make_unique<vk::raii::ShaderModule>(context->device, create_info); }
@@ -30,7 +27,7 @@ namespace vku {
 
             this->stage = vk::PipelineShaderStageCreateInfo {
                 .flags = vk::PipelineShaderStageCreateFlags(),
-                .stage = stage,
+                .stage = spv.stage,
                 .module = **module,
                 .pName = "main"
             };

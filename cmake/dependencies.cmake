@@ -82,7 +82,7 @@ CPMAddPackage(
 
 CPMAddPackage(
   GITHUB_REPOSITORY ${glslang_repo}
-  GIT_TAG ${glslang_commit}
+  GIT_TAG ${glslang_tag}
   OPTIONS
     "GLSLANG_TESTS OFF"
     "ENABLE_GLSLANG_BINARIES OFF"

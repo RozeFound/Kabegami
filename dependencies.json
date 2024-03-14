@@ -2,77 +2,66 @@
     {
         "name": "glfw",
         "github": "glfw/glfw",
-        "branch": "master",
         "tag": "3.4",
         "commit": "bf945f1213728a98f7647380616f9cff9f6b3611"
     },
     {
         "name": "glm",
         "github": "g-truc/glm",
-        "branch": "master",
         "tag": "1.0.1",
         "commit": "ab913bbdd0bd10462114a17bcb65cf5a368c1f32"
     },
     {
         "name": "fmt",
         "github": "fmtlib/fmt",
-        "branch": "master",
         "tag": "10.2.1",
         "commit": "df6e7b22f7fef9c37736b3718c5ccb357df7dcd2"
     },
     {
         "name": "glaze",
         "github": "stephenberry/glaze",
-        "branch": "main",
-        "tag": "v2.2.2",
-        "commit": "1bc1f97b2a662b6ec3f7ae4ee50eff8438fc339c"
+        "tag": "v2.2.4",
+        "commit": "5135e3a99f04d68e2a18330ef6932e191c87dcaa"
     },
     {
         "name": "spdlog",
         "github": "gabime/spdlog",
-        "branch": "v1.x",
         "tag": "v1.13.0",
         "commit": "ae525b75c31adaad130dd4501d37ff632ec5eade"
     },
     {
         "name": "stb",
         "github": "nothings/stb",
-        "branch": "master",
-        "tag": "ae721c50eaf761660b4f90cc590453cdb0c2acd0",
+        "tag": null,
         "commit": "ae721c50eaf761660b4f90cc590453cdb0c2acd0"
     },
     {
         "name": "lz4",
         "github": "lz4/lz4",
-        "branch": "dev",
         "tag": "v1.9.4",
         "commit": "a3be31154f2e4c928ae6dcba9fe7e89e7678c74b"
     },
     {
         "name": "SPIRV-Headers",
         "github": "KhronosGroup/SPIRV-Headers",
-        "branch": "main",
-        "tag": "8b246ff75c6615ba4532fe4fde20f1be090c3764",
+        "tag": "vulkan-sdk-1.3.275.0",
         "commit": "8b246ff75c6615ba4532fe4fde20f1be090c3764"
     },
     {
         "name": "SPIRV-Tools",
         "github": "KhronosGroup/SPIRV-Tools",
-        "branch": "main",
-        "tag": "v2023.2",
-        "commit": "f869d391a5eaff5e121428a568c80823a2cafbda"
+        "tag": "v2024.1.rc1",
+        "commit": "02c79e90829c2d9149725ce0ac9f44c793f712bb"
     },
     {
         "name": "glslang",
         "github": "KhronosGroup/glslang",
-        "branch": "main",
-        "tag": "14.1.0",
-        "commit": "ee2f5d09eaf8f4e8d0d598bd2172fce290d4ca60"
+        "tag": "main-tot",
+        "commit": "9f37ad360ea1c32162f0cc1799b1b292594fc771"
     },
     {
         "name": "xxHash",
         "github": "Cyan4973/xxHash",
-        "branch": "dev",
         "tag": "v0.8.2",
         "commit": "da79cc1229e1e26e2c017aa28fb3873f7012e689"
     }

@@ -3,6 +3,7 @@
 #include <glslang/SPIRV/GlslangToSpv.h>
 #include <glslang/Public/ShaderLang.h>
 #include <glslang/Public/ResourceLimits.h>
+#include <glslang/MachineIndependent/iomapper.h>
 
 namespace glsl {
 
@@ -26,6 +27,11 @@ namespace glsl {
         std::string source;
         const vk::ShaderStageFlagBits stage;
         const EShLanguage language = find_shader_language(stage);
+        
+        struct PreProcessInfo {
+            std::unordered_map<std::string, std::string> inputs;
+            std::unordered_map<std::string, std::string> outputs;
+        } preprocess_info;
 
         ShaderUnit(const std::string& source, vk::ShaderStageFlagBits stage) : source(source), stage(stage) {}
 
@@ -47,6 +53,12 @@ namespace glsl {
         constexpr const auto get_preamble() const { return preamble; }
         constexpr const auto get_processes() const { return processes; }
 
+    };
+
+    struct SPV {
+        std::vector<uint32_t> code;
+        std::uint32_t size;
+        vk::ShaderStageFlagBits stage;
     };
 
     class Compiler {
@@ -81,12 +93,12 @@ namespace glsl {
             
         } const options;
 
-        Compiler() { glslang::InitializeProcess(); set_messages(); };
-        Compiler (Options options) : Compiler() { options = options; };
+        Compiler() : Compiler(Options{}) {} ;
+        Compiler (Options options) : options(options) { glslang::InitializeProcess(); set_messages(); };
         ~Compiler() { glslang::FinalizeProcess(); };
 
-        bool parse (ShaderUnit& unit, glslang::TShader& shader);
-        bool compile (ShaderUnit& unit, std::vector<uint32_t>& spriv);
+        bool parse (const ShaderUnit& unit, glslang::TShader& shader);
+        bool compile (const std::vector<ShaderUnit>& units, std::vector<SPV>& spvs);
 
 
     };

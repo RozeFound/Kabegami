@@ -35,6 +35,8 @@ precision highp float;
 #define float4 vec4
 #define lerp mix
 
+__SHADER_PLACEHOLD__
+
 )";
 
     std::string load_glsl_include (const FileSystem& fs, std::string_view source) {
@@ -93,87 +95,52 @@ precision highp float;
         auto messages = static_cast<EShMessages>(EShMsgDefault | EShMsgSpvRules | EShMsgRelaxedErrors | EShMsgSuppressWarnings | EShMsgVulkanRules);
 
         shader.preprocess(GetDefaultResources(), 110, profile, false, false, messages, &output, includer);
+        
+        static auto re_io = std::regex(R"(.+\s(in|out)\s[\s\w]+\s(\w+)\s*;)", std::regex::ECMAScript);
+        std::smatch match;
+
+        // iterate over matches with std::regex_iterator
+        for (auto it = std::sregex_iterator(output.begin(), output.end(), re_io);
+                  it != std::sregex_iterator(); ++it) {
+            auto& match = *it; auto& io = match[1]; auto& name = match[2];
+            if (io == "in") unit.preprocess_info.inputs[name] = match[0];
+            else if (io == "out") unit.preprocess_info.outputs[name] = match[0];
+        }
 
         return output;
 
     }
 
-    std::string map_io (glsl::ShaderUnit& unit) {
+    void map_io (std::vector<glsl::ShaderUnit>& units) {
+        
+        for (std::size_t i = 0; i < units.size(); i++) {
 
-        auto source = preprocess(unit);
-        std::string output;
+            std::string io_list;
+            auto& unit = units[i];
 
-        std::vector<Parameter> inputs;
-        std::vector<Parameter> outputs;
-        std::vector<Parameter> textures;
-        std::vector<Parameter> uniforms;
-
-        // Counters
-        uint32_t in_c = 0, out_c = 0, texture_c = 0;
-
-        static auto re_io = std::regex(R"(^\s*(in|out|uniform)\s(\w+)\s(\w+))", std::regex::ECMAScript);
-
-        std::string line;
-        auto source_stream = std::istringstream(source);
-
-        while (std::getline(source_stream, line)) {
-
-            if (line.empty()) continue;
-            if (line.find("void main()") != std::string::npos) {
-                auto pos = -line.length() -1 + source_stream.tellg();
-                output.append(source.substr(pos));
-                break;
-            }   
-                
-            std::smatch match;
-            if (std::regex_search(line, match, re_io)) {
-                if (match[2] == "sampler2D") textures.push_back({match[2], match[3], texture_c++});
-                else if (match[1] == "in") inputs.push_back({match[2], match[3], in_c++});
-                else if (match[1] == "out") outputs.push_back({match[2], match[3], out_c++});
-                else if (match[1] == "uniform") uniforms.push_back({match[2], match[3], 0});
-                continue;
+            if (i >= 1) {
+                auto& info = units[i - 1].preprocess_info;
+                for (auto& [name, io] : info.outputs) {
+                    if (!unit.preprocess_info.inputs.contains(name)) {
+                        auto nio = std::regex_replace(io, std::regex(R"(\s*out\s)"), " in ");
+                        io_list += nio + '\n';
+                    }            
+                }
             }
 
-            output.append(line + '\n');
+            if (i + 1 < units.size()) {
+                auto& info = units[i + 1].preprocess_info;
+                for (auto& [name, io] : info.inputs) {
+                    if (!unit.preprocess_info.outputs.contains(name)) {
+                        auto nio = std::regex_replace(io, std::regex(R"(\s*in\s)"), " out ");
+                        io_list += nio + '\n';
+                    }
+                }
+            }
+
+            unit.source = std::regex_replace(unit.source, std::regex("__SHADER_PLACEHOLD__"), io_list);
 
         }
-
-        std::ostringstream parameters;
-
-        parameters << "\n\n";
-
-        if (!inputs.empty()) {
-            for (auto& input : inputs)
-                parameters << fmt::format("layout(location={}) in {} {};\n", input.location, input.type, input.name);
-            parameters << "\n\n";
-        }
-
-        if (!uniforms.empty()) {
-            parameters << "layout(binding=0) uniform GLOBAL {\n";
-            for (auto& uniform : uniforms)
-                parameters << fmt::format("\t{} {};\n", uniform.type, uniform.name);
-            parameters << "};\n\n";
-        }
-
-        if (!textures.empty()) {
-            for (auto& texture : textures)
-                parameters << fmt::format("layout(binding={}) uniform {} {};\n", 1 + texture.binding, texture.type, texture.name);
-            parameters << "\n\n";
-        }
-
-        if (!outputs.empty()) {
-            for (auto& output : outputs)
-                parameters << fmt::format("layout(location={}) out {} {};\n", output.location, output.type, output.name);
-            parameters << "\n\n";
-        }
-
-        parameters << "\n\n";
-
-        output.insert(output.find("void main()"), parameters.str());
-
-        logd("Mapped IO: \n{}", output);
-
-        return output;  
 
     }
 
@@ -206,9 +173,11 @@ precision highp float;
         if (fs.exists(path + ".geom"))
             units.emplace_back(load_glsl_file(fs, path + ".geom"), vk::ShaderStageFlagBits::eGeometry);
 
-        for (auto& unit : units)
-            unit.source = map_io(unit);
+        std::for_each(units.begin(), units.end(), [&](glsl::ShaderUnit& unit) {
+            unit.source = preprocess(unit);
+        });
 
+        map_io(units);
 
     }
 

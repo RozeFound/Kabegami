@@ -1,6 +1,7 @@
 #pragma once
 
 #include "module.hpp"
+#include "assets/filesystem.hpp"
 
 namespace vku {
 

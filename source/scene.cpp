@@ -22,7 +22,7 @@ Scene::Scene (const objects::Scene& info, const assets::FileSystem& fs) {
 
     shaders = {
         std::make_pair("basic", std::make_shared<vku::Shader>(fs, "shaders/basic")),
-        std::make_pair("waterriple", std::make_shared<vku::Shader>(fs, "shaders/effects/waterripple_opengl")),
+        std::make_pair("waterriple", std::make_shared<vku::Shader>(fs, "shaders/effects/waterripple")),
     };
 
     auto vertecies = std::vector<vku::Vertex> {
@@ -54,7 +54,7 @@ Scene::Scene (const objects::Scene& info, const assets::FileSystem& fs) {
 
 }
 
-void Scene::allocate_resources(const vk::raii::RenderPass& render_pass) {
+void Scene::allocate_resources (const vk::raii::RenderPass& render_pass) {
 
     auto basic_set_layout = vku::DescriptorSetLayoutFactory()
         .add_binding(0, vk::DescriptorType::eUniformBuffer, vk::ShaderStageFlagBits::eVertex)
@@ -125,28 +125,6 @@ void Scene::draw (const vk::raii::CommandBuffer& commands) const {
     auto current = std::chrono::high_resolution_clock::now();
 
     float delta = std::chrono::duration<float, std::chrono::seconds::period>(current - start).count();
-
-    auto vertex_globals = VertexPC {
-        .g_ModelViewProjectionMatrix = modelViewProjection,
-        .g_Time = delta,
-        .g_Texture0Resolution = {1.0f, 1.0f, 1.0f, 1.0f},
-        .g_Texture2Resolution = {1.0f, 1.0f, 1.0f, 1.0f},
-        .g_AnimationSpeed = 0.1f,
-        .g_Scale = 2.5f,
-        .g_ScrollSpeed = 0.0f,
-        .g_Direction = 0.0f
-    };
-
-    commands.pushConstants<VertexPC>(*pipeline_layouts.at("water"), vk::ShaderStageFlagBits::eVertex, 0, vertex_globals);
-
-    auto fragment_globals = FragmentPC {
-        .g_Strength = 0.07f,
-        .g_SpecularPower = 1.0f,
-        .g_SpecularStrength = 1.0f,
-        .g_SpecularColor = {1.0f, 1.0f, 1.0f}
-    };
-
-    commands.pushConstants<FragmentPC>(*pipeline_layouts.at("water"), vk::ShaderStageFlagBits::eFragment, sizeof(VertexPC), fragment_globals);
 
     commands.bindPipeline(vk::PipelineBindPoint::eGraphics, *pipelines.at("water"));
 
