@@ -69,7 +69,6 @@ foreach(FILE ${RESOURCE_FILES})
 
 endforeach()
 
-
 # ---- Link libraries ----
 
 target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt spdlog glaze::glaze)

@@ -4,10 +4,7 @@
 
 #include "vectors.hpp"
 
-#include "image.hpp"
-#include "particle.hpp"
-#include "sound.hpp"
-#include "light.hpp"
+#include "objects/object.hpp"
 
 namespace objects {
 
@@ -78,7 +75,7 @@ namespace objects {
 
         } general { camera };
 
-        std::vector<std::variant<objects::Image, objects::Particle, objects::Sound, objects::Light>> objects;
+        std::vector<object_t> objects;
 
         int version;
 

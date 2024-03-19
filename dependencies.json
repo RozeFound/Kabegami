@@ -15,19 +15,19 @@
         "name": "fmt",
         "github": "fmtlib/fmt",
         "tag": "10.2.1",
-        "commit": "df6e7b22f7fef9c37736b3718c5ccb357df7dcd2"
+        "commit": "365c3fbd258fb3df69007fc7a22c0472dd31dcbb"
     },
     {
         "name": "glaze",
         "github": "stephenberry/glaze",
-        "tag": "v2.2.4",
-        "commit": "5135e3a99f04d68e2a18330ef6932e191c87dcaa"
+        "tag": "v2.3.0",
+        "commit": "79e524a4efb34fa3e0446991d8c7a2f14afbba17"
     },
     {
         "name": "spdlog",
         "github": "gabime/spdlog",
         "tag": "v1.13.0",
-        "commit": "ae525b75c31adaad130dd4501d37ff632ec5eade"
+        "commit": "d03eb40c179db937d69f40b831c23f8dea7eabb5"
     },
     {
         "name": "stb",
@@ -51,18 +51,18 @@
         "name": "SPIRV-Tools",
         "github": "KhronosGroup/SPIRV-Tools",
         "tag": "v2024.1.rc1",
-        "commit": "02c79e90829c2d9149725ce0ac9f44c793f712bb"
+        "commit": "6c3f632a2c5264d6419fdfb07d602ca1bfa35469"
     },
     {
         "name": "glslang",
         "github": "KhronosGroup/glslang",
         "tag": "main-tot",
-        "commit": "9f37ad360ea1c32162f0cc1799b1b292594fc771"
+        "commit": "b047a21033480766a6dbfad8a3b6790055aaa93d"
     },
     {
         "name": "xxHash",
         "github": "Cyan4973/xxHash",
         "tag": "v0.8.2",
-        "commit": "da79cc1229e1e26e2c017aa28fb3873f7012e689"
+        "commit": "38fa891fa054307bb1c2f537b9b0278910bd24e3"
     }
 ]

@@ -1,7 +1,5 @@
 #include "app.hpp"
 
-#include <fmt/core.h>
-
 #include "assets/filesystem.hpp"
 #include "scene.hpp"
 
@@ -35,15 +33,18 @@ void Kabegami::run() {
 
     if constexpr (debug) fs.add_location("./");
 
+    objects::Scene scene_info;
     auto buffer = fs.read_as_string(file.value());
-    auto scene_info = glz::read_json<objects::Scene>(buffer);
-
-    if (!scene_info) {
-        auto error = glz::format_error(scene_info.error(), buffer);
-        loge("Failed to parse scene:\n{}", error); return;
+    
+    constexpr auto opts = glz::opts{.error_on_unknown_keys=false};
+    if (auto pe = glz::read<opts>(scene_info, buffer)) {
+        loge("Failed to parse scene:\n{}", glz::format_error(pe, buffer));
+        auto file_path = vku::fs::write_temp(buffer);
+        logd("Scene json at: {}", file_path.string());
+        return;
     }
 
-    engine->set_scene(std::make_shared<Scene>(*scene_info, fs));
+    engine->set_scene(std::make_shared<Scene>(scene_info, fs));
 
     window->add_key_callback([this](int key, int action, int mods) {
         if (mods == GLFW_MOD_CONTROL && action == GLFW_PRESS) {
