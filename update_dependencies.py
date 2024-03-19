@@ -1,4 +1,4 @@
-import requests, json
+import asyncio, httpx, json
 
 # https://www.youtube.com/watch?v=-BG9lhTg6xY
 token = "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"
@@ -29,60 +29,56 @@ query($owner: String!, $repo: String!) {
 }
 """
 
-def fetch_latest_tag_and_commit(owner, repo):
+async def get_updated_item(client: httpx.AsyncClient, dependency: dict[str, str]) -> dict[str, str]:
 
-    variables = {
-        "owner": owner,
-        "repo": repo
+    name: str = dependency.get("name")
+    github: str = dependency.get("github")
+
+    owner, repo = github.split("/")
+
+    json = {
+        "query": query,
+        "variables": {
+            "owner": owner,
+            "repo": repo
+        }
     }
 
-    headers = {
-        "Authorization": f"Bearer {token}"
-    }
-
-    response = requests.post(
-        "https://api.github.com/graphql",
-        headers=headers,
-        json={"query": query, "variables": variables}
-    )
+    response = await client.post("graphql", json=json)
 
     repository_data = response.json()["data"]["repository"]
     latest_tag = None
     latest_commit = repository_data["defaultBranchRef"]["target"]["oid"]
 
     if "refs" in repository_data and repository_data["refs"]["edges"]:
-        latest_tag = repository_data["refs"]["edges"][0]["node"]["name"]
+        latest_tag = repository_data["refs"]["edges"][0]["node"]["name"] 
 
-    return latest_tag, latest_commit
+    return {
+        "name": name,
+        "github": github,
+        "tag": latest_tag,
+        "commit": latest_commit
+    }
 
 
-def main() -> int:
+async def main() -> int:
 
     with open("dependencies.json", "r") as file:
         dependencies = json.load(file)
 
-    items = []
+    limits = httpx.Limits(max_connections=None, max_keepalive_connections=None)
+    async with httpx.AsyncClient(limits=limits, http2=True) as client:
+        client.base_url = "https://api.github.com"
+        client.headers["Authorization"] = f"Bearer {token}"
 
-    for dependency in dependencies:
-
-        name: str = dependency.get("name")
-        github: str = dependency.get("github")
-
-        owner, repo = github.split("/")
-        tag, commit = fetch_latest_tag_and_commit(owner, repo)
-
-        items.append({
-            "name": name,
-            "github": github,
-            "tag": tag,
-            "commit": commit
-        })
+        futures = [get_updated_item(client, d) for d in dependencies]
+        items = await asyncio.gather(*futures)
 
     with open("dependencies.json", "w") as file:
         json.dump(items, file, indent=4)
 
 if __name__ == "__main__":
-    try: main()
+    try: asyncio.run(main())
     except KeyboardInterrupt:
         print("Operation aborted by user.")
         exit(-1)
