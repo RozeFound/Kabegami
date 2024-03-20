@@ -1,9 +1,7 @@
 #pragma once
 
-#include <glslang/SPIRV/GlslangToSpv.h>
 #include <glslang/Public/ShaderLang.h>
 #include <glslang/Public/ResourceLimits.h>
-#include <glslang/MachineIndependent/iomapper.h>
 
 namespace glsl {
 
@@ -50,8 +48,8 @@ namespace glsl {
             processes.emplace_back("U" + name);
         }
 
-        constexpr const auto get_preamble() const { return preamble; }
-        constexpr const auto get_processes() const { return processes; }
+        constexpr const auto& get_preamble() const { return preamble; }
+        constexpr const auto& get_processes() const { return processes; }
 
     };
 

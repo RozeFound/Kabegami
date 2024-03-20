@@ -2,14 +2,18 @@
 
 #include "vulkan/utility/misc.hpp"
 
+#include <SPIRV/GLSL.std.450.h>
+#include <SPIRV/GlslangToSpv.h>
+#include <glslang/MachineIndependent/iomapper.h>
+
 namespace glsl {
 
     void Compiler::set_messages() {
         auto messages = static_cast<EShMessages>(EShMsgDefault | EShMsgSpvRules);
-        if (options.relaxed_errors_glsl) messages = (EShMessages)(messages | EShMsgRelaxedErrors);
-        if (options.suppress_warnings_glsl) messages = (EShMessages)(messages | EShMsgSuppressWarnings);
+        if (options.relaxed_errors_glsl) messages = static_cast<EShMessages>(messages | EShMsgRelaxedErrors);
+        if (options.suppress_warnings_glsl) messages = static_cast<EShMessages>(messages | EShMsgSuppressWarnings);
         if (get_client(options.client_version) == glslang::EShClientVulkan)
-            messages = (EShMessages)(messages | EShMsgVulkanRules);
+            messages = static_cast<EShMessages>(messages | EShMsgVulkanRules);
         this->messages = messages;
     }
 
@@ -123,7 +127,10 @@ namespace glsl {
             spvs.emplace_back(std::move(spirv), spirv.size() * sizeof(uint32_t), unit.stage);
 
             auto log = logger.getAllMessages();
-            if (log.length()) loge("glslang(spirv): {}", log);
+            if (log.length() > 0) {
+                loge("glslang(spirv): {}", log);
+                return false;
+            }
         }
 
         return true;

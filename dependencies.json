@@ -9,19 +9,19 @@
         "name": "glm",
         "github": "g-truc/glm",
         "tag": "1.0.1",
-        "commit": "ab913bbdd0bd10462114a17bcb65cf5a368c1f32"
+        "commit": "4137519418a933e5863eea7c3ac53890ae7faf9d"
     },
     {
         "name": "fmt",
         "github": "fmtlib/fmt",
         "tag": "10.2.1",
-        "commit": "365c3fbd258fb3df69007fc7a22c0472dd31dcbb"
+        "commit": "53347891cf658c6ff02370f566c06376671551e2"
     },
     {
         "name": "glaze",
         "github": "stephenberry/glaze",
         "tag": "v2.3.0",
-        "commit": "79e524a4efb34fa3e0446991d8c7a2f14afbba17"
+        "commit": "884b5eb0db7147c28c647ce093ee1588dfb8ce04"
     },
     {
         "name": "spdlog",
@@ -51,13 +51,13 @@
         "name": "SPIRV-Tools",
         "github": "KhronosGroup/SPIRV-Tools",
         "tag": "v2024.1.rc1",
-        "commit": "6c3f632a2c5264d6419fdfb07d602ca1bfa35469"
+        "commit": "3a0471c3b6b24517a37e9e44dbe7eefffb5b493e"
     },
     {
         "name": "glslang",
         "github": "KhronosGroup/glslang",
         "tag": "main-tot",
-        "commit": "b047a21033480766a6dbfad8a3b6790055aaa93d"
+        "commit": "be0d1cb45235dc72748c1ff83120cd2518fd62e8"
     },
     {
         "name": "xxHash",
