@@ -36,7 +36,7 @@ file(GLOB_RECURSE sources CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/source/
 # ---- Create executable ----
 
 add_executable(${PROJECT_NAME} ${sources})
-set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 20)
+set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 23)
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/source)
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY "$<$<CONFIG:RELEASE>:INTERPROCEDURAL_OPTIMIZATION>" TRUE)
@@ -71,7 +71,15 @@ endforeach()
 
 # ---- Link libraries ----
 
-target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt spdlog glaze::glaze)
-target_link_libraries(${PROJECT_NAME} PRIVATE glfw glm::glm vulkan)
-target_link_libraries(${PROJECT_NAME} PRIVATE ${glslang-link-targets})
-target_link_libraries(${PROJECT_NAME} PRIVATE lz4 stb xxHash::xxhash)
+set(LINK_TARGETS  fmt::fmt
+                  spdlog
+                  glaze::glaze 
+                  glfw
+                  glm::glm
+                  vulkan
+                  ${glslang-link-targets}
+                  spirv-reflect-static
+                  lz4
+                  stb
+                  xxHash::xxhash)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${LINK_TARGETS})

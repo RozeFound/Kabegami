@@ -90,6 +90,9 @@ __SHADER_PLACEHOLD__
         auto* data = source.c_str();
         shader.setStrings(&data, 1);
 
+        shader.setPreamble(unit.get_preamble().c_str());
+        shader.addProcesses(unit.get_processes());
+
         constexpr auto profile = EProfile::ECoreProfile;
         auto includer = glslang::TShader::ForbidIncluder();
         auto messages = static_cast<EShMessages>(EShMsgDefault | EShMsgSpvRules | EShMsgRelaxedErrors | EShMsgSuppressWarnings | EShMsgVulkanRules);

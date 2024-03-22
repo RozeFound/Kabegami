@@ -50,9 +50,6 @@ namespace glsl {
         shader.setEnvClient(client, options.client_version);
         shader.setEnvTarget(glslang::EShTargetLanguage::EShTargetSpv, get_target_version(options.client_version));
 
-        shader.setPreamble(unit.get_preamble().c_str());
-        shader.addProcesses(unit.get_processes());
-
         if (options.auto_map_locations) shader.setAutoMapLocations(true);
         if (options.auto_map_bindings) shader.setAutoMapBindings(true);
 

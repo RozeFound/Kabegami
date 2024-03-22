@@ -8,6 +8,7 @@ namespace vku {
     class Shader {
 
         std::vector<std::shared_ptr<vku::ShaderModule>> modules;
+        std::shared_ptr<vk::raii::DescriptorSetLayout> descriptor_set_layout;
 
         public:
 

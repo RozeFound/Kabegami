@@ -70,6 +70,7 @@ CPMAddHeaderOnly(
 CPMAddPackage(
   GITHUB_REPOSITORY ${SPIRV-Headers_repo}
   GIT_TAG ${SPIRV-Headers_commit}
+  DOWNLOAD_ONLY
 )
 
 CPMAddPackage(
@@ -101,4 +102,13 @@ CPMAddPackage(
         "XXHASH_BUILD_ENABLE_INLINE_API OFF"
         "XXHASH_BUILD_XXHSUM OFF"
     SOURCE_SUBDIR cmake_unofficial
+)
+
+CPMAddPackage(
+    DOWNLOAD_ONLY
+    GITHUB_REPOSITORY ${SPIRV-Reflect_repo}
+    GIT_TAG ${SPIRV-Reflect_commit}
+    OPTIONS
+        "SPIRV_REFLECT_EXECUTABLE OFF"
+        "SPIRV_REFLECT_STATIC_LIB ON"
 )

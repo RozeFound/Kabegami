@@ -1,5 +1,6 @@
 #include "shader.hpp"
 
+#include "reflection.hpp"
 #include "assets/shader.hpp"
 
 namespace vku {
@@ -21,6 +22,9 @@ namespace vku {
 
         if (!compiler.compile(parser.get_units(), spvs))
             loge("Failed to compile shader: {}", path);
+
+        auto resources = glsl::ShaderResources(spvs);
+        descriptor_set_layout = resources.get_layout();
 
         for (auto& spv : spvs)
             modules.emplace_back(std::make_shared<vku::ShaderModule>(spv));
