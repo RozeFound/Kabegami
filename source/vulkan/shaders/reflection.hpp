@@ -30,13 +30,15 @@ namespace glsl {
         std::unordered_map<std::string_view, vk::DescriptorSetLayoutBinding> binding_map;
         std::unordered_map<std::string_view, Input> input_map;
 
+        std::shared_ptr<vk::raii::DescriptorSetLayout> layout;
+
         bool reflect (const std::vector<uint32_t>& code);
 
         public:
 
         ShaderResources (const std::vector<SPV>& spvs);
 
-        std::shared_ptr<vk::raii::DescriptorSetLayout> get_layout();
+        constexpr auto& get_layout () const { return layout; }
 
     };
 

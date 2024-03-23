@@ -5,7 +5,7 @@
 namespace vku {
 
     std::unique_ptr<vk::raii::Pipeline> PipeLineFactory::create (const vk::raii::PipelineCache& cache,
-        const vk::raii::PipelineLayout& layout, const vk::raii::RenderPass& render_pass) {
+        const vku::Shader& shader, const vk::raii::RenderPass& render_pass) {
 
         auto context = vki::Context::get();
 
@@ -31,8 +31,13 @@ namespace vku {
             .pAttachments = &create_info.color_blend_attachment
         };
 
+        auto layout = PipeLineLayoutFactory()
+            .set_layout(*shader.get_layout())
+            .create();
+
         auto stages = std::vector<vk::PipelineShaderStageCreateInfo>();
-        for (const auto& module : shader_modules)
+        
+        for (const auto& module : shader.get_modules())
             stages.push_back(module->get_stage());
 
         auto pipeline_create_info = vk::GraphicsPipelineCreateInfo {
@@ -76,14 +81,6 @@ namespace vku {
 
         return *this;
 
-    }
-    
-    PipeLineFactory& PipeLineFactory::stage (const std::shared_ptr<vku::ShaderModule> module) {
-        
-        shader_modules.push_back(module);
-
-        return *this;
-        
     }
 
     PipeLineFactory& PipeLineFactory::topology (vk::PrimitiveTopology topology) {

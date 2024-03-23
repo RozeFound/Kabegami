@@ -60,8 +60,9 @@ namespace vku {
         Texture (std::filesystem::path path);
         Texture (Texture&&) = default;
 
-        void write_descriptors (vk::raii::DescriptorSet& set, uint32_t binding);
         void set_data (std::span<std::byte> pixels);
+
+        constexpr auto get_desc() const { return vk::DescriptorImageInfo(**sampler, *view, vk::ImageLayout::eShaderReadOnlyOptimal); }
         
     };
 

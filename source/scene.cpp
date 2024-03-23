@@ -4,7 +4,6 @@
 #include "glm/ext/matrix_transform.hpp"
 
 #include "vulkan/utility/primitives.hpp"
-#include "vulkan/core/descriptor_set.hpp"
 
 Scene::Scene (const objects::Scene& info, const assets::FileSystem& fs) {
 
@@ -56,53 +55,13 @@ Scene::Scene (const objects::Scene& info, const assets::FileSystem& fs) {
 
 void Scene::allocate_resources (const vk::raii::RenderPass& render_pass) {
 
-    auto basic_set_layout = vku::DescriptorSetLayoutFactory()
-        .add_binding(0, vk::DescriptorType::eUniformBuffer, vk::ShaderStageFlagBits::eVertex)
-        .add_binding(1, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment)
-        .create();
-
-    sets["background"] = vku::DescriptorSetFactory()
-        .set_layout(basic_set_layout)
-        .create();
-    textures.at("background")->write_descriptors(*sets.at("background"), 1);
-
-    sets["mud"] = vku::DescriptorSetFactory()
-        .set_layout(basic_set_layout)
-        .create();
-    textures.at("mud")->write_descriptors(*sets.at("mud"), 1);
-
-    pipeline_layouts["basic"] = vku::PipeLineLayoutFactory()
-        .set_layout(**basic_set_layout)
-        .create();
-
-    auto water_set_layout = vku::DescriptorSetLayoutFactory()
-        .add_binding(0, vk::DescriptorType::eUniformBuffer, vk::ShaderStageFlagBits::eVertex)
-        .add_binding(0, vk::DescriptorType::eUniformBuffer, vk::ShaderStageFlagBits::eFragment)
-        .add_binding(1, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment)
-        .add_binding(2, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment)
-        .add_binding(3, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment)
-        .create();
-
-    sets["water"] = vku::DescriptorSetFactory()
-        .set_layout(water_set_layout)
-        .create();
-    textures.at("water")->write_descriptors(*sets.at("water"), 1);
-    textures.at("mud")->write_descriptors(*sets.at("water"), 2);
-    textures.at("waterripple_normal")->write_descriptors(*sets.at("water"), 3);
-
-    pipeline_layouts["water"] = vku::PipeLineLayoutFactory()
-        .set_layout(**water_set_layout)
-        .create();
-
     pipelines["basic"] = vku::PipeLineFactory()
         .vertex_binding(vku::Vertex::get_binding_description())
         .vertex_attributes(vku::Vertex::get_attribute_descriptions())
         .color_blend(true,
             { vk::BlendFactor::eSrcAlpha, vk::BlendFactor::eOneMinusSrcAlpha }, vk::BlendOp::eAdd,
             { vk::BlendFactor::eSrcAlpha, vk::BlendFactor::eOneMinusSrcAlpha }, vk::BlendOp::eAdd)
-        .stage(shaders.at("basic")->get_modules().at(0))
-        .stage(shaders.at("basic")->get_modules().at(1))
-        .create(**pipeline_cache, *pipeline_layouts.at("basic"), render_pass);
+        .create(**pipeline_cache, *shaders.at("basic"), render_pass);
 
     pipelines["water"] = vku::PipeLineFactory()
         .vertex_binding(vku::Vertex::get_binding_description())
@@ -111,9 +70,7 @@ void Scene::allocate_resources (const vk::raii::RenderPass& render_pass) {
         .color_blend(true,
             { vk::BlendFactor::eSrcAlpha, vk::BlendFactor::eOneMinusSrcAlpha }, vk::BlendOp::eAdd,
             { vk::BlendFactor::eSrcAlpha, vk::BlendFactor::eOneMinusSrcAlpha }, vk::BlendOp::eAdd)
-        .stage(shaders.at("waterriple")->get_modules().at(0))
-        .stage(shaders.at("waterriple")->get_modules().at(1))
-        .create(**pipeline_cache, *pipeline_layouts.at("water"), render_pass);
+        .create(**pipeline_cache, *shaders.at("waterriple"), render_pass);
 
 }
 
@@ -128,23 +85,16 @@ void Scene::draw (const vk::raii::CommandBuffer& commands) const {
 
     commands.bindPipeline(vk::PipelineBindPoint::eGraphics, *pipelines.at("water"));
 
-    commands.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, *pipeline_layouts.at("water"), 0, **sets.at("water"), nullptr);
-    commands.bindPipeline(vk::PipelineBindPoint::eGraphics, *pipelines.at("water"));
-
     commands.bindVertexBuffers(0, ***vertex_buffer, *offsets.data());
     commands.bindIndexBuffer(**index_buffer, 0, vk::IndexType::eUint16);
     commands.drawIndexed(6, 1, 0, 0, 0);
 
-    commands.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, *pipeline_layouts.at("basic"), 0, **sets.at("mud"), nullptr);
-    commands.pushConstants<glm::mat4x4>(*pipeline_layouts.at("basic"), vk::ShaderStageFlagBits::eVertex, 0, modelViewProjection);
     commands.bindPipeline(vk::PipelineBindPoint::eGraphics, *pipelines.at("basic"));
 
     commands.bindVertexBuffers(0, ***vertex_buffer, *offsets.data());
     commands.bindIndexBuffer(**index_buffer, 0, vk::IndexType::eUint16);
     commands.drawIndexed(6, 1, 0, 0, 0);
 
-    commands.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, *pipeline_layouts.at("basic"), 0, **sets.at("background"), nullptr);
-    commands.pushConstants<glm::mat4x4>(*pipeline_layouts.at("basic"), vk::ShaderStageFlagBits::eVertex, 0, modelViewProjection);
     commands.bindPipeline(vk::PipelineBindPoint::eGraphics, *pipelines.at("basic"));
 
     commands.bindVertexBuffers(0, ***vertex_buffer, *offsets.data());

@@ -51,7 +51,10 @@ namespace vki {
 
     std::vector<const char*> Device::get_extensions() {
 
-        return std::vector<const char*>{"VK_KHR_swapchain"};
+        return std::vector<const char*>{
+            "VK_KHR_swapchain",
+            "VK_KHR_push_descriptor"
+        };
 
     }
 

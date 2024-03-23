@@ -2,6 +2,9 @@
 
 #include <spirv_reflect.h>
 
+#include "vulkan/core/context.hpp"
+#include "vulkan/utility/misc.hpp"
+
 namespace glsl {
 
     // taken from https://github.com/catsout/wallpaper-engine-kde-plugin/blob/34f7f01acba3bc8f94d478032cf86aef06b02d26/src/backend_scene/src/Vulkan/Shader.cpp#L55
@@ -39,6 +42,23 @@ namespace glsl {
 
         for (const auto& spv : spvs)
             reflect(spv.code);
+
+        auto bindings = std::vector<vk::DescriptorSetLayoutBinding>();
+
+        std::ranges::transform(binding_map, std::back_inserter(bindings), [](auto&& pair) { 
+            logi("Bind {} at {}", pair.first, pair.second.binding); return pair.second;
+        });
+
+        auto create_info = vk::DescriptorSetLayoutCreateInfo {
+            .flags = vk::DescriptorSetLayoutCreateFlagBits::ePushDescriptorKHR,
+            .bindingCount = vku::to_u32(bindings.size()),
+            .pBindings = bindings.data()
+        };
+
+        auto& device = vki::Context::get()->device;
+
+        try { layout = std::make_shared<vk::raii::DescriptorSetLayout>(device, create_info); }
+        catch (vk::SystemError error) { loge("Failed to create DescriptorSet layout"); }
 
     }
 
@@ -137,14 +157,5 @@ namespace glsl {
         return true;
 
     }
-
-    std::shared_ptr<vk::raii::DescriptorSetLayout> ShaderResources::get_layout() {
-
-        loge("glsl::ShaderResources::get_layout() not implemented");
-        return std::nullptr_t{};
-
-    }
-
-
 
 }

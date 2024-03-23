@@ -15,7 +15,8 @@ namespace vku {
         Shader() = delete;
         Shader (const assets::FileSystem& fs, std::string path);
 
-        constexpr const auto get_modules() const { return modules; }
+        constexpr const auto& get_modules() const { return modules; }
+        constexpr const auto& get_layout() const { return descriptor_set_layout; }
 
 
     };

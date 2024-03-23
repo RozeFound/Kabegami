@@ -61,7 +61,7 @@ namespace vku {
         Buffer (Buffer&&) = default;
         ~Buffer () { if constexpr (opts.persistent) memory->unmapMemory(); } 
 
-        void upload (const auto& data, std::size_t size = 0, std::ptrdiff_t offset = 0) {
+        constexpr void upload (const auto& data, std::size_t size = 0, std::ptrdiff_t offset = 0) {
 
             if (!size) size = get_size();
 
@@ -90,6 +90,8 @@ namespace vku {
 
         constexpr const vk::raii::Buffer& operator*() const { return *handle; }
         constexpr const std::size_t get_size() const { return size; }
+
+        constexpr auto get_desc (uint32_t offset = 0) const { return vk::DescriptorBufferInfo(**handle, offset, size); }
 
     };
 

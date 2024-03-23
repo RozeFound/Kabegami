@@ -118,27 +118,6 @@ namespace vku {
 
     }
 
-    void Texture::write_descriptors (vk::raii::DescriptorSet& set, uint32_t binding) {
-
-        auto image_info = vk::DescriptorImageInfo {
-            .sampler = **sampler,
-            .imageView = **view,
-            .imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal,
-        };
-
-        auto write_info = vk::WriteDescriptorSet {
-            .dstSet = *set,
-            .dstBinding = binding,
-            .dstArrayElement = 0,
-            .descriptorCount = 1,
-            .descriptorType = vk::DescriptorType::eCombinedImageSampler,
-            .pImageInfo = &image_info
-        };
-
-        context->device->updateDescriptorSets(write_info, nullptr);
-
-    }
-
     void Texture::update_mipmaps (const std::vector<assets::MipMap>& mipmaps) {
 
         auto buffers = std::vector<BasicBuffer>();

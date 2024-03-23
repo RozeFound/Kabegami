@@ -40,6 +40,8 @@ namespace vki {
 
         if constexpr (debug) extensions.push_back("VK_EXT_debug_utils");
 
+        extensions.push_back("VK_KHR_get_physical_device_properties2");
+
         logv("Extensions to be requested: ");
             for (auto& extension : extensions)
                 logv("\t{}", extension);
