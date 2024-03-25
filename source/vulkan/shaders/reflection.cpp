@@ -40,8 +40,9 @@ namespace glsl {
 
     ShaderResources::ShaderResources (const std::vector<SPV>& spvs) {
 
-        for (const auto& spv : spvs)
-            reflect(spv.code);
+        std::ranges::for_each(spvs, [&](auto&& spv) {
+            if (!reflect(spv.code)) loge("Failed to reflect shader");
+        });
 
         auto bindings = std::vector<vk::DescriptorSetLayoutBinding>();
 

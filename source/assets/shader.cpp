@@ -2,6 +2,8 @@
 
 #include <regex>
 
+#include <glaze/glaze.hpp>
+
 namespace assets {
 
 constexpr auto pre_shader_code = R"(
@@ -68,6 +70,66 @@ __SHADER_PLACEHOLD__
 
         output.append(source.substr(pos));
         return output;
+
+    }
+
+    void parse (glsl::ShaderUnit& unit,
+        std::unordered_map<std::string, std::string>& combos,
+        std::unordered_map<std::string, std::string>& aliases,
+        std::unordered_map<std::string, glz::json_t>& values,
+        std::vector<std::string>& textures) {
+
+        auto source = std::string(unit.source);
+
+        static auto re_unif = std::regex(R"(^\s*uniform\s(\w+)\s(\w+))", std::regex::ECMAScript);
+
+        std::string line;
+        auto source_stream = std::istringstream(source);
+
+        glz::json_t json;
+
+        while (std::getline(source_stream, line)) {
+
+            if (line.find("COMBO") != std::string::npos) {
+                auto error = glz::read_json(json, line.substr(line.find_first_of('{')));
+
+                auto name = json.at("combo").as<std::string>();
+
+                if (!combos.contains(name))
+                    combos[name] = json.at("default").as<std::string>();
+
+                continue;
+            }
+
+            std::smatch match;
+            if (std::regex_search(line, match, re_unif)) {
+
+                auto j_start = line.find_first_of('{');
+                if (j_start == std::string::npos) continue;
+
+                auto error = glz::read_json(json, line.substr(j_start));
+
+                auto& type = match[1];
+                auto name = std::string(match[2]);
+
+                auto material = json.at("material").as<std::string>();
+                aliases[name] = material;
+
+                if (json.contains("default")) {
+                    if (type == "sampler2D") {
+                        int t_id = std::stoi(name.substr(name.length()-1));
+                        textures.at(t_id) = json.at("default").as<std::string>();
+                    }
+                    else if (!values.contains(material))
+                        values[material] = json.at("default");
+                }
+
+            }
+
+        }
+
+        for (auto&&[name, value] : combos)
+            unit.define(name, value);
 
     }
 
@@ -176,9 +238,15 @@ __SHADER_PLACEHOLD__
         if (fs.exists(path + ".geom"))
             units.emplace_back(load_glsl_file(fs, path + ".geom"), vk::ShaderStageFlagBits::eGeometry);
 
-        std::for_each(units.begin(), units.end(), [&](glsl::ShaderUnit& unit) {
+        std::unordered_map<std::string, std::string> combos;  // Pass::combos
+        std::unordered_map<std::string, std::string> aliases; // g_Uniform -> material
+        std::unordered_map<std::string, glz::json_t> values;  // Pass::constantshadervalues
+        std::vector<std::string> textures;                    // Pass::textures
+
+        for (auto& unit : units) {
+            parse(unit, combos, aliases, values, textures);
             unit.source = preprocess(unit);
-        });
+        }
 
         map_io(units);
 
