@@ -130,7 +130,7 @@ template <> struct glz::meta<objects::Pass> {
 
     static constexpr auto value = object(
         "id", &T::id,
-        "combos", &T::combos,
+        "combos", glz::number<&T::combos>,
         "blending", &T::blending,
         "cullmode", &T::cullmode,
         "depthtest", &T::depthtest,

@@ -94,7 +94,7 @@ namespace assets {
             for (uint32_t i = 0; i < mipmap_count; i ++)
                 mipmaps.emplace_back(reader, header);
 
-            images[image] = mipmaps; // will make a copy?
+            images.emplace_back(std::move(mipmaps));
 
         }
 

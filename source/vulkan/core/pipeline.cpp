@@ -198,7 +198,7 @@ namespace vku {
         auto context = vki::Context::get();
 
         if (std::filesystem::exists(path))
-            data = fs::read(path);
+            data = fs::read(path, 0, 0);
 
         auto create_info = vk::PipelineCacheCreateInfo {
             .flags = vk::PipelineCacheCreateFlags(),

@@ -1,8 +1,6 @@
 #pragma once
 
 #include <optional>
-#include <filesystem>
-#include <fstream>
 
 #include <xxh3.h>
 
@@ -32,47 +30,5 @@ namespace vku {
         vk::Format format, vk::ImageAspectFlags flags, uint32_t mip_levels = 1);
 
     constexpr uint32_t to_u32 (std::size_t value) { return static_cast<uint32_t>(value); }
-
-    namespace hash {
-
-        XXH64_hash_t XXH3(std::span<std::byte> data);
-        XXH64_hash_t XXH3(std::filesystem::path path);
-
-    }
-
-    namespace fs {
-
-        template <class T> concept is_array_like = requires (T cls) { cls.size(); cls.data(); };
-
-        template <typename T = std::byte> std::vector<T> read (std::filesystem::path path) {
-
-            auto file = std::ifstream(path, std::ios::ate | std::ios::binary);
-
-            std::size_t size = file.tellg(); file.seekg(0);
-            auto buffer = std::vector<T>(size);
-
-            file.read(reinterpret_cast<char*>(buffer.data()), size);
-
-            return buffer;
-        }
-
-        template <class T> requires is_array_like<T>
-        void write (std::filesystem::path path, T data) {
-            auto file = std::ofstream(path, std::ios::trunc | std::ios::binary);
-            file.write(reinterpret_cast<char*>(data.data()), data.size());
-        }
-
-        template <class T> requires is_array_like<T>
-        std::filesystem::path write_temp (T data) {
-
-            auto hash = std::to_string(hash::XXH3(data));
-            auto path = std::filesystem::temp_directory_path() / hash;
-
-            write(path, data);
-
-            return path;
-        }
-
-    }
 
 }

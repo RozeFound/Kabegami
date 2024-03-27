@@ -58,7 +58,7 @@ __SHADER_PLACEHOLD__
 
             auto name = source.substr(sQ + 1, eQ - sQ - 1);
 
-            auto content = fs.read_as_string(fmt::format("shaders/{}", name));
+            auto content = fs.read<std::string>(fmt::format("shaders/{}", name));
 
             output.append(fmt::format("\n//-----include {}\n", name));
             output.append(load_glsl_include(fs, content));
@@ -211,7 +211,7 @@ __SHADER_PLACEHOLD__
 
     std::string load_glsl_file (const FileSystem& fs, std::string_view path) {
 
-        auto source = fs.read_as_string(path);
+        auto source = fs.read<std::string>(path);
         auto new_source = std::string(source);
 
         std::string::size_type pos = 0;

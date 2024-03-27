@@ -1,7 +1,5 @@
 #include "compiler.hpp"
 
-#include "vulkan/utility/misc.hpp"
-
 #include <SPIRV/GLSL.std.450.h>
 #include <SPIRV/GlslangToSpv.h>
 #include <glslang/MachineIndependent/iomapper.h>
@@ -59,7 +57,7 @@ namespace glsl {
         }
 
         if (!shader.parse(resource_limits, 110, false, messages)) {
-            auto tmp_path = vku::fs::write_temp(unit.source);
+            auto tmp_path = fs::write_temp(unit.source);
             logi("--- shader compile failed ---");
             loge("shader source is at {}", tmp_path.string());
             loge("glslang(parse): {}", shader.getInfoLog());
@@ -71,7 +69,7 @@ namespace glsl {
 
     }
 
-    bool Compiler::compile (const std::vector<ShaderUnit>& units, std::vector<SPV>& spvs) {
+    bool Compiler::compile (const std::vector<ShaderUnit>& units, std::vector<std::vector<uint32_t>>& codes) {
 
         std::vector<std::unique_ptr<glslang::TShader>> shaders;
         glslang::TProgram program;
@@ -120,8 +118,7 @@ namespace glsl {
 
             std::vector<uint32_t> spirv;
             glslang::GlslangToSpv(*intermediate, spirv, &logger, &spv_options);
-            
-            spvs.emplace_back(std::move(spirv), spirv.size() * sizeof(uint32_t), unit.stage);
+            codes.emplace_back(std::move(spirv));
 
             auto log = logger.getAllMessages();
             if (log.length() > 0) {

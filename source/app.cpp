@@ -1,6 +1,7 @@
 #include "app.hpp"
 
 #include "assets/filesystem.hpp"
+#include "utils.hpp"
 #include "scene.hpp"
 
 Kabegami::Kabegami() {
@@ -28,18 +29,18 @@ void Kabegami::run() {
 
     auto fs = assets::FileSystem { settings.assets, settings.wallpaper };
 
-    auto file = glz::get_as_json<std::string, "/file">(fs.read_as_string("project.json"));
+    auto file = glz::get_as_json<std::string, "/file">(fs.read<std::string>("project.json"));
     if (!fs.exists(file.value())) fs.add_package(settings.wallpaper + "/scene.pkg");
 
     if constexpr (debug) fs.add_location("./");
 
     objects::Scene scene_info;
-    auto buffer = fs.read_as_string(file.value());
+    auto buffer = fs.read<std::string>(file.value());
     
     constexpr auto opts = glz::opts{.error_on_unknown_keys=false};
     if (auto pe = glz::read<opts>(scene_info, buffer)) {
         loge("Failed to parse scene:\n{}", glz::format_error(pe, buffer));
-        auto file_path = vku::fs::write_temp(buffer);
+        auto file_path = fs::write_temp(buffer);
         logd("Scene json at: {}", file_path.string());
         return;
     }

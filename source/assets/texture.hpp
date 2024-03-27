@@ -2,7 +2,6 @@
 
 #include <vector>
 #include <string_view>
-#include <unordered_map>
 #include <cstring>
 #include <span>
 
@@ -166,7 +165,7 @@ namespace assets {
 
         std::string_view animation_version;
 
-        std::unordered_map<uint32_t, std::vector<MipMap>> images;
+        std::vector<std::vector<MipMap>> images;
 
         uint32_t gif_width, gif_height;
         std::vector<Frame> frames;

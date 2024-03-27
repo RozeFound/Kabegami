@@ -38,10 +38,10 @@ namespace glsl {
         }
     }
 
-    ShaderResources::ShaderResources (const std::vector<SPV>& spvs) {
+    ShaderResources::ShaderResources (std::vector<std::vector<uint32_t>>& codes) {
 
-        std::ranges::for_each(spvs, [&](auto&& spv) {
-            if (!reflect(spv.code)) loge("Failed to reflect shader");
+        std::ranges::for_each(codes, [&](auto&& code) {
+            if (!reflect(code)) loge("Failed to reflect shader");
         });
 
         auto bindings = std::vector<vk::DescriptorSetLayoutBinding>();
@@ -67,6 +67,8 @@ namespace glsl {
 
         auto spv_ref = spv_reflect::ShaderModule(code, SPV_REFLECT_MODULE_FLAG_NO_COPY);
         auto stage = toVkType(spv_ref.GetShaderStage());
+
+        spvs.emplace_back(code, code.size() * sizeof(uint32_t), stage);
 
         std::vector<SpvReflectInterfaceVariable*> inputs;
         std::vector<SpvReflectDescriptorBinding*> bindings;

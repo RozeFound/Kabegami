@@ -3,6 +3,8 @@
 #include <glslang/Public/ShaderLang.h>
 #include <glslang/Public/ResourceLimits.h>
 
+#include "utils.hpp"
+
 namespace glsl {
 
     constexpr auto find_shader_language (vk::ShaderStageFlagBits stage) {
@@ -51,12 +53,8 @@ namespace glsl {
         constexpr const auto& get_preamble() const { return preamble; }
         constexpr const auto& get_processes() const { return processes; }
 
-    };
+        constexpr const auto get_hash() const { return hash::XXH3(source); }
 
-    struct SPV {
-        std::vector<uint32_t> code;
-        std::uint32_t size;
-        vk::ShaderStageFlagBits stage;
     };
 
     class Compiler {
@@ -96,7 +94,7 @@ namespace glsl {
         ~Compiler() { glslang::FinalizeProcess(); };
 
         bool parse (const ShaderUnit& unit, glslang::TShader& shader);
-        bool compile (const std::vector<ShaderUnit>& units, std::vector<SPV>& spvs);
+        bool compile (const std::vector<ShaderUnit>& units, std::vector<std::vector<uint32_t>>& codes);
 
 
     };

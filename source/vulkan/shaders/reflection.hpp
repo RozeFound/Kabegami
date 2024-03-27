@@ -1,8 +1,12 @@
 #pragma once
 
-#include "compiler.hpp"
-
 namespace glsl {
+
+    struct SPV {
+        std::vector<uint32_t> code;
+        std::uint32_t size;
+        vk::ShaderStageFlagBits stage;
+    };
     
     class ShaderResources {
 
@@ -31,14 +35,17 @@ namespace glsl {
         std::unordered_map<std::string_view, Input> input_map;
 
         std::shared_ptr<vk::raii::DescriptorSetLayout> layout;
+        std::vector<SPV> spvs;
+
 
         bool reflect (const std::vector<uint32_t>& code);
 
         public:
 
-        ShaderResources (const std::vector<SPV>& spvs);
+        ShaderResources (std::vector<std::vector<uint32_t>>& codes);
 
         constexpr auto& get_layout () const { return layout; }
+        constexpr auto& get_spvs () const { return spvs; }
 
     };
 

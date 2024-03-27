@@ -59,7 +59,7 @@ namespace vku {
 
     class PipeLineCache {
 
-        std::filesystem::path path = ".cache/pipeline.cache";
+        std::filesystem::path path = fs::get_cache_dir() / "pipeline.cache";
         std::unique_ptr<vk::raii::PipelineCache> handle;
         std::vector<std::byte> data;
 

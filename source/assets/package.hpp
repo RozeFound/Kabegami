@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 
+#include "utils.hpp"
+
 namespace assets {
 
     struct Entry {
@@ -32,16 +34,24 @@ namespace assets {
         Package (Package&&) noexcept = default;
         Package (Package&) = delete;
 
-        template<typename T> std::vector<T> read_file (std::string_view path) const {
+        template <typename T = std::vector<std::byte>>
+        T read (std::string_view path, std::ptrdiff_t position, std::size_t size) const {
 
             auto& entry = entries.at({ path.begin(), path.end() });
-            auto result = std::vector<T>(entry.length / sizeof(T));
 
             file.seekg(data_offset + entry.offset);
+            if (size == 0) size = entry.length;
 
-            file.read(reinterpret_cast<char*>(result.data()), entry.length);
-            
-            return result;
+            if constexpr (is_array_like<T>) {
+                auto buffer = T();
+                buffer.resize(size);
+                file.read(reinterpret_cast<char*>(buffer.data()), size);
+                return buffer;
+            } else {
+                T value;
+                file.read(reinterpret_cast<char*>(&value), sizeof(T));
+                return value;
+            }
 
         }
         
