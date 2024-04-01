@@ -32,7 +32,7 @@ namespace vku {
         if (!read_cache(codes, cache_path, hash)) {
             if (!compiler.compile(parser.get_units(), codes))
                 loge("Failed to compile shader: {}", path);
-            write_cache(codes, cache_path, hash);
+            else write_cache(codes, cache_path, hash);
         }
 
         auto resources = glsl::ShaderResources(codes);

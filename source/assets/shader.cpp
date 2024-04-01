@@ -4,6 +4,36 @@
 
 #include <glaze/glaze.hpp>
 
+struct Material {
+    std::string name;
+    glz::json_t value;
+};
+
+struct Combo {
+    std::string name;
+    std::string value;
+};
+
+template <> struct glz::meta<Material> {
+
+    using T = Material;
+
+    static constexpr auto value = object(
+        "material", &T::name,
+        "default", &T::value
+    );
+};
+
+template <> struct glz::meta<Combo> {
+
+    using T = Combo;
+
+    static constexpr auto value = object(
+        "combo", &T::name,
+        "default", number<&T::value>
+    );
+};
+
 namespace assets {
 
 constexpr auto pre_shader_code = R"(
@@ -86,17 +116,22 @@ __SHADER_PLACEHOLD__
         std::string line;
         auto source_stream = std::istringstream(source);
 
-        glz::json_t json;
+        constexpr auto opts = glz::opts{.error_on_unknown_keys = false};
 
         while (std::getline(source_stream, line)) {
 
             if (line.find("COMBO") != std::string::npos) {
-                auto error = glz::read_json(json, line.substr(line.find_first_of('{')));
 
-                auto name = json.at("combo").as<std::string>();
+                Combo combo;
+                auto buffer = std::string_view(line).substr(line.find_first_of('{'));
+                
+                if (auto error = glz::read<opts>(combo, buffer)) {
+                    logw("Failed to parse combo: {}", glz::format_error(error, buffer));
+                    continue;
+                }
 
-                if (!combos.contains(name))
-                    combos[name] = json.at("default").as<std::string>();
+                if (!combos.contains(combo.name))
+                    combos[combo.name] = combo.value;
 
                 continue;
             }
@@ -107,21 +142,26 @@ __SHADER_PLACEHOLD__
                 auto j_start = line.find_first_of('{');
                 if (j_start == std::string::npos) continue;
 
-                auto error = glz::read_json(json, line.substr(j_start));
+                Material material;
+                auto buffer = std::string_view(line).substr(j_start);
+
+                if (auto error = glz::read<opts>(material, buffer)) {
+                    logw("Failed to parse material json: {}", glz::format_error(error, buffer));
+                    continue;
+                }
 
                 auto& type = match[1];
                 auto name = std::string(match[2]);
 
-                auto material = json.at("material").as<std::string>();
-                aliases[name] = material;
+                aliases[name] = material.name;
 
-                if (json.contains("default")) {
+                if (material.value) {
                     if (type == "sampler2D") {
                         int t_id = std::stoi(name.substr(name.length()-1));
-                        textures.at(t_id) = json.at("default").as<std::string>();
+                        textures.at(t_id) = material.value.as<std::string>();
                     }
-                    else if (!values.contains(material))
-                        values[material] = json.at("default");
+                    else if (!values.contains(material.name))
+                        values[material.name] = material.value;
                 }
 
             }
@@ -241,7 +281,7 @@ __SHADER_PLACEHOLD__
         std::unordered_map<std::string, std::string> combos;  // Pass::combos
         std::unordered_map<std::string, std::string> aliases; // g_Uniform -> material
         std::unordered_map<std::string, glz::json_t> values;  // Pass::constantshadervalues
-        std::vector<std::string> textures;                    // Pass::textures
+        std::vector<std::string> textures(3);                    // Pass::textures
 
         for (auto& unit : units) {
             parse(unit, combos, aliases, values, textures);
