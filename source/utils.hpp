@@ -28,19 +28,19 @@ namespace fs {
     template <typename T = std::vector<std::byte>>
     T read (std::filesystem::path path, std::ptrdiff_t position, std::size_t size) {
         
-        auto file = std::ifstream (path, std::ios::ate | std::ios::binary);
+        auto file = std::fopen(path.c_str(), "rb");
 
-        if (size == 0) size = file.tellg();
-        file.seekg(position);
+        if (position) std::fseek(file, position, SEEK_SET);
 
         if constexpr (is_array_like<T>) {
             auto buffer = T();
+            if (size == 0) size = std::filesystem::file_size(path);
             buffer.resize(size);
-            file.read(reinterpret_cast<char*>(buffer.data()), size);
+            std::fread(buffer.data(), size, 1, file);
             return buffer;
         } else {
             T value;
-            file.read(reinterpret_cast<char*>(&value), sizeof(T));
+            std::fread(value.data(), size, 1, file);
             return value;
         }
 
