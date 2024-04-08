@@ -1,7 +1,7 @@
 #pragma once
 
 #include "vulkan/core/context.hpp"
-#include "assets/texture.hpp"
+#include "parsers/texture.hpp"
 #include "transient.hpp"
 
 namespace vku {
@@ -51,12 +51,12 @@ namespace vku {
         std::unique_ptr<vk::raii::Sampler> sampler;
 
         void create_sampler();
-        void update_mipmaps (const std::vector<assets::MipMap>& mipmaps);
+        void update_mipmaps (const std::vector<parsers::Texture::MipMap>& mipmaps);
         void generate_mipmaps (const TransientBuffer& commands);
 
         public:
 
-        Texture (const assets::TextureParser& parser);
+        Texture (const parsers::Texture& parser);
         Texture (std::filesystem::path path);
         Texture (Texture&&) = default;
 

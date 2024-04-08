@@ -1,5 +1,6 @@
 #pragma once
 
+#include "utils.hpp"
 #include "vulkan/shaders/shader.hpp"
 
 namespace vku {
@@ -61,7 +62,6 @@ namespace vku {
 
         std::filesystem::path path = fs::get_cache_dir() / "pipeline.cache";
         std::unique_ptr<vk::raii::PipelineCache> handle;
-        std::vector<std::byte> data;
 
         public:
 

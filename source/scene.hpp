@@ -1,6 +1,6 @@
 #pragma once
 
-#include "assets/filesystem.hpp"
+#include "filesystem/vfs.hpp"
 
 #include "vulkan/utility/image.hpp"
 #include "vulkan/core/pipeline.hpp"
@@ -48,7 +48,7 @@ class Scene {
     
     std::array<float, 4> clear_color;
 
-    Scene (const objects::Scene& info, const assets::FileSystem& fs);
+    Scene (const objects::Scene& info, const fs::VFS& fs);
     void allocate_resources (const vk::raii::RenderPass& render_pass);
 
     void draw (const vk::raii::CommandBuffer& commands) const;

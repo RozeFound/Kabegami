@@ -1,7 +1,7 @@
 #pragma once
 
 #include "module.hpp"
-#include "assets/filesystem.hpp"
+#include "filesystem/vfs.hpp"
 
 namespace vku {
 
@@ -16,7 +16,7 @@ namespace vku {
         public:
 
         Shader() = delete;
-        Shader (const assets::FileSystem& fs, std::string path);
+        Shader (const fs::VFS& vfs, std::string path);
 
         constexpr const auto& get_modules() const { return modules; }
         constexpr const auto& get_layout() const { return descriptor_set_layout; }

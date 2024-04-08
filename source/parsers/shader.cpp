@@ -34,7 +34,7 @@ template <> struct glz::meta<Combo> {
     );
 };
 
-namespace assets {
+namespace parsers {
 
 constexpr auto pre_shader_code = R"(
 #version 450
@@ -71,7 +71,7 @@ __SHADER_PLACEHOLD__
 
 )";
 
-    std::string load_glsl_include (const FileSystem& fs, std::string_view source) {
+    std::string load_glsl_include (const fs::VFS& vfs, std::string_view source) {
 
         std::string_view::size_type start = std::string_view::npos;
         std::string_view::size_type pos = 0;
@@ -88,10 +88,10 @@ __SHADER_PLACEHOLD__
 
             auto name = source.substr(sQ + 1, eQ - sQ - 1);
 
-            auto content = fs.read<std::string>(fmt::format("shaders/{}", name));
+            auto content = vfs.read<std::string>(fmt::format("shaders/{}", name));
 
             output.append(fmt::format("\n//-----include {}\n", name));
-            output.append(load_glsl_include(fs, content));
+            output.append(load_glsl_include(vfs, content));
             output.append("\n//-----include end\n");
 
             pos = end;
@@ -249,9 +249,9 @@ __SHADER_PLACEHOLD__
 
     }
 
-    std::string load_glsl_file (const FileSystem& fs, std::string_view path) {
+    std::string load_glsl_file (const fs::VFS& vfs, std::string_view path) {
 
-        auto source = fs.read<std::string>(path);
+        auto source = vfs.read<std::string>(path);
         auto new_source = std::string(source);
 
         std::string::size_type pos = 0;
@@ -264,19 +264,19 @@ __SHADER_PLACEHOLD__
             pos = end;
         }
         
-        include = load_glsl_include(fs, include);
+        include = load_glsl_include(vfs, include);
 
         return include + new_source;
 
     }
 
-    ShaderParser::ShaderParser(const FileSystem& fs, std::string path) {
+    Shader::Shader(const fs::VFS& vfs, std::string path) {
 
-        units.emplace_back(load_glsl_file(fs, path + ".vert"), vk::ShaderStageFlagBits::eVertex);
-        units.emplace_back(load_glsl_file(fs, path + ".frag"), vk::ShaderStageFlagBits::eFragment);
+        units.emplace_back(load_glsl_file(vfs, path + ".vert"), vk::ShaderStageFlagBits::eVertex);
+        units.emplace_back(load_glsl_file(vfs, path + ".frag"), vk::ShaderStageFlagBits::eFragment);
 
-        if (fs.exists(path + ".geom"))
-            units.emplace_back(load_glsl_file(fs, path + ".geom"), vk::ShaderStageFlagBits::eGeometry);
+        if (vfs.exists(path + ".geom"))
+            units.emplace_back(load_glsl_file(vfs, path + ".geom"), vk::ShaderStageFlagBits::eGeometry);
 
         std::unordered_map<std::string, std::string> combos;  // Pass::combos
         std::unordered_map<std::string, std::string> aliases; // g_Uniform -> material

@@ -2,17 +2,17 @@
 
 #include "vulkan/shaders/compiler.hpp"
 
-#include "filesystem.hpp"
+#include "filesystem/vfs.hpp"
 
-namespace assets {
+namespace parsers {
 
-    class ShaderParser {
+    class Shader {
 
         std::vector<glsl::ShaderUnit> units;
 
         public:
 
-        ShaderParser (const FileSystem& fs, std::string path);
+        Shader (const fs::VFS& vfs, std::string path);
 
         constexpr const auto& get_units() const { return units; };
 

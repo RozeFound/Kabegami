@@ -50,7 +50,7 @@ namespace vku {
 
     }
 
-    Texture::Texture (const assets::TextureParser& parser) {
+    Texture::Texture (const parsers::Texture& parser) {
 
         auto header = parser.get_header();
         width = header.width; height = header.height;
@@ -118,7 +118,7 @@ namespace vku {
 
     }
 
-    void Texture::update_mipmaps (const std::vector<assets::MipMap>& mipmaps) {
+    void Texture::update_mipmaps (const std::vector<parsers::Texture::MipMap>& mipmaps) {
 
         auto buffers = std::vector<BasicBuffer>();
         auto commands = TransientBuffer(true);

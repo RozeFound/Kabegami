@@ -15,19 +15,19 @@
         "name": "fmt",
         "github": "fmtlib/fmt",
         "tag": "10.2.1",
-        "commit": "f5ec5ada2bcb2c64306f3d8c25dd919dbbe4692e"
+        "commit": "550437b29ecc7fa63eafacc866f897de9e40dc29"
     },
     {
         "name": "glaze",
         "github": "stephenberry/glaze",
-        "tag": "v2.4.0",
-        "commit": "63f585915baf753df73219bb0859f3d80712123e"
+        "tag": "v2.4.4",
+        "commit": "cc58afa1f751513daa482a905e6021f5dcc5fe2c"
     },
     {
         "name": "spdlog",
         "github": "gabime/spdlog",
         "tag": "v1.13.0",
-        "commit": "8fed530bdffbe69304a330be2096c65793b722c2"
+        "commit": "a2b4262090fd3f005c2315dcb5be2f0f1774a005"
     },
     {
         "name": "stb",
@@ -39,7 +39,7 @@
         "name": "lz4",
         "github": "lz4/lz4",
         "tag": "v1.9.4",
-        "commit": "39d869620c29633f32040ce1aacae0a653e2bd32"
+        "commit": "35264befb81eb0efb1a8693962ca257bd9028e45"
     },
     {
         "name": "SPIRV-Headers",
@@ -51,13 +51,13 @@
         "name": "SPIRV-Tools",
         "github": "KhronosGroup/SPIRV-Tools",
         "tag": "vulkan-sdk-1.3.280.0",
-        "commit": "7fe5f75e581014e920ab5d9a218ea2f37bbaa0d4"
+        "commit": "ade1f7cfd7dbe41f30e19dc11cc168a1aa67a34a"
     },
     {
         "name": "glslang",
         "github": "KhronosGroup/glslang",
         "tag": "main-tot",
-        "commit": "0015dc9345ff9572af60801948c82b7ebce5ddb3"
+        "commit": "8a3ea594c76c154493ade0948f1ea64a2f9d2e75"
     },
     {
         "name": "xxHash",
@@ -69,6 +69,6 @@
         "name": "SPIRV-Reflect",
         "github": "KhronosGroup/SPIRV-Reflect",
         "tag": "vulkan-sdk-1.3.280.0",
-        "commit": "c7be9dcb5395048d95e724d612eac68b72a5a677"
+        "commit": "e4b225a8551e2f8dbf55e71762b54e0cae7850c7"
     }
 ]

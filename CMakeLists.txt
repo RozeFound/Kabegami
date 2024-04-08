@@ -71,15 +71,4 @@ endforeach()
 
 # ---- Link libraries ----
 
-set(LINK_TARGETS  fmt::fmt
-                  spdlog
-                  glaze::glaze 
-                  glfw
-                  glm::glm
-                  vulkan
-                  ${glslang-link-targets}
-                  spirv-reflect-static
-                  lz4
-                  stb
-                  xxHash::xxhash)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${LINK_TARGETS})

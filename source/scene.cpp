@@ -5,7 +5,7 @@
 
 #include "vulkan/utility/primitives.hpp"
 
-Scene::Scene (const objects::Scene& info, const assets::FileSystem& fs) {
+Scene::Scene (const objects::Scene& info, const fs::VFS& vfs) {
 
     clear_color = { (float)info.general.clear_color.r,
                     (float)info.general.clear_color.g,
@@ -20,8 +20,8 @@ Scene::Scene (const objects::Scene& info, const assets::FileSystem& fs) {
     };
 
     shaders = {
-        std::make_pair("basic", std::make_shared<vku::Shader>(fs, "shaders/basic")),
-        std::make_pair("waterriple", std::make_shared<vku::Shader>(fs, "shaders/effects/waterripple")),
+        std::make_pair("basic", std::make_shared<vku::Shader>(vfs, "shaders/basic")),
+        std::make_pair("waterriple", std::make_shared<vku::Shader>(vfs, "shaders/effects/waterripple")),
     };
 
     auto vertecies = std::vector<vku::Vertex> {

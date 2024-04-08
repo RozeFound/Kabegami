@@ -1,6 +1,6 @@
 #include "app.hpp"
 
-#include "assets/filesystem.hpp"
+#include "filesystem/vfs.hpp"
 #include "utils.hpp"
 #include "scene.hpp"
 
@@ -27,15 +27,15 @@ Kabegami::~Kabegami() {
 
 void Kabegami::run() {
 
-    auto fs = assets::FileSystem { settings.assets, settings.wallpaper };
+    auto vfs = fs::VFS { settings.assets, settings.wallpaper };
 
-    auto file = glz::get_as_json<std::string, "/file">(fs.read<std::string>("project.json"));
-    if (!fs.exists(file.value())) fs.add_package(settings.wallpaper + "/scene.pkg");
+    auto file = glz::get_as_json<std::string, "/file">(vfs.read<std::string>("project.json"));
+    if (!vfs.exists(file.value())) vfs.add_package(settings.wallpaper + "/scene.pkg");
 
-    if constexpr (debug) fs.add_location("./");
+    if constexpr (debug) vfs.add_location("./");
 
     objects::Scene scene_info;
-    auto buffer = fs.read<std::string>(file.value());
+    auto buffer = vfs.read<std::string>(file.value());
     
     constexpr auto opts = glz::opts{.error_on_unknown_keys=false};
     if (auto pe = glz::read<opts>(scene_info, buffer)) {
@@ -45,7 +45,7 @@ void Kabegami::run() {
         return;
     }
 
-    engine->set_scene(std::make_shared<Scene>(scene_info, fs));
+    engine->set_scene(std::make_shared<Scene>(scene_info, vfs));
 
     window->add_key_callback([this](int key, int action, int mods) {
         if (mods == GLFW_MOD_CONTROL && action == GLFW_PRESS) {

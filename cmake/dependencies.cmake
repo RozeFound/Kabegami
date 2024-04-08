@@ -112,3 +112,15 @@ CPMAddPackage(
         "SPIRV_REFLECT_EXECUTABLE OFF"
         "SPIRV_REFLECT_STATIC_LIB ON"
 )
+
+set(LINK_TARGETS  fmt::fmt
+                  spdlog
+                  glaze::glaze 
+                  glfw
+                  glm::glm
+                  vulkan
+                  ${glslang-link-targets}
+                  spirv-reflect-static
+                  lz4
+                  stb
+                  xxHash::xxhash)

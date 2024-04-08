@@ -196,9 +196,12 @@ namespace vku {
     PipeLineCache::PipeLineCache() {
 
         auto context = vki::Context::get();
+        auto data = std::vector<std::byte>();
 
-        if (std::filesystem::exists(path))
-            data = fs::read(path, 0, 0);
+        if (std::filesystem::exists(path)) {
+            auto file = fs::BinaryStream(path, fs::read);
+            data = file.read<decltype(data)>();
+        }
 
         auto create_info = vk::PipelineCacheCreateInfo {
             .flags = vk::PipelineCacheCreateFlags(),
@@ -215,7 +218,8 @@ namespace vku {
         if (!std::filesystem::exists(path))
             std::filesystem::create_directories(path.parent_path());
 
-        fs::write(path, handle->getData());
+        auto file = fs::BinaryStream(path, fs::write);
+        file.write<std::vector<uint8_t>>(handle->getData());
 
     }
 

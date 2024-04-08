@@ -3,9 +3,9 @@
 #include <lz4.h>
 #include <stb_image.h>
 
-namespace assets {
+namespace parsers {
 
-    Header::Header (Reader& reader) {
+    Texture::Header::Header (Reader& reader) {
 
         version = reader.get<std::string_view>();
         index = reader.get<std::string_view>();
@@ -29,7 +29,7 @@ namespace assets {
 
     }
 
-    MipMap::MipMap (Reader& reader, const Header& header) {
+    Texture::MipMap::MipMap (Reader& reader, const Header& header) {
 
         width = reader.get<uint32_t>();
         height = reader.get<uint32_t>();
@@ -69,7 +69,7 @@ namespace assets {
 
     }
 
-    Frame::Frame (Reader& reader) {
+    Texture::Frame::Frame (Reader& reader) {
 
         index = reader.get<uint32_t>();
         duration = reader.get<uint32_t>();
@@ -84,7 +84,7 @@ namespace assets {
 
     }
 
-    TextureParser::TextureParser (std::span<std::byte> data) : reader(data), header(reader) {
+    Texture::Texture (std::span<std::byte> data) : reader(data), header(reader) {
 
         for (uint32_t image = 0; image < header.image_count; image++) {
 

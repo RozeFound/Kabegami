@@ -1,7 +1,7 @@
 #include "shader.hpp"
 
 #include "reflection.hpp"
-#include "assets/shader.hpp"
+#include "parsers/shader.hpp"
 
 namespace vku {
 
@@ -11,7 +11,7 @@ namespace vku {
         return hash::XXH3(hashes);
     }
 
-    Shader::Shader (const assets::FileSystem& fs, std::string path) {
+    Shader::Shader (const fs::VFS& vfs, std::string path) {
 
         glsl::Compiler::Options options;
 
@@ -22,7 +22,7 @@ namespace vku {
         options.suppress_warnings_glsl = true;
 
         auto compiler = glsl::Compiler(options);
-        auto parser = assets::ShaderParser(fs, path);
+        auto parser = parsers::Shader(vfs, path);
 
         auto hash = get_hash(parser.get_units());
 
@@ -47,24 +47,16 @@ namespace vku {
 
         if (!std::filesystem::exists(path)) return false;
 
-        auto file = std::ifstream(path, std::ios::binary);
+        auto file = fs::BinaryStream(path, fs::read);
 
-        XXH64_hash_t stored_hash;
-        file.read((char*)&stored_hash, sizeof(XXH64_hash_t));
+        if (file.read<XXH64_hash_t>() != hash) return false;
 
-        if (stored_hash != hash) return false;
-
-        uint32_t codes_count;
-        file.read((char*)&codes_count, sizeof(uint32_t));
+        auto codes_count = file.read<uint32_t>();
 
         for (uint32_t i = 0; i < codes_count; i++) {
 
-            uint32_t size;
-            file.read((char*)&size, sizeof(uint32_t));
-
-            auto code = std::vector<uint32_t>(size);
-            file.read((char*)code.data(), size * sizeof(uint32_t));
-
+            auto size = file.read<uint32_t>();
+            auto code = file.read<std::vector<uint32_t>>(size);
             codes.emplace_back(std::move(code));
 
         }
@@ -75,20 +67,17 @@ namespace vku {
 
     void Shader::write_cache (std::vector<std::vector<uint32_t>>& codes, std::filesystem::path path, XXH64_hash_t hash) {
 
-        if (!std::filesystem::exists(path)) {
+        if (!std::filesystem::exists(path))
             std::filesystem::create_directories(path.parent_path());
-        }
 
-        auto file = std::ofstream(path, std::ios::binary);
-        uint32_t size = vku::to_u32(codes.size());
+        auto file = fs::BinaryStream(path, fs::write);
 
-        file.write((char*)&hash, sizeof(decltype(hash)));
-        file.write((char*)&size, sizeof(uint32_t));
-        
+        file.write(hash);
+        file.write<uint32_t>(codes.size());
+
         for (auto& code : codes) {
-            uint32_t size = vku::to_u32(code.size());
-            file.write((char*)&size, sizeof(uint32_t));
-            file.write((char*)code.data(), code.size() * sizeof(uint32_t));
+            file.write<uint32_t>(code.size());
+            file.write(code);
         }
 
     }

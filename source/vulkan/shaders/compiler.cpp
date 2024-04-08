@@ -105,7 +105,7 @@ namespace glsl {
         // Compile to SPV
         spv::SpvBuildLogger logger;
         glslang::SpvOptions spv_options;
-        spv_options.generateDebugInfo = false;
+        spv_options.generateDebugInfo = true;
 
         if constexpr (!debug) {
             spv_options.disableOptimizer = !options.optimize;
