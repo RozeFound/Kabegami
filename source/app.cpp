@@ -29,10 +29,13 @@ void Kabegami::run() {
 
     auto vfs = fs::VFS { settings.assets, settings.wallpaper };
 
-    auto file = glz::get_as_json<std::string, "/file">(vfs.read<std::string>("project.json"));
-    if (!vfs.exists(file.value())) vfs.add_package(settings.wallpaper + "/scene.pkg");
+    if constexpr (debug) vfs.mount_location("./");
+    if (!settings.cache_location.empty())
+        vfs.mount_location(settings.cache_location, "cache");
+    else vfs.mount_location(fs::get_cache_dir(), "cache");
 
-    if constexpr (debug) vfs.add_location("./");
+    auto file = glz::get_as_json<std::string, "/file">(vfs.read<std::string>("project.json"));
+    if (!vfs.exists(file.value())) vfs.mount_package(settings.wallpaper + "/scene.pkg");
 
     objects::Scene scene_info;
     auto buffer = vfs.read<std::string>(file.value());

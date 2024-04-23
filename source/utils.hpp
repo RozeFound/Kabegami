@@ -1,12 +1,7 @@
 #pragma once
 
-#include <fstream>
-#include <filesystem>
-
+#include "filesystem/binary_stream.hpp"
 #include <xxh3.h>
-
-template <class T> concept is_array_like = requires (T cls) { cls.size(); cls.data(); };
-template <class T> concept array_like = is_array_like<T>;
 
 namespace hash {
 
@@ -30,8 +25,8 @@ namespace fs {
         auto hash = std::to_string(hash::XXH3(data));
         auto path = std::filesystem::temp_directory_path() / hash;
 
-        auto file = std::ofstream(path, std::ios::trunc | std::ios::binary);
-        file.write(reinterpret_cast<char*>(data.data()), data.size());
+        auto file = fs::FileBinaryStream(path, fs::write);
+        file.write(data);
 
         return path;
     }

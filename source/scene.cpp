@@ -39,7 +39,7 @@ Scene::Scene (const objects::Scene& info, const fs::VFS& vfs) {
     index_buffer = std::make_unique<vku::DeviceBuffer>(indices.size() * sizeof(uint16_t), vk::BufferUsageFlagBits::eIndexBuffer);
     index_buffer->upload(indices.data(), indices.size() * sizeof(uint16_t));
 
-    pipeline_cache = std::make_unique<vku::PipeLineCache>();
+    pipeline_cache = std::make_unique<vku::PipeLineCache>(vfs.get_mount("cache"));
 
     glm::mat4 orthoProjection = glm::ortho(-1.0f,  1.0f,
                                             1.0f, -1.0f,

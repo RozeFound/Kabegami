@@ -12,6 +12,7 @@ class Kabegami {
     struct Settings {
         std::string assets;
         std::string wallpaper;
+        std::string cache_location;
     } settings;
 
     std::unique_ptr<Window> window;

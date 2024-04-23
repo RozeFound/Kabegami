@@ -23,16 +23,24 @@ namespace vku {
 
         auto compiler = glsl::Compiler(options);
         auto parser = parsers::Shader(vfs, path);
+        std::vector<std::vector<uint32_t>> codes;
 
         auto hash = get_hash(parser.get_units());
 
-        std::vector<std::vector<uint32_t>> codes;
-        auto cache_path = fs::get_cache_dir() / (path + ".spvcache");
+        auto cache_mount = vfs.get_mount("cache");
+        auto cache_path = path + ".spvcache";
+        bool cache_read = false;
 
-        if (!read_cache(codes, cache_path, hash)) {
-            if (!compiler.compile(parser.get_units(), codes))
-                loge("Failed to compile shader: {}", path);
-            else write_cache(codes, cache_path, hash);
+        if (cache_mount->exists(cache_path)) {
+            auto file = cache_mount->open(cache_path, fs::read);
+            cache_read = read_cache(codes, file, hash);
+        }
+
+        if (!cache_read) {
+            if (compiler.compile(parser.get_units(), codes)) {
+                auto file = cache_mount->open(cache_path, fs::write);
+                write_cache(codes, file, hash);
+            }
         }
 
         auto resources = glsl::ShaderResources(codes);
@@ -43,11 +51,7 @@ namespace vku {
 
     }
 
-    bool Shader::read_cache (std::vector<std::vector<uint32_t>>& codes, std::filesystem::path path, XXH64_hash_t hash) {
-
-        if (!std::filesystem::exists(path)) return false;
-
-        auto file = fs::BinaryStream(path, fs::read);
+    bool Shader::read_cache (std::vector<std::vector<uint32_t>>& codes, fs::BinaryStream& file, XXH64_hash_t hash) {
 
         if (file.read<XXH64_hash_t>() != hash) return false;
 
@@ -65,12 +69,7 @@ namespace vku {
 
     }
 
-    void Shader::write_cache (std::vector<std::vector<uint32_t>>& codes, std::filesystem::path path, XXH64_hash_t hash) {
-
-        if (!std::filesystem::exists(path))
-            std::filesystem::create_directories(path.parent_path());
-
-        auto file = fs::BinaryStream(path, fs::write);
+    void Shader::write_cache (std::vector<std::vector<uint32_t>>& codes, fs::BinaryStream& file, XXH64_hash_t hash) {
 
         file.write(hash);
         file.write<uint32_t>(codes.size());

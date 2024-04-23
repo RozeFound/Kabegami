@@ -1,6 +1,5 @@
 #pragma once
 
-#include "utils.hpp"
 #include "vulkan/shaders/shader.hpp"
 
 namespace vku {
@@ -60,12 +59,13 @@ namespace vku {
 
     class PipeLineCache {
 
-        std::filesystem::path path = fs::get_cache_dir() / "pipeline.cache";
+        std::shared_ptr<fs::Mount> mount;
+        std::filesystem::path path = "pipeline.cache";
         std::unique_ptr<vk::raii::PipelineCache> handle;
 
         public:
 
-        PipeLineCache();
+        PipeLineCache(std::shared_ptr<fs::Mount> mount);
         ~PipeLineCache();
 
         constexpr const auto& operator*() const { return *handle; };

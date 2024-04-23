@@ -35,17 +35,17 @@ namespace glsl {
 
         ShaderUnit(const std::string& source, vk::ShaderStageFlagBits stage) : source(source), stage(stage) {}
 
-        inline void define (const std::string& name) {
+        void define (const std::string& name) {
             preamble += "#define " + name + "\n";
             processes.emplace_back("D" + name);
         }
 
-        inline void define (const std::string& name, const std::string& value) {
+        void define (const std::string& name, const std::string& value) {
             preamble += "#define " + name + " " + value + "\n";
             processes.emplace_back("D" + name + "=" + value);
         }
         
-        inline void undefine (const std::string& name) {
+        void undefine (const std::string& name) {
             preamble += "#undef " + name + "\n";
             processes.emplace_back("U" + name);
         }

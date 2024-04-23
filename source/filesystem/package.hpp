@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "mount.hpp"
 #include "binary_stream.hpp"
 
 namespace fs {
@@ -16,7 +17,7 @@ namespace fs {
         uint32_t length;
     };
 
-    class Package {
+    class Package : public Mount {
 
         std::unique_ptr<BinaryStream> file;
 
@@ -26,9 +27,10 @@ namespace fs {
 
         public:
 
-        Package (std::filesystem::path path) {
+        Package (std::filesystem::path path, std::string_view name)
+            : Mount(path, name) {
 
-            file = std::make_unique<BinaryStream>(path, fs::read);
+            file = std::make_unique<FileBinaryStream>(path, fs::read);
 
             auto package_version = file->read<std::string>(file->read<uint32_t>());
             logi("Package version: {}", package_version);
@@ -48,21 +50,25 @@ namespace fs {
 
         }
 
-        Package (Package&&) noexcept = default;
+        
+        Package (Package&& other) noexcept;
         Package (Package&) = delete;
 
-        template <typename T = std::vector<std::byte>>
-        T read (std::string_view path, std::size_t size) const {
+        BinaryStream open (std::filesystem::path path, access_flags mode) const {
 
-            auto& entry = entries.at({ path.begin(), path.end() });
-            if (size == 0) size = entry.length;
+            auto& entry = entries.at(path);
+
+            auto size = entry.length;
             auto offset = data_offset + entry.offset;
-            return file->read<T>(size, offset);
+
+            using T = std::vector<std::byte>;
+            auto data = file->read<T>(size, offset);
+            return MemoryBinaryStream(std::move(data), fs::read);
 
         }
         
-        constexpr bool exists (std::string_view path) const { 
-            return entries.contains({ path.begin(), path.end() });
+        bool exists (std::filesystem::path path) const { 
+            return entries.contains(path);
         }
 
     };

@@ -193,13 +193,15 @@ namespace vku {
         return *this;
     }
 
-    PipeLineCache::PipeLineCache() {
+    PipeLineCache::PipeLineCache(std::shared_ptr<fs::Mount> mount) {
 
+        this->mount = mount;
         auto context = vki::Context::get();
         auto data = std::vector<std::byte>();
 
-        if (std::filesystem::exists(path)) {
-            auto file = fs::BinaryStream(path, fs::read);
+
+        if (mount->exists(path)) {
+            auto file = mount->open(path, fs::read);
             data = file.read<decltype(data)>();
         }
 
@@ -215,10 +217,7 @@ namespace vku {
 
     PipeLineCache::~PipeLineCache() {
 
-        if (!std::filesystem::exists(path))
-            std::filesystem::create_directories(path.parent_path());
-
-        auto file = fs::BinaryStream(path, fs::write);
+        auto file = mount->open(path, fs::write);
         file.write<std::vector<uint8_t>>(handle->getData());
 
     }

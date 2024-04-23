@@ -4,59 +4,62 @@
 #include <filesystem>
 
 #include "binary_stream.hpp"
+#include "location.hpp"
 #include "package.hpp"
 
 namespace fs {
 
     class VFS {
 
-        std::vector<Package> packages;
-        std::vector<std::filesystem::path> locations;
+        std::vector<std::shared_ptr<Mount>> mounts;
 
         public:
 
         VFS() = default;
-        VFS (std::initializer_list<std::filesystem::path> locations) : locations(locations) {}
-
-        void add_package (std::filesystem::path package) { packages.emplace_back(package); }
-        void add_location (std::filesystem::path location) { locations.push_back(location); }
-
-        constexpr bool exists (std::string_view path) const {
-
-        for (const auto& package : packages)
-            if (package.exists(path))
-                return true;
-
-        for (const auto& location : locations) {
-            auto full_path = location / path;
-            if (std::filesystem::exists(full_path))
-                return true;
+        VFS (std::initializer_list<std::filesystem::path> locations) {
+            for (const auto& location : locations) mount_location(location);
         }
 
-        return false;
-        
-    }
+        void mount_package (std::filesystem::path path, std::string name = "") {
+            mounts.emplace_back(std::make_shared<Package>(path, name));
+        }
+
+        void mount_location (std::filesystem::path path, std::string name = "") {
+            mounts.emplace_back(std::make_shared<Location>(path, name));
+        }
+
+        constexpr bool is_mounted (std::string_view name) const {
+            for (const auto& mount : mounts)
+                if (mount->get_name() == name) return true;
+            return false; 
+        }
+
+        std::shared_ptr<Mount> get_mount (std::string_view name) const {
+            for (const auto& mount : mounts)
+                if (mount->get_name() == name) return mount;
+            throw std::runtime_error(fmt::format("Failed to get mount: {}", name));
+        }
+
+        bool exists (std::filesystem::path path) const {
+            for (const auto& mount : mounts)
+                if (mount->exists(path)) return true;
+            return false;
+        }
+
+        BinaryStream open (std::filesystem::path path, access_flags mode) const {
+            for (const auto& mount : mounts)
+                if (mount->exists(path)) return mount->open(path, mode);
+            throw std::runtime_error(fmt::format("Failed to open file: {}", path.string())); 
+        }
 
         template <typename T = std::vector<std::byte>>
-        T read (std::string_view path, std::size_t size = 0, std::ptrdiff_t offset = 0) const {
+        T read (std::filesystem::path path, std::size_t size = 0, std::ptrdiff_t offset = 0) const {
+            return open(path, fs::read).read<T>(size, offset);
+        }
 
-            for (auto& package : packages)
-                if (package.exists(path))
-                    return package.read<T>(path, size);
-
-            for (const auto& location : locations) {
-
-                auto full_path = location / path;
-
-                if (std::filesystem::exists(full_path)) {
-                    auto file = BinaryStream(full_path, fs::read);
-                    return file.read<T>(size, offset);
-                }
-
-            }
-
-            throw std::runtime_error(fmt::format("Error reading file: {}", path));
-
+        template <typename T = std::vector<std::byte>>
+        void write(std::filesystem::path path, T data) const {
+            open(path, fs::write).write<T>(data);
         }
 
     };
