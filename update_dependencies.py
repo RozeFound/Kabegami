@@ -1,7 +1,6 @@
-import asyncio, httpx, json
+import asyncio, json, os
 
-# https://www.youtube.com/watch?v=-BG9lhTg6xY
-token = "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"
+import httpx
 
 query = """
 query($owner: String!, $repo: String!) {
@@ -62,6 +61,10 @@ async def get_updated_item(client: httpx.AsyncClient, dependency: dict[str, str]
 
 
 async def main() -> int:
+
+    if not (token := os.environ.get("GITHUB_TOKEN")):
+        print("GITHUB_TOKEN environment variable not set.")
+        exit(-1)
 
     with open("dependencies.json", "r") as file:
         dependencies = json.load(file)
