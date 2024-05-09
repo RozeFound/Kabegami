@@ -8,7 +8,7 @@
 #define logw(FS...) spdlog::get("kabegami")->warn(FS)
 #define loge(FS...) spdlog::get("kabegami")->error(FS)
 
-#if defined(DEBUG)
+#if !defined(DNDEBUG)
     constexpr bool debug = true; 
 #else
     constexpr bool debug = false;

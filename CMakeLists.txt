@@ -45,10 +45,6 @@ set_property(TARGET ${PROJECT_NAME} PROPERTY "$<$<CONFIG:RELEASE>:INTERPROCEDURA
 target_compile_definitions(${PROJECT_NAME} PRIVATE "VULKAN_HPP_NO_CONSTRUCTORS" "VULKAN_HPP_NO_TO_STRING")
 target_precompile_headers(${PROJECT_NAME} PRIVATE <vulkan/vulkan_raii.hpp> "source/logging.hpp" <glm/glm.hpp> <GLFW/glfw3.h>)
 
-# ---- Enable debug info ----
-
-target_compile_definitions(${PROJECT_NAME} PUBLIC "$<$<CONFIG:DEBUG>:DEBUG>")
-
 # ---- Copy over resources ----
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/settings.json DESTINATION ${PROJECT_BINARY_DIR})

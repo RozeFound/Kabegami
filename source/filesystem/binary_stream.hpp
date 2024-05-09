@@ -130,7 +130,7 @@ namespace fs {
                 std::fwrite(&value, sizeof(T), 1, file);
             }
 
-            template <typename T> void write_array (T value, std::size_t size) {     
+            template <typename T> void write_array (T value, std::size_t size) {
                 for (std::size_t i = 0; i < size; i++) write_int(value[i]);
             }
 

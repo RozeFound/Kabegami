@@ -56,6 +56,8 @@ namespace fs {
 
         BinaryStream open (std::filesystem::path path, access_flags mode) const {
 
+            if (mode == fs::write) throw std::runtime_error("Package is read only");
+
             auto& entry = entries.at(path);
 
             auto size = entry.length;
