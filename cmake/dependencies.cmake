@@ -25,7 +25,7 @@ CPMAddPackage(
 )
 
 CPMAddPackage(
-    GIT_TAG ${spdlog_tag}
+    GIT_TAG ${spdlog_commit}
     GITHUB_REPOSITORY ${spdlog_repo}
     OPTIONS "SPDLOG_FMT_EXTERNAL 1"
 )
