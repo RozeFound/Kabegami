@@ -1,5 +1,4 @@
 #include <vector>
-#include <string_view>
 #include <memory>
 
 #include <spdlog/async.h>
@@ -8,10 +7,8 @@
 
 #include "app.hpp"
 
-auto main (const int argc, const char* const* const argv) -> int {
+void setup_logging() {
 
-    const auto args = std::vector<std::string_view>(argv, argv + argc);
-    
     spdlog::init_thread_pool(8192, 1);
     std::vector<spdlog::sink_ptr> sinks;
 
@@ -30,10 +27,16 @@ auto main (const int argc, const char* const* const argv) -> int {
     logger->set_level(spdlog::level::trace);
 
     spdlog::register_logger(logger);
+    
+}
 
-    auto app = std::make_unique<Kabegami>();
+auto main () -> int {
 
-    app->run();
+    setup_logging();
+
+    Kabegami app;
+
+    app.run();
 
     return 0;
 
