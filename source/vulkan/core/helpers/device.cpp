@@ -10,9 +10,9 @@ namespace vki {
         auto queue_piority = 1.f;
 
         auto unique_indices = std::set {
-            indices.transfer_family.value(),
-            indices.graphics_family.value(), 
-            indices.present_family.value()
+            indices.transfer_family.value_or(false),
+            indices.graphics_family.value_or(false),
+            indices.present_family.value_or(false)
         };
 
         for (const auto& queue_family : unique_indices) {

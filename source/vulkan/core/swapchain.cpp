@@ -18,7 +18,7 @@ namespace vki {
 
         auto image_count = capabilities.minImageCount + 1;
 
-        if (image_count > capabilities.maxImageCount)
+        if (image_count > capabilities.maxImageCount && capabilities.maxImageCount)
             image_count = capabilities.maxImageCount;
 
         auto composite_alpha = vk::CompositeAlphaFlagBitsKHR::eInherit;
