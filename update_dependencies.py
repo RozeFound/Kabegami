@@ -30,8 +30,8 @@ query($owner: String!, $repo: String!) {
 
 async def get_updated_item(client: httpx.AsyncClient, dependency: dict[str, str]) -> dict[str, str]:
 
-    name: str = dependency.get("name")
-    github: str = dependency.get("github")
+    name: str = dependency.get("name", "")
+    github: str = dependency.get("github", "")
 
     owner, repo = github.split("/")
 
@@ -45,12 +45,12 @@ async def get_updated_item(client: httpx.AsyncClient, dependency: dict[str, str]
 
     response = await client.post("graphql", json=json)
 
-    repository_data = response.json()["data"]["repository"]
-    latest_tag = None
-    latest_commit = repository_data["defaultBranchRef"]["target"]["oid"]
+    data = response.json()["data"]["repository"]
+    latest_tag = str()
+    latest_commit = data["defaultBranchRef"]["target"]["oid"]
 
-    if "refs" in repository_data and repository_data["refs"]["edges"]:
-        latest_tag = repository_data["refs"]["edges"][0]["node"]["name"] 
+    if "refs" in data and data["refs"]["edges"]:
+        latest_tag = data["refs"]["edges"][0]["node"]["name"]
 
     return {
         "name": name,
@@ -80,8 +80,11 @@ async def main() -> int:
     with open("dependencies.json", "w") as file:
         json.dump(items, file, indent=4)
 
+    return 0
+
 if __name__ == "__main__":
-    try: asyncio.run(main())
+    try:
+        exit(asyncio.run(main()))
     except KeyboardInterrupt:
         print("Operation aborted by user.")
         exit(-1)
