@@ -58,7 +58,7 @@ namespace fs {
         }
 
         template <typename T = std::vector<std::byte>>
-        void write(std::filesystem::path path, T data) const {
+        void write (std::filesystem::path path, T data) const {
             open(path, fs::write).write<T>(data);
         }
 

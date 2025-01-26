@@ -48,7 +48,7 @@ namespace vku {
         queue->submit(submit_info, **submition_completed);
 
         constexpr auto timeout = std::numeric_limits<uint64_t>::max();
-        auto wait =context->device->waitForFences(**submition_completed, true, timeout);
+        auto wait = context->device->waitForFences(**submition_completed, true, timeout);
         if (wait != vk::Result::eSuccess) logw("Something goes wrong when waiting on fences");
 
     }

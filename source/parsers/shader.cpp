@@ -124,7 +124,7 @@ __SHADER_PLACEHOLD__
 
                 Combo combo;
                 auto buffer = std::string_view(line).substr(line.find_first_of('{'));
-                
+
                 if (auto error = glz::read<opts>(combo, buffer)) {
                     logw("Failed to parse combo: {}", glz::format_error(error, buffer));
                     continue;
@@ -179,7 +179,7 @@ __SHADER_PLACEHOLD__
 
         if (unit.stage == vk::ShaderStageFlagBits::eVertex)
             header += "#define attribute in\n"
-                      "#define varying out\n";     
+                      "#define varying out\n";
         else if (unit.stage == vk::ShaderStageFlagBits::eFragment)
             header += "#define varying in\n"
                       "#define gl_FragColor diffuseColor\n"
@@ -200,7 +200,7 @@ __SHADER_PLACEHOLD__
         auto messages = static_cast<EShMessages>(EShMsgDefault | EShMsgSpvRules | EShMsgRelaxedErrors | EShMsgSuppressWarnings | EShMsgVulkanRules);
 
         shader.preprocess(GetDefaultResources(), 110, profile, false, false, messages, &output, includer);
-        
+
         static auto re_io = std::regex(R"(.+\s(in|out)\s[\s\w]+\s(\w+)\s*;)", std::regex::ECMAScript);
         std::smatch match;
 
@@ -217,7 +217,7 @@ __SHADER_PLACEHOLD__
     }
 
     void map_io (std::vector<glsl::ShaderUnit>& units) {
-        
+
         for (std::size_t i = 0; i < units.size(); i++) {
 
             std::string io_list;
@@ -229,7 +229,7 @@ __SHADER_PLACEHOLD__
                     if (!unit.preprocess_info.inputs.contains(name)) {
                         auto nio = std::regex_replace(io, std::regex(R"(\s*out\s)"), " in ");
                         io_list += nio + '\n';
-                    }            
+                    }
                 }
             }
 
@@ -263,7 +263,7 @@ __SHADER_PLACEHOLD__
             include.append(source.substr(pos, end - pos) + "\n");
             pos = end;
         }
-        
+
         include = load_glsl_include(vfs, include);
 
         return include + new_source;
@@ -281,7 +281,7 @@ __SHADER_PLACEHOLD__
         std::unordered_map<std::string, std::string> combos;  // Pass::combos
         std::unordered_map<std::string, std::string> aliases; // g_Uniform -> material
         std::unordered_map<std::string, glz::json_t> values;  // Pass::constantshadervalues
-        std::vector<std::string> textures(3);                    // Pass::textures
+        std::vector<std::string> textures(3);                 // Pass::textures
 
         for (auto& unit : units) {
             parse(unit, combos, aliases, values, textures);
