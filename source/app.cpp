@@ -10,6 +10,7 @@ Kabegami::Kabegami() {
     engine = std::make_unique<Engine>(*window);
 
     auto ec = glz::read_file_json(settings, "settings.json", std::string{});
+    if (ec) loge("Failed to read settings: {}", glz::format_error(ec));
 
 }
 
@@ -17,7 +18,8 @@ Kabegami::~Kabegami() {
 
     std::string buffer;
 
-    glz::write<glz::opts{.prettify=true}>(settings, buffer);
+    auto ec = glz::write<glz::opts{.prettify=true}>(settings, buffer);
+    if (ec) loge("Failed to write settings: {}", glz::format_error(ec, buffer));
 
     auto file = std::ofstream("settings.json");
 
@@ -41,8 +43,8 @@ void Kabegami::run() {
     auto buffer = vfs.read<std::string>(file.value());
     
     constexpr auto opts = glz::opts{.error_on_unknown_keys=false};
-    if (auto pe = glz::read<opts>(scene_info, buffer)) {
-        loge("Failed to parse scene:\n{}", glz::format_error(pe, buffer));
+    if (auto ec = glz::read<opts>(scene_info, buffer)) {
+        loge("Failed to parse scene:\n{}", glz::format_error(ec, buffer));
         auto file_path = fs::write_temp(buffer);
         logd("Scene json at: {}", file_path.string());
         return;
