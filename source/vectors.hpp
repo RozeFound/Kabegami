@@ -45,14 +45,14 @@ struct glz::meta<T>
 namespace glz::detail {
 
     template <class T> requires std::derived_from<T, vec_t> 
-    struct from_json <T> {
+    struct from<JSON, T> {
 
         template <auto Opts>
         static void op (T& vec, auto&&... args) noexcept {
 
             char _cbuf[64]; 
             std::string_view buffer(_cbuf); 
-            read<json>::op<Opts>(buffer, args...);
+            read<JSON>::op<Opts>(buffer, args...);
 
             for (int position = 0; auto& value : vec) {
                 auto str = buffer.substr(position);

@@ -2,7 +2,7 @@
 
 Window::Window (std::string_view title, std::size_t width, std::size_t height) {
 
-    auto ec = glz::read_file_binary(settings, "window-settings.beve", std::string{});
+    auto ec = glz::read_as_binary(settings, "window-settings.beve", std::string{});
 
     if (!settings.width) settings.width = width;
     if (!settings.height) settings.height = height;
@@ -32,7 +32,7 @@ Window::~Window() {
 
     glfwTerminate();
 
-    auto ec = glz::write_file_binary(settings, "window-settings.beve", std::string{});
+    auto ec = glz::write_file_beve(settings, "window-settings.beve", std::string{});
 
 }
 

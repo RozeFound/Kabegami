@@ -25,14 +25,14 @@ namespace objects {
                 bool enabled;
                 double amount;
                 double delay;
-                int mouse_influence;
+                double mouse_influence;
             } parallax;
 
             struct Shake {
                 bool enabled;
                 double amplitude;
-                int roughness;
-                int speed;
+                double roughness;
+                double speed;
             } shake;
 
         } camera;
@@ -43,7 +43,7 @@ namespace objects {
 
             struct Bloom {
                 bool enabled;
-                int strength;
+                double strength;
                 double threshold;
                 struct HDR {
                     double feather;
