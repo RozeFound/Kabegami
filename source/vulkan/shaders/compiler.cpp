@@ -2,6 +2,7 @@
 
 #include <SPIRV/GLSL.std.450.h>
 #include <SPIRV/GlslangToSpv.h>
+#include <glslang/MachineIndependent/localintermediate.h>
 #include <glslang/MachineIndependent/iomapper.h>
 
 namespace glsl {
